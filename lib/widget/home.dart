@@ -15,6 +15,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  //async wait 을 쓰기 위해서는 Future 타입을 이용함
+  Future<Null> refreshList() async {
+    await Future.delayed(Duration(seconds: 1)); //thread sleep 같은 역할을 함.
+    //새로운 정보를 그려내는 곳
+    setState(() {
+    });
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,25 +34,35 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             onPressed: () {
               Navigator.push(
-                  context, CupertinoPageRoute(builder: (context) => setting(title: '설정')));
+                  context, CupertinoPageRoute(builder: (context) => setting()));
+            },
+            icon: const Icon(Icons.edit),
+          ),
+          IconButton(
+            onPressed: () {
+             setState(() {
+             });
             },
             icon: const Icon(Icons.edit),
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: TimeTable(),
-          ),
-          const SizedBox(height: 30),
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Lunch(),
-          ),
-          Container(height: 400,)
-        ],
+      body: RefreshIndicator(
+        onRefresh: refreshList,
+        child: ListView(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(12.0),
+              child: TimeTable(),
+            ),
+            const SizedBox(height: 30),
+            const Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Lunch(),
+            ),
+            Container(height: 400,)
+          ],
+        ),
       ),
     );
   }

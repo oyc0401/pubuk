@@ -37,8 +37,7 @@ dependencies:
   http: ^0.13.4
   intl: ^0.17.0
   shared_preferences: ^2.0.12
-  select_form_field: "^2.2.0"
-  direct_select_flutter: ^1.1.1
+  select_dialog: ^2.0.0
 
 dev_dependencies:
   flutter_test:
