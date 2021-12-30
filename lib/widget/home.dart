@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/widget/setting.dart';
-
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'lunch.dart';
 import 'timetable.dart';
 
@@ -15,12 +19,44 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //async wait 을 쓰기 위해서는 Future 타입을 이용함
-  Future<Null> refreshList() async {
-    await Future.delayed(Duration(seconds: 1)); //thread sleep 같은 역할을 함.
-    //새로운 정보를 그려내는 곳
-    setState(() {});
-    return null;
+
+
+  Future TimeTableFetchPost() async {
+    var now = DateTime.now();
+    var mon = DateFormat('yyyyMMdd')
+        .format(now.add(Duration(days: -1 * now.weekday + 1)));
+    var fri = DateFormat('yyyyMMdd')
+        .format(now.add(Duration(days: -1 * now.weekday + 5))); // weekday 금요일=5
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var Grade = prefs.getInt('Grade') ?? 1;
+    var Class = prefs.getInt('Class') ?? 1;
+    const SchoolCode=7530072;
+
+    Uri uri = Uri.parse(
+        "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&"
+            "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=J10&"
+            "SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      print("home: 시간표 json 파싱 완료 $uri");
+      setState(() {
+        pizzza=Post.fromJson(json.decode(response.body));
+      });
+    } else {
+      throw Exception('Failed to load post');
+    }
+  }
+
+
+  Post pizzza =Post.fromJson({});
+
+  @override
+  void initState() {
+    super.initState();
+    TimeTableFetchPost();
   }
 
   @override
@@ -36,30 +72,21 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             icon: const Icon(Icons.edit),
           ),
-          IconButton(
-            onPressed: () {
-              setState(() {});
-            },
-            icon: const Icon(Icons.edit),
-          ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: refreshList,
+        onRefresh: TimeTableFetchPost,
         child: ListView(
           children: [
             Padding(
               padding: EdgeInsets.all(12.0),
-              child: FutureBuilder(
-                  future: refreshList(),
-                  builder: (context, snapshot) {
-                    return TimeTable();
-                  }),
+              child: TimeTable(post: pizzza)
             ),
             const SizedBox(height: 30),
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(12.0),
-              child: Lunch(),
+              child: Lunch()
+              //Text('ggg')
             ),
             Container(
               height: 400,

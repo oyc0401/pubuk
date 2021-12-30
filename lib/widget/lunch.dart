@@ -23,13 +23,13 @@ class _LunchState extends State<Lunch> {
   List? touchedDateList = ['20211122'];
 
   ///수 나중에 설정하는 변
-  late Future<Postserver> post;
   late Map allMenuMap;
+  late Future<Postserver> post;
 
   @override
   void initState() {
     super.initState();
-    allMenuMap=assetMap();
+    allMenuMap = assetMap();
     post = LunchFetchPost();
   }
 
@@ -53,12 +53,8 @@ class _LunchState extends State<Lunch> {
     return Table(
       children: [
         TableRow(children: [
-          SizedBox(
-              height: 340,
-              child: PictureView()),
-          SizedBox(
-              height: 340,
-              child: MenuView()),
+          SizedBox(height: 340, child: PictureView()),
+          SizedBox(height: 340, child: MenuView()),
         ])
       ],
     );
@@ -67,19 +63,19 @@ class _LunchState extends State<Lunch> {
   /// 메뉴 레이아웃
   Widget MenuView() {
     return PageView(
-              controller: PageController(
-                initialPage: 30,
-                keepPage: true,
-              ),
-              children: [...PageViewList()],
-            );
+      controller: PageController(
+        initialPage: 30,
+        keepPage: true,
+      ),
+      children: [...PageViewList()],
+    );
   }
 
   /// 사진 레이아웃
   Widget PictureView() {
     return ListView(
-              children: [Text(lunchImageTitle), ...images()],
-            );
+      children: [Text(lunchImageTitle), ...images()],
+    );
   }
 
   /// 페이지뷰 속 리스트뷰 레이아웃
@@ -98,7 +94,7 @@ class _LunchState extends State<Lunch> {
 
               touchedDateList = allMenuMap[text];
               touchedDateList ??= ['급식이 없습니다.212122112122'];
-              print(touchedDateList);
+              print("lunch: " + touchedDateList.toString());
             });
           },
           child: Text(text, overflow: TextOverflow.ellipsis)));
@@ -128,7 +124,7 @@ class _LunchState extends State<Lunch> {
     List<Widget> list = [];
     List todaymenu = touchedDateList!;
 
-    print(todaymenu.length);
+    //print("lunch: "+todaymenu.length.toString());
     int length = todaymenu.length;
     if (length >= 5) {
       length = 5;
@@ -141,10 +137,10 @@ class _LunchState extends State<Lunch> {
       list.add(Text(Date));
 
       list.add(Image.network(
-        "https://puchonbuk.hs.kr/phpThumb/phpThumb.php?src=/upload/l_passquery/$Date"+"_2.jpeg&w=139&h=99",
+        "https://puchonbuk.hs.kr/phpThumb/phpThumb.php?src=/upload/l_passquery/$Date" +
+            "_2.jpeg&w=139&h=99",
         errorBuilder: (context, error, stackTrace) => Text("급식 사진을 찾을 수 없습니다."),
       ));
-
 
       ///"https://puchonbuk.hs.kr/phpThumb/phpThumb.php?src=/upload/l_passquery/$Date"+"_2.jpeg&w=139&h=99"
       ///"https://puchonbuk.hs.kr/upload/l_passquery/$Date"+"_2.jpeg"
@@ -188,15 +184,19 @@ class _LunchState extends State<Lunch> {
       weekKor = "$weekKor요일";
       return weekKor;
     }
+
     final DateTime now = DateTime.now();
-    final String fromYMD = DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
-    final String toYMD = DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+    final String fromYMD =
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
+    final String toYMD =
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
 
     String plusDayYMD = fromYMD;
     DateTime addedTime = now.add(Duration(days: FROM_TERM));
 
-    while (plusDayYMD != toYMD){
-      String title = DateFormat('MM월 dd일 ').format(addedTime) + weekdayEng2Kor(DateFormat('E').format(addedTime));
+    while (plusDayYMD != toYMD) {
+      String title = DateFormat('MM월 dd일 ').format(addedTime) +
+          weekdayEng2Kor(DateFormat('E').format(addedTime));
 
       lunchArr.add([title, ...menuList(plusDayYMD)]);
 
@@ -213,7 +213,8 @@ class _LunchState extends State<Lunch> {
     String lastday = "";
 
     var now = new DateTime.now();
-    firstday = DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
+    firstday =
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
     lastday = DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
 
     Uri uri = Uri.parse(
@@ -224,7 +225,7 @@ class _LunchState extends State<Lunch> {
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
-      print("급식 json 파싱 완료 $uri");
+      print("lunch: 급식 json 파싱 완료 $uri");
       return Postserver.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to load post');
@@ -233,8 +234,8 @@ class _LunchState extends State<Lunch> {
 
   /// 저장한 json맵
   Map assetMap() {
-
-    Map<dynamic, List> allMap = Map(); // ["급식이름"][20210819, 20210910, 20211005, 20211108];
+    Map<dynamic, List> allMap =
+        Map(); // ["급식이름"][20210819, 20210910, 20211005, 20211108];
 
     Future<String> jsonstring() async {
       String jsonString = await rootBundle.loadString('asset/a.json');
@@ -242,13 +243,12 @@ class _LunchState extends State<Lunch> {
     }
 
     jsonstring().then((value) {
-      print("원본 급식 json 파일 가져오기 성공");
-
+      print("lunch: 원본 급식 json 파일 가져오기 성공");
 
       Postasset post = Postasset.fromJson(json.decode(value));
       var Menu = post.Menu;
 
-      print(Menu);
+      //print("lunch: "+Menu.toString());
 
       for (int i = 0; i <= Menu.length.toInt() - 1; i++) {
         var keys = Menu.keys.toList(); // =[20321,3213,3222,20214533,20214534,]
@@ -267,9 +267,9 @@ class _LunchState extends State<Lunch> {
         }
       }
 
-      print(allMap);
+      //print(allMap);
 
-      print("여기까지 입니다.");
+      //print("여기까지 입니다.");
 
       allMenuMap = allMap;
       lunchImageTitle = "오른쪽에서 메뉴를 선택하면 과거에 나왔던 급식의 사진을 볼 수 있어요.";
@@ -290,7 +290,7 @@ class Postserver {
     List<String> Menus;
 
     int listLength = jsonlist.length;
-    print("급식 배열 길이: $listLength");
+    //print("급식 배열 길이: $listLength");
     for (int i = 0; i <= listLength - 1; i++) {
       // 날짜
       String date = jsonlist[i]["MLSV_YMD"];
@@ -317,8 +317,6 @@ class Postserver {
   }
 }
 
-
-
 // 왼쪽
 class Postasset {
   final Map Menu; // ["20211204"][2]= 12월 4일 2번째 급식이름
@@ -331,7 +329,7 @@ class Postasset {
     List<String> Menus;
 
     int listLength = jsonlist.length;
-    print("급식 배열 길이: $listLength");
+    print("lunch: 급식 배열 길이: $listLength");
     for (int i = 0; i <= listLength - 1; i++) {
       // 날짜
       String date = jsonlist[i]["MLSV_YMD"];
