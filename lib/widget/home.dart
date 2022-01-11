@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/widget/setting.dart';
 
 import 'lunch.dart';
 import 'timetable.dart';
@@ -18,6 +20,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context, CupertinoPageRoute(builder: (context) => setting()));
+            },
+            icon: const Icon(Icons.edit),
+          ),
+        ],
       ),
       body: ListView(
         children: [

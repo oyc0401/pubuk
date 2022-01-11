@@ -52,7 +52,8 @@ class _TimeTableState extends State<TimeTable> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Grade = prefs.getInt('Grade') ?? 1;
     Class = prefs.getInt('Class') ?? 1;
-
+    //prefs.setInt('Grade', 2);
+    //prefs.setInt('Class', 2);
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&"
