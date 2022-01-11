@@ -24,7 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             onPressed: () {
               Navigator.push(
-                  context, CupertinoPageRoute(builder: (context) => setting()));
+                  context, CupertinoPageRoute(builder: (context) => setting(title: '설정')));
             },
             icon: const Icon(Icons.edit),
           ),
