@@ -50,52 +50,76 @@ class _settingState extends State<setting> {
       appBar: AppBar(
         title: Text('설정'),
       ),
-      body: Column(
-        children: [
-          TextButton(
-              onPressed: () {
-                SelectDialog.showModal<String>(
-                  context,
-                  label: "학년을 선택하세요",
-                  selectedValue: "$Grade학년",
-                  items: List.generate(3, (index) {
-                    var num = index + 1;
-                    return "$num학년";
-                  }),
-                  onChange: (String selected) {
-                    setState(() {
-                      var dd = selected.split('');
-                      Grade = int.parse(dd[0]);
-                      _setGrade(Grade);
-                    });
-                  },
-                  showSearchBox: false,
-                );
-              },
-              child: Text("$Grade학년")),
-          TextButton(
-              onPressed: () {
-                SelectDialog.showModal<String>(
-                  context,
-                  label: "반을 선택하세요",
-                  selectedValue: "$Class반",
-                  items: List.generate(10, (index) {
-                    var num = index + 1;
-                    return "$num반";
-                  }),
-                  onChange: (String selected) {
-                    setState(() {
-                      var dd = selected.split('');
-                      Class = int.parse(dd[0]);
-                      _setClass(Class);
-                    });
-                  },
-                  showSearchBox: false,
-                );
-              },
-              child: Text("$Class반"))
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Text("학년:"),
+                TextButton(
+                    onPressed: () {
+                      showClassDialog(context);
+                    },
+                    child: Text("$Grade학년")),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              children: [
+                Text("반:"),
+                TextButton(
+                    onPressed: () {
+                      showGradeDialog(context);
+                    },
+                    child: Text("$Class반"))
+              ],
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  showGradeDialog(BuildContext context) {
+    SelectDialog.showModal<String>(
+      context,
+      label: "반을 선택하세요",
+      selectedValue: "$Class반",
+      items: List.generate(10, (index) {
+        var num = index + 1;
+        return "$num반";
+      }),
+      onChange: (String selected) {
+        setState(() {
+          var dd = selected.split('');
+          Class = int.parse(dd[0]);
+          _setClass(Class);
+        });
+      },
+      showSearchBox: false,
+    );
+  }
+
+  showClassDialog(BuildContext context) {
+    SelectDialog.showModal<String>(
+      context,
+      label: "학년을 선택하세요",
+      selectedValue: "$Grade학년",
+      items: List.generate(3, (index) {
+        var num = index + 1;
+        return "$num학년";
+      }),
+      onChange: (String selected) {
+        setState(() {
+          var dd = selected.split('');
+          Grade = int.parse(dd[0]);
+          _setGrade(Grade);
+        });
+      },
+      showSearchBox: false,
     );
   }
 }
