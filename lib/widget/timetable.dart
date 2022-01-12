@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TimeTable extends StatefulWidget {
-  const TimeTable({Key? key}) : super(key: key);
+  TimeTable({Key? key}) : super(key: key);
 
   @override
   _TimeTableState createState() => _TimeTableState();

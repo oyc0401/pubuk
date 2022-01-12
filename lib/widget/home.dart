@@ -15,13 +15,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   //async wait 을 쓰기 위해서는 Future 타입을 이용함
   Future<Null> refreshList() async {
     await Future.delayed(Duration(seconds: 1)); //thread sleep 같은 역할을 함.
     //새로운 정보를 그려내는 곳
-    setState(() {
-    });
+    setState(() {});
     return null;
   }
 
@@ -40,8 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           IconButton(
             onPressed: () {
-             setState(() {
-             });
+              setState(() {});
             },
             icon: const Icon(Icons.edit),
           ),
@@ -51,16 +48,22 @@ class _MyHomePageState extends State<MyHomePage> {
         onRefresh: refreshList,
         child: ListView(
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(12.0),
-              child: TimeTable(),
+              child: FutureBuilder(
+                  future: refreshList(),
+                  builder: (context, snapshot) {
+                    return TimeTable();
+                  }),
             ),
             const SizedBox(height: 30),
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(12.0),
               child: Lunch(),
             ),
-            Container(height: 400,)
+            Container(
+              height: 400,
+            )
           ],
         ),
       ),
