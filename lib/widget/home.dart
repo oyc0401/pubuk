@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (response.statusCode == 200) {
       print("home: 시간표 json 파싱 완료 $uri");
       setState(() {
-        pizzza=Post.fromJson(json.decode(response.body));
+        table_post=Post.fromJson(json.decode(response.body));
       });
     } else {
       throw Exception('Failed to load post');
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-  Post pizzza =Post.fromJson({});
+  Post table_post =Post.fromJson({});
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Padding(
               padding: EdgeInsets.all(12.0),
-              child: TimeTable(post: pizzza)
+              child: TimeTable(post: table_post)
             ),
             const SizedBox(height: 30),
             const Padding(

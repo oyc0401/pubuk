@@ -23,8 +23,8 @@ class _settingState extends State<setting> {
   _loadProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      Grade = (prefs.getInt('Grade') ?? 3);
-      Class = (prefs.getInt('Class') ?? 4);
+      Grade = (prefs.getInt('Grade') ?? 1);
+      Class = (prefs.getInt('Class') ?? 1);
       print(Grade);
       print(Class);
     });
