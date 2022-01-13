@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "38235317642",
+    "project_id": "flutterschool-70d7a",
+    "storage_bucket": "flutterschool-70d7a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:38235317642:android:e5fdb0ecdd04d4a349d473",
+        "android_client_info": {
+          "package_name": "com.oyc0401.flutterschool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "38235317642-c9bgtj0qfovi4qc983iicjlf5mqii58l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEi3Nj78MYDN5wiOGMrDBRv5QWTeEZAm8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "38235317642-c9bgtj0qfovi4qc983iicjlf5mqii58l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "38235317642-4i8ul6m33g6ljpap0bk2b46lv05k1j79.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.oyc0401.flutterschool"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
