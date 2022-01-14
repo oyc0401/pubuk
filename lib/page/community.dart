@@ -17,73 +17,88 @@ class community extends StatefulWidget {
   _communityState createState() => _communityState();
 }
 
-//
-
 class _communityState extends State<community> {
-  CollectionReference pubuk = FirebaseFirestore.instance.collection('pubuk');
-  int where = 0;
   List TEXTLIST = [];
+  String finalDate = '2022-01-15 00:09:27.614909';
+  String firstDate = '';
+  List<Widget> widgetList = [
+    const SizedBox(
+        height: 200, child: Center(child: CircularProgressIndicator()))
+  ];
 
-  List ALLDATE = [];
+  Future getfirstDate() async {
+    //reset All DATA
+    TEXTLIST = [];
+    widgetList = [];
 
-  Future refresh() async {
-    setState(() {});
+    //get firstDate;
+    await FirebaseFirestore.instance
+        .collection('pubuk')
+        .orderBy('date', descending: true)
+        .limit(1)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      print('처음값은');
+      String firstvalue = querySnapshot.docs[0]['date'];
+      print(firstvalue);
+      firstDate = firstvalue;
+      TEXTLIST.add(firstvalue);
+    });
+    finalDate = firstDate;
   }
 
   Future readPage() async {
     print('readPage');
-    TEXTLIST = [];
-    where = 4;
-    await pubuk
+
+    await FirebaseFirestore.instance
+        .collection('pubuk')
         .orderBy('date', descending: true)
+        .startAfter([finalDate])
         .limit(4)
         .get()
         .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        print(doc['date']);
-        TEXTLIST.add(doc['date']);
-      });
+          //print ('바로밑');
+          //print (querySnapshot.docs[0]['id']);
+
+          querySnapshot.docs.forEach((doc) {
+            print(doc['date']);
+            TEXTLIST.add(doc['date']);
+            finalDate = doc['date'];
+          });
+        });
+    print(TEXTLIST);
+
+    setState(() {
+      widgetList = _WidgetList();
     });
   }
 
-  Future readall() async {
-    print('readall');
-    ALLDATE = [];
-    await pubuk
-        .orderBy('date', descending: true)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        ALLDATE.add(doc['date']);
-      });
-      print(ALLDATE.toString());
-    });
+  Future reset() async {
+    await getfirstDate();
     await readPage();
-    widgetList = widget_List();
   }
 
-  Future readMore() async {
-    print('더 읽어유');
-    pubuk.limit(4).get().then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        print(doc['date']);
-        TEXTLIST.add(doc['date']);
-      });
-    });
+  List<Widget> _WidgetList() {
+    List<Widget> valuewidgets = [];
+
+    print("위젯을 만들기 시작합니다!");
+    int lenght = TEXTLIST.length;
+
+    for (int i = 0; i < lenght; i++) {
+      Widget baby=Text(TEXTLIST[i]);
+
+
+      valuewidgets.add(baby);
+    }
+
+    return valuewidgets;
   }
 
-  List<Widget> widget_List() {
-    print("what?");
-    List<Widget> dd = [];
-    dd.add(Text(TEXTLIST.toString()));
-    dd.add(Text(TEXTLIST[0]));
-    dd.add(Text(TEXTLIST[1]));
-    dd.add(Text(TEXTLIST[2]));
-    dd.add(Text(TEXTLIST[3]));
-    return dd;
+  @override
+  void initState() {
+    super.initState();
+    reset();
   }
-
-  List<Widget> widgetList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -100,28 +115,43 @@ class _communityState extends State<community> {
           ),
         ],
       ),
-      body: FutureBuilder(
-          future: readall(),
-          builder: (context, snapshot) {
-            return RefreshIndicator(
-              child: ListView(
-                children: [
-                  CupertinoButton(
-                      child: Text('추가버튼'),
-                      onPressed: () {
-                        print(TEXTLIST);
-                      }),
-                  CupertinoButton(
-                      child: Text('setstate'),
-                      onPressed: () {
-                        setState(() {});
-                      }),
-                  ...widgetList
-                ],
-              ),
-              onRefresh: refresh,
-            );
-          }),
+      body: RefreshIndicator(
+        child: ListView(
+          children: [
+            CupertinoButton(
+                child: Text('print textlist'),
+                onPressed: () {
+                  print(TEXTLIST);
+                }),
+            CupertinoButton(
+                child: Text('getfirstDate'),
+                onPressed: () {
+                  getfirstDate();
+                }),
+            CupertinoButton(
+                child: Text('readpage'),
+                onPressed: () {
+                  readPage();
+                  //print(TEXTLIST);
+                }),
+            CupertinoButton(
+                child: Text('setstate'),
+                onPressed: () {
+                  setState(() {});
+                }),
+            ...widgetList
+          ],
+        ),
+        onRefresh:
+            // refresh,
+        reset,
+      ),
     );
   }
+
+  Future refresh() async {
+    setState(() {});
+  }
+
+  Future no() async {}
 }
