@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'widget/home.dart';
 
@@ -25,5 +26,10 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: '학교'),
     );
   }
+
+
+
+
+
 }
 
