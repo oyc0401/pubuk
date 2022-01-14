@@ -11,14 +11,15 @@ import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class community extends StatefulWidget {
-  const community({Key? key}) : super(key: key);
+  community({Key? key}) : super(key: key);
 
   @override
   _communityState createState() => _communityState();
 }
 
 class _communityState extends State<community> {
-  List TEXTLIST = [];
+  List docNameList = [];
+  List MAPLIST = [];
   String finalDate = '2022-01-15 00:09:27.614909';
   String firstDate = '';
   List<Widget> widgetList = [
@@ -28,7 +29,7 @@ class _communityState extends State<community> {
 
   Future getfirstDate() async {
     //reset All DATA
-    TEXTLIST = [];
+    docNameList = [];
     widgetList = [];
 
     //get firstDate;
@@ -42,9 +43,12 @@ class _communityState extends State<community> {
       String firstvalue = querySnapshot.docs[0]['date'];
       print(firstvalue);
       firstDate = firstvalue;
-      TEXTLIST.add(firstvalue);
+      docNameList.add(firstvalue);
+
+      MAPLIST=[docToMap(doc: querySnapshot.docs[0]).recivedMap()];
+
+      finalDate = firstDate;
     });
-    finalDate = firstDate;
   }
 
   Future readPage() async {
@@ -62,11 +66,15 @@ class _communityState extends State<community> {
 
           querySnapshot.docs.forEach((doc) {
             print(doc['date']);
-            TEXTLIST.add(doc['date']);
+            docNameList.add(doc['date']);
             finalDate = doc['date'];
+
+            MAPLIST.add(docToMap(doc: doc).recivedMap());
+
           });
         });
-    print(TEXTLIST);
+    print(docNameList);
+    //print(MAPLIST);
 
     setState(() {
       widgetList = _WidgetList();
@@ -82,12 +90,28 @@ class _communityState extends State<community> {
     List<Widget> valuewidgets = [];
 
     print("위젯을 만들기 시작합니다!");
-    int lenght = TEXTLIST.length;
+    int lenght = docNameList.length;
+
+    print(MAPLIST);
 
     for (int i = 0; i < lenght; i++) {
-      Widget baby=Text(TEXTLIST[i]);
+      //make widget
+      Widget baby = Padding(
+        child: Column(
+          children: [
+            Text(MAPLIST[i]['id']),
+            Text(MAPLIST[i]['nickname']),
+            Text(MAPLIST[i]['text']),
+            Text(MAPLIST[i]['date']),
+            Text(MAPLIST[i]['image']),
+          ],
+        ),
+        padding: EdgeInsets.all(12),
+      );
 
+      //return widget
 
+      //Widget popo = Text(docNameList[i]); 테스트용 이름 리스트 baby를 popo로 바꿔봐요
       valuewidgets.add(baby);
     }
 
@@ -121,7 +145,7 @@ class _communityState extends State<community> {
             CupertinoButton(
                 child: Text('print textlist'),
                 onPressed: () {
-                  print(TEXTLIST);
+                  print(docNameList);
                 }),
             CupertinoButton(
                 child: Text('getfirstDate'),
@@ -144,7 +168,7 @@ class _communityState extends State<community> {
         ),
         onRefresh:
             // refresh,
-        reset,
+            reset,
       ),
     );
   }
@@ -154,4 +178,27 @@ class _communityState extends State<community> {
   }
 
   Future no() async {}
+}
+
+class docToMap {
+  QueryDocumentSnapshot<Object?> doc;
+
+  docToMap({required this.doc});
+
+  Map recivedMap() {
+    String text = doc['text'];
+    String id = doc['id'];
+    String nickname = doc['nickname'];
+    String date = doc['date'];
+    String image = doc['image'];
+    Map box = {
+      "id": id,
+      "nickname": nickname,
+      "date": date,
+      "text": text,
+      "image": image
+    };
+
+    return box;
+  }
 }

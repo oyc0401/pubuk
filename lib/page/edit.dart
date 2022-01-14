@@ -30,13 +30,14 @@ class _editState extends State<edit> {
         .doc(date)
         .set({
       'id': "oyc0401",
+      'nickname':"유찬이",
       'text': text,
       'image': "abc,bcd,fds,rew",
       'date': date,
-      'sha256': "b7d81268fb1873fd23r"
     })
         .then((value) {
           print("User Added");
+          // 창 나가기
           Navigator.of(context).pop(true);
         })
         .catchError((error) => print("Failed to add user: $error"));
