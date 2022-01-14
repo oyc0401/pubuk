@@ -1,7 +1,12 @@
+import 'dart:core';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/edit.dart';
+import 'package:flutterschool/page/view.dart';
+import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,117 +20,108 @@ class community extends StatefulWidget {
 //
 
 class _communityState extends State<community> {
-  @override
-  void initState() {
-    super.initState();
-    read();
+  CollectionReference pubuk = FirebaseFirestore.instance.collection('pubuk');
+  int where = 0;
+  List TEXTLIST = [];
+
+  List ALLDATE = [];
+
+  Future refresh() async {
+    setState(() {});
   }
 
-  var text = '오류발생';
-
-  CollectionReference pubuk = FirebaseFirestore.instance.collection('pubuk');
-
-  Future read() async {
-    pubuk.doc('2022-01-14 14:11:23.2334').get().then((value) {
-      print(value.data());
-      setState(() {
-        text = value.data().toString();
+  Future readPage() async {
+    print('readPage');
+    TEXTLIST = [];
+    where = 4;
+    await pubuk
+        .orderBy('date', descending: true)
+        .limit(4)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        print(doc['date']);
+        TEXTLIST.add(doc['date']);
       });
     });
   }
 
   Future readall() async {
-    pubuk.get().then((QuerySnapshot querySnapshot) {
+    print('readall');
+    ALLDATE = [];
+    await pubuk
+        .orderBy('date', descending: true)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        ALLDATE.add(doc['date']);
+      });
+      print(ALLDATE.toString());
+    });
+    await readPage();
+    widgetList = widget_List();
+  }
+
+  Future readMore() async {
+    print('더 읽어유');
+    pubuk.limit(4).get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         print(doc['date']);
+        TEXTLIST.add(doc['date']);
       });
     });
   }
 
-  Future readsome() async {
-    pubuk.limit(2).get().then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        print(doc['date']);
-      });
-    });
+  List<Widget> widget_List() {
+    print("what?");
+    List<Widget> dd = [];
+    dd.add(Text(TEXTLIST.toString()));
+    dd.add(Text(TEXTLIST[0]));
+    dd.add(Text(TEXTLIST[1]));
+    dd.add(Text(TEXTLIST[2]));
+    dd.add(Text(TEXTLIST[3]));
+    return dd;
   }
 
-  Future<void> addUser() {
-    String date = '2022-01-14 14:11:24.2333';
-    return pubuk
-        .doc(date)
-        .set({
-          'id': "oyc0401",
-          'title': "제목",
-          'content': "Hello world!",
-          'image': "abc,bcd,fds,rew",
-          'date': date,
-          'sha256': "b7d81268fb1873fd23r"
-        })
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
-  }
-
-  Future<void> updateUser() {
-    return pubuk
-        .doc('2022-01-14 14:11:23.2334')
-        .update({'content': "이걸로 수정했어"})
-        .then((value) => print("User Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> deleteUser() {
-    return pubuk
-        .doc('2022-01-14 14:11:23.2334')
-        .delete()
-        .then((value) => print("User Deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
-  }
+  List<Widget> widgetList = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('게시판'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context, CupertinoPageRoute(builder: (context) => edit()));
+            },
+            icon: const Icon(Icons.edit),
+          ),
+        ],
       ),
-      body: RefreshIndicator(
-        child: ListView(
-          children: [
-            Text(text),
-            CupertinoButton(
-                child: Text('읽기'),
-                onPressed: () {
-                  read();
-                }),
-            CupertinoButton(
-                child: Text('쓰기'),
-                onPressed: () {
-                  addUser();
-                }),
-            CupertinoButton(
-                child: Text('수정'),
-                onPressed: () {
-                  updateUser();
-                }),
-            CupertinoButton(
-                child: Text('삭제'),
-                onPressed: () {
-                  deleteUser();
-                }),
-            CupertinoButton(
-                child: Text('모두 읽기'),
-                onPressed: () {
-                  readall();
-                }),
-            CupertinoButton(
-                child: Text('한 페이지 읽기'),
-                onPressed: () {
-                  readsome();
-                }),
-          ],
-        ),
-        onRefresh: read,
-      ),
+      body: FutureBuilder(
+          future: readall(),
+          builder: (context, snapshot) {
+            return RefreshIndicator(
+              child: ListView(
+                children: [
+                  CupertinoButton(
+                      child: Text('추가버튼'),
+                      onPressed: () {
+                        print(TEXTLIST);
+                      }),
+                  CupertinoButton(
+                      child: Text('setstate'),
+                      onPressed: () {
+                        setState(() {});
+                      }),
+                  ...widgetList
+                ],
+              ),
+              onRefresh: refresh,
+            );
+          }),
     );
   }
 }
