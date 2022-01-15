@@ -25,17 +25,16 @@ class _communityState extends State<community> {
   String finalDate = '2022-01-15 00:09:27.614909';
   String firstDate = '';
   List<Widget> widgetList = [SizedBox(
-      height: 200, child: Center(child: CircularProgressIndicator()))];
-
+      height: 400, child: Center(child: CircularProgressIndicator()))];
   RefreshController _refreshController =
   RefreshController(initialRefresh: false);
 
   Future readFirst() async {
-    print('getfirstDate');
+    print('readFirst');
     //reset All DATA
     docNameList = [];
-    widgetList = [];
-    //get firstDate;
+
+
     await FirebaseFirestore.instance
         .collection('pubuk')
         .orderBy('date', descending: true)
@@ -48,6 +47,7 @@ class _communityState extends State<community> {
       firstDate = firstvalue;
 
       docNameList.add(firstvalue);
+      widgetList = [];
       widgetList
           .add(json2Widget(docToMap(doc: querySnapshot.docs[0]).recivedMap()));
 
