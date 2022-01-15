@@ -6,7 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/edit.dart';
 import 'package:flutterschool/page/view.dart';
+import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,7 +47,7 @@ class _communityState extends State<community> {
       firstDate = firstvalue;
       docNameList.add(firstvalue);
 
-      MAPLIST=[docToMap(doc: querySnapshot.docs[0]).recivedMap()];
+      MAPLIST = [docToMap(doc: querySnapshot.docs[0]).recivedMap()];
 
       finalDate = firstDate;
     });
@@ -70,7 +72,6 @@ class _communityState extends State<community> {
             finalDate = doc['date'];
 
             MAPLIST.add(docToMap(doc: doc).recivedMap());
-
           });
         });
     print(docNameList);
@@ -79,11 +80,17 @@ class _communityState extends State<community> {
     setState(() {
       widgetList = _WidgetList();
     });
+    _refreshController.loadComplete();
   }
 
+  ///TODO 밑 스크롤시 새로고침
+  ///화면 ui 꾸미기
+  ///끗!
+  ///
   Future reset() async {
     await getfirstDate();
     await readPage();
+    _refreshController.refreshCompleted();
   }
 
   List<Widget> _WidgetList() {
@@ -95,18 +102,190 @@ class _communityState extends State<community> {
     print(MAPLIST);
 
     for (int i = 0; i < lenght; i++) {
+      // 이곳은 위젯하나를 만들때 실행되는 장소 입니다.
+
+      // 시간 다루기
+      DateTime dt = DateTime.parse(MAPLIST[i]['date']);
+      print("위젯 빌드 date: $dt");
+
+      DateTime _toDay = DateTime.now();
+      Duration duration= _toDay.difference(DateTime.parse(MAPLIST[i]['date']));
+
+      int difsec = int.parse(duration.inSeconds.toString());
+      int difmin = int.parse(duration.inMinutes.toString());
+      int difhour = int.parse(duration.inHours.toString());
+      int difday = int.parse(duration.inDays.toString());
+      String yyyy=DateFormat('yyyy').format(dt);
+      String MMdd=DateFormat('M/dd').format(dt);
+      String yyyyMMdd=DateFormat('yyyy.MM.dd').format(dt);
+
+      String date='error: 변수 설정할 때 나오는 텍스트';
+      if(difsec<60){
+        date = '$difsec초 전';
+      }else if(difmin<60){
+        date = '$difmin분 전';
+      }else if(difhour<24){
+        date = '$difhour시간 전';
+      } else if(difday<30){
+        date = '$difday일 전';
+      }else if(difday<365){
+        date = MMdd;
+        if(yyyy!=DateFormat('yyyy').format(_toDay)){
+          print('작년이예요');
+          date=yyyyMMdd;
+        }
+      }else {
+        date=yyyyMMdd;
+      }
+
+
       //make widget
-      Widget baby = Padding(
-        child: Column(
-          children: [
-            Text(MAPLIST[i]['id']),
-            Text(MAPLIST[i]['nickname']),
-            Text(MAPLIST[i]['text']),
-            Text(MAPLIST[i]['date']),
-            Text(MAPLIST[i]['image']),
-          ],
-        ),
-        padding: EdgeInsets.all(12),
+      Widget baby = Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              print('눌렀어');
+            },
+            child: Container(
+              color: Colors.white,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10 , horizontal: 20),
+              child: Column(
+                children: [
+                  Container(
+                    child: Row(
+                      children: [
+                        Text(MAPLIST[i]['nickname'],
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Colors.black)),
+                        Text(date,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 5 , horizontal: 0),
+                    alignment: Alignment.centerLeft,
+                    child: Text(MAPLIST[i]['text'],
+                        maxLines: 5,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.black)),
+                  ),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 0 , horizontal: 5),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.thumb_up,
+                                size: 15,
+                              ),
+                              Text('0'),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.comment,
+                              size: 15,
+                            ),
+                            Text('0'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          Container(
+            height: 0.5,
+            color: Colors.grey,
+          ),
+        ],
+      );
+
+      Widget example = Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              print('눌렀어');
+            },
+            child: Container(
+              color: Colors.white,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10 , horizontal: 20),
+              child: Column(
+                children: [
+                  Container(
+                    child: Row(
+                      children: [
+                        Text(MAPLIST[i]['nickname'],
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Colors.black)),
+                        Text(MAPLIST[i]['date'],
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 5 , horizontal: 0),
+                    alignment: Alignment.centerLeft,
+                    child: Text(MAPLIST[i]['text'],
+                        maxLines: 5,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.black)),
+                  ),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 0 , horizontal: 5),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.thumb_up,
+                                size: 15,
+                              ),
+                              Text('0'),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.comment,
+                              size: 15,
+                            ),
+                            Text('0'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          Container(
+            height: 0.5,
+            color: Colors.grey,
+          ),
+        ],
       );
 
       //return widget
@@ -124,6 +303,10 @@ class _communityState extends State<community> {
     reset();
   }
 
+
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,7 +322,37 @@ class _communityState extends State<community> {
           ),
         ],
       ),
-      body: RefreshIndicator(
+      body: SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: true,
+        header: WaterDropHeader(),
+        footer: CustomFooter(
+          builder: (BuildContext context,LoadStatus? mode){
+            Widget body ;
+            if(mode==LoadStatus.idle){
+              body =  Text("pull up load");
+            }
+            else if(mode==LoadStatus.loading){
+              body =  CupertinoActivityIndicator();
+            }
+            else if(mode == LoadStatus.failed){
+              body = Text("Load Failed!Click retry!");
+            }
+            else if(mode == LoadStatus.canLoading){
+              body = Text("release to load more");
+            }
+            else{
+              body = Text("No more Data");
+            }
+            return Container(
+              height: 55.0,
+              child: Center(child:body),
+            );
+          },
+        ),
+        controller: _refreshController,
+        onRefresh: reset,
+        onLoading: readPage,
         child: ListView(
           children: [
             CupertinoButton(
@@ -166,18 +379,17 @@ class _communityState extends State<community> {
             ...widgetList
           ],
         ),
-        onRefresh:
-            // refresh,
-            reset,
       ),
     );
   }
 
-  Future refresh() async {
-    setState(() {});
-  }
 
-  Future no() async {}
+
+
+
+
+
+
 }
 
 class docToMap {

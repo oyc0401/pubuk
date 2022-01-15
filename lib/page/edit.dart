@@ -16,31 +16,110 @@ class edit extends StatefulWidget {
 class _editState extends State<edit> {
   CollectionReference pubuk = FirebaseFirestore.instance.collection('pubuk');
 
-  String text=' ';
-
+  String text = '빈칸입니다';
 
   Future<void> addUser() async {
+    DateTime startDate = DateTime.now().toLocal();
+    int offset = await NTP.getNtpOffset(localTime: startDate);
+    print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
+    String date = "${startDate.add(Duration(milliseconds: offset))}";
+    pubuk.doc(date).set({
+      'id': "oyc0401",
+      'nickname': "유찬이",
+      'text': text,
+      'title': text,
+      'image': "abc,bcd,fds,rew",
+      'date': date,
+    }).then((value) {
+      print("User Added");
+      // 창 나가기
+      //Navigator.of(context).pop(true);
+    }).catchError((error) => print("Failed to add user: $error"));
+  }
 
+  Future<void> TimeTest() async {
+    //몇분전 이런거 테스트하는 함수 addUser대신 이걸 넣으세요
     DateTime startDate = DateTime.now().toLocal();
     int offset = await NTP.getNtpOffset(localTime: startDate);
     print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
     String date = "${startDate.add(Duration(milliseconds: offset))}";
 
-    return pubuk
-        .doc(date)
-        .set({
+    //6년전
+    date = '2016-01-15 05:01:52.056883'; //지워라!!!
+    pubuk.doc(date).set({
       'id': "oyc0401",
-      'nickname':"유찬이",
+      'nickname': "유찬이",
       'text': text,
+      'title': text,
       'image': "abc,bcd,fds,rew",
       'date': date,
-    })
-        .then((value) {
-          print("User Added");
-          // 창 나가기
-          Navigator.of(context).pop(true);
-        })
-        .catchError((error) => print("Failed to add user: $error"));
+    }).then((value) {
+      print("User Added");
+      // 창 나가기
+      //Navigator.of(context).pop(true);
+    }).catchError((error) => print("Failed to add user: $error"));
+
+    //6달전
+    date = '2021-07-15 05:01:52.056883'; //지워라!!!
+    pubuk.doc(date).set({
+      'id': "oyc0401",
+      'nickname': "유찬이",
+      'text': text,
+      'title': text,
+      'image': "abc,bcd,fds,rew",
+      'date': date,
+    }).then((value) {
+      print("User Added");
+      // 창 나가기
+      //Navigator.of(context).pop(true);
+    }).catchError((error) => print("Failed to add user: $error"));
+
+    //14일전
+    date = '2022-01-01 05:01:52.056883'; //지워라!!!
+    pubuk.doc(date).set({
+      'id': "oyc0401",
+      'nickname': "유찬이",
+      'text': text,
+      'title': text,
+      'image': "abc,bcd,fds,rew",
+      'date': date,
+    }).then((value) {
+      print("User Added");
+      // 창 나가기
+      //Navigator.of(context).pop(true);
+    }).catchError((error) => print("Failed to add user: $error"));
+
+    //10시간전
+    date = '2022-01-15 11:01:52.056883'; //지워라!!!
+    pubuk.doc(date).set({
+      'id': "oyc0401",
+      'nickname': "유찬이",
+      'text': text,
+      'title': text,
+      'image': "abc,bcd,fds,rew",
+      'date': date,
+    }).then((value) {
+      print("User Added");
+      // 창 나가기
+      //Navigator.of(context).pop(true);
+    }).catchError((error) => print("Failed to add user: $error"));
+
+    //20분전
+    date = '2022-01-15 21:01:37.725114'; //지워라!!!
+    pubuk.doc(date).set({
+      'id': "oyc0401",
+      'nickname': "유찬이",
+      'text': text,
+      'title': text,
+      'image': "abc,bcd,fds,rew",
+      'date': date,
+    }).then((value) {
+      print("User Added");
+      // 창 나가기
+      //Navigator.of(context).pop(true);
+    }).catchError((error) => print("Failed to add user: $error"));
+
+
   }
 
   Future<void> updateUser() {
@@ -51,11 +130,10 @@ class _editState extends State<edit> {
         .catchError((error) => print("Failed to update user: $error"));
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     // resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         actions: [
           IconButton(
