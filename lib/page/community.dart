@@ -20,20 +20,21 @@ class community extends StatefulWidget {
 }
 
 class _communityState extends State<community> {
-  List docNameList = [];
-  List MAPLIST = [];
+
+  List docNameList = []; //이거 지금은 필요 없는데 나중에 지워도 괜찮을듯
   String finalDate = '2022-01-15 00:09:27.614909';
   String firstDate = '';
-  List<Widget> widgetList = [
-    const SizedBox(
-        height: 200, child: Center(child: CircularProgressIndicator()))
-  ];
+  List<Widget> widgetList = [SizedBox(
+      height: 200, child: Center(child: CircularProgressIndicator()))];
 
-  Future getfirstDate() async {
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
+
+  Future readFirst() async {
+    print('getfirstDate');
     //reset All DATA
     docNameList = [];
     widgetList = [];
-
     //get firstDate;
     await FirebaseFirestore.instance
         .collection('pubuk')
@@ -45,9 +46,10 @@ class _communityState extends State<community> {
       String firstvalue = querySnapshot.docs[0]['date'];
       print(firstvalue);
       firstDate = firstvalue;
-      docNameList.add(firstvalue);
 
-      MAPLIST = [docToMap(doc: querySnapshot.docs[0]).recivedMap()];
+      docNameList.add(firstvalue);
+      widgetList
+          .add(json2Widget(docToMap(doc: querySnapshot.docs[0]).recivedMap()));
 
       finalDate = firstDate;
     });
@@ -60,240 +62,30 @@ class _communityState extends State<community> {
         .collection('pubuk')
         .orderBy('date', descending: true)
         .startAfter([finalDate])
-        .limit(4)
+        .limit(10)
         .get()
         .then((QuerySnapshot querySnapshot) {
-          //print ('바로밑');
-          //print (querySnapshot.docs[0]['id']);
 
-          querySnapshot.docs.forEach((doc) {
-            print(doc['date']);
-            docNameList.add(doc['date']);
-            finalDate = doc['date'];
-
-            MAPLIST.add(docToMap(doc: doc).recivedMap());
-          });
-        });
+      querySnapshot.docs.forEach((doc) {
+        print(doc['date']);
+        docNameList.add(doc['date']);
+        finalDate = doc['date'];
+        widgetList
+            .add(json2Widget(docToMap(doc: doc).recivedMap()));
+      });
+    });
     print(docNameList);
-    //print(MAPLIST);
 
     setState(() {
-      widgetList = _WidgetList();
     });
     _refreshController.loadComplete();
   }
 
   Future reset() async {
-    await getfirstDate();
+    print('reset');
+    await readFirst();
     await readPage();
     _refreshController.refreshCompleted();
-  }
-
-  List<Widget> _WidgetList() {
-    List<Widget> valuewidgets = [];
-
-    print("위젯을 만들기 시작합니다!");
-    int lenght = docNameList.length;
-
-    print(MAPLIST);
-
-    for (int i = 0; i < lenght; i++) {
-      // 이곳은 위젯하나를 만들때 실행되는 장소 입니다.
-
-      // 시간 다루기
-      DateTime dt = DateTime.parse(MAPLIST[i]['date']);
-      print("위젯 빌드 date: $dt");
-
-      DateTime _toDay = DateTime.now();
-      Duration duration = _toDay.difference(DateTime.parse(MAPLIST[i]['date']));
-
-      int difsec = int.parse(duration.inSeconds.toString());
-      int difmin = int.parse(duration.inMinutes.toString());
-      int difhour = int.parse(duration.inHours.toString());
-      int difday = int.parse(duration.inDays.toString());
-      String yyyy = DateFormat('yyyy').format(dt);
-      String MMdd = DateFormat('M/dd').format(dt);
-      String yyyyMMdd = DateFormat('yyyy.MM.dd').format(dt);
-
-      String date = 'error: 변수 설정할 때 나오는 텍스트';
-      if (difsec < 60) {
-        date = '$difsec초 전';
-      } else if (difmin < 60) {
-        date = '$difmin분 전';
-      } else if (difhour < 24) {
-        date = '$difhour시간 전';
-      } else if (difday < 30) {
-        date = '$difday일 전';
-      } else if (difday < 365) {
-        date = MMdd;
-        if (yyyy != DateFormat('yyyy').format(_toDay)) {
-          print('작년이예요');
-          date = yyyyMMdd;
-        }
-      } else {
-        date = yyyyMMdd;
-      }
-
-      //make widget
-      Widget baby = Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              print('눌렀어');
-            },
-            child: Container(
-              color: Colors.white,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Column(
-                children: [
-                  Container(
-                    child: Row(
-                      children: [
-                        Text(MAPLIST[i]['nickname'],
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: Colors.black)),
-                        Text(date,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.black)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                    alignment: Alignment.centerLeft,
-                    child: Text(MAPLIST[i]['text'],
-                        maxLines: 5,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Colors.black)),
-                  ),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 0, horizontal: 5),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.thumb_up,
-                                size: 15,
-                              ),
-                              Text('0'),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.comment,
-                              size: 15,
-                            ),
-                            Text('0'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Container(
-            height: 0.5,
-            color: Colors.grey,
-          ),
-        ],
-      );
-
-      Widget example = Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              print('눌렀어');
-            },
-            child: Container(
-              color: Colors.white,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Column(
-                children: [
-                  Container(
-                    child: Row(
-                      children: [
-                        Text(MAPLIST[i]['nickname'],
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: Colors.black)),
-                        Text(MAPLIST[i]['date'],
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.black)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                    alignment: Alignment.centerLeft,
-                    child: Text(MAPLIST[i]['text'],
-                        maxLines: 5,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Colors.black)),
-                  ),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 0, horizontal: 5),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.thumb_up,
-                                size: 15,
-                              ),
-                              Text('0'),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.comment,
-                              size: 15,
-                            ),
-                            Text('0'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Container(
-            height: 0.5,
-            color: Colors.grey,
-          ),
-        ],
-      );
-
-      //return widget
-
-      //Widget popo = Text(docNameList[i]); 테스트용 이름 리스트 baby를 popo로 바꿔봐요
-      valuewidgets.add(baby);
-    }
-
-    return valuewidgets;
   }
 
   @override
@@ -301,9 +93,6 @@ class _communityState extends State<community> {
     super.initState();
     reset();
   }
-
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -339,13 +128,16 @@ class _communityState extends State<community> {
             } else if (mode == LoadStatus.canLoading) {
               body = Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [CupertinoActivityIndicator(), Text("로딩중...")],
+                children: [
+                  Icon(Icons.arrow_downward_rounded),
+                  Text("아래로 당겨주세요")
+                ],
               );
             } else {
               body = Text("글이 없습니다.");
             }
             return Container(
-              height: 55.0,
+              height: 50.0,
               child: Center(child: body),
             );
           },
@@ -354,33 +146,129 @@ class _communityState extends State<community> {
         onRefresh: reset,
         onLoading: readPage,
         child: ListView(
-          children: [
-            CupertinoButton(
-                child: Text('print textlist'),
-                onPressed: () {
-                  print(docNameList);
-                }),
-            CupertinoButton(
-                child: Text('getfirstDate'),
-                onPressed: () {
-                  getfirstDate();
-                }),
-            CupertinoButton(
-                child: Text('readpage'),
-                onPressed: () {
-                  readPage();
-                  //print(TEXTLIST);
-                }),
-            CupertinoButton(
-                child: Text('setstate'),
-                onPressed: () {
-                  setState(() {});
-                }),
-            ...widgetList
-          ],
+          physics: BouncingScrollPhysics(),
+          children: [...widgetList],
         ),
       ),
     );
+  }
+
+  // 이거 나중에 밑에 있는 클래스로 이전해도 괜찮을듯
+  Widget json2Widget(Map json) {
+    print("위젯을 추가합니다!");
+    print(json);
+
+    // 시간 다루기
+    DateTime dt = DateTime.parse(json['date']);
+    print("위젯 빌드 date: $dt");
+
+    DateTime _toDay = DateTime.now();
+    Duration duration = _toDay.difference(DateTime.parse(json['date']));
+
+    int difsec = int.parse(duration.inSeconds.toString());
+    int difmin = int.parse(duration.inMinutes.toString());
+    int difhour = int.parse(duration.inHours.toString());
+    int difday = int.parse(duration.inDays.toString());
+    String yyyy = DateFormat('yyyy').format(dt);
+    String MMdd = DateFormat('M/dd').format(dt);
+    String yyyyMMdd = DateFormat('yyyy.MM.dd').format(dt);
+
+    String date = 'error: 변수 설정할 때 나오는 텍스트';
+    if (difsec < 60) {
+      date = '$difsec초 전';
+    } else if (difmin < 60) {
+      date = '$difmin분 전';
+    } else if (difhour < 24) {
+      date = '$difhour시간 전';
+    } else if (difday < 30) {
+      date = '$difday일 전';
+    } else if (difday < 365) {
+      date = MMdd;
+      if (yyyy != DateFormat('yyyy').format(_toDay)) {
+        date = yyyyMMdd;
+      }
+    } else {
+      date = yyyyMMdd;
+    }
+
+    //make widget
+    Widget baby = Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            print('눌렀어');
+          },
+          child: Container(
+            color: Colors.white,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child: Column(
+              children: [
+                Container(
+                  child: Row(
+                    children: [
+                      Text(json['nickname'],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.black)),
+                      Text(date,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                  alignment: Alignment.centerLeft,
+                  child: Text(json['text'],
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.black)),
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 0, horizontal: 5),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.thumb_up,
+                              size: 15,
+                            ),
+                            Text('0'),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.comment,
+                            size: 15,
+                          ),
+                          Text('0'),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        Container(
+          height: 0.5,
+          color: Colors.grey,
+        ),
+      ],
+    );
+
+    return baby;
   }
 }
 
