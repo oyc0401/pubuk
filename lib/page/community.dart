@@ -83,10 +83,6 @@ class _communityState extends State<community> {
     _refreshController.loadComplete();
   }
 
-  ///TODO 밑 스크롤시 새로고침
-  ///화면 ui 꾸미기
-  ///끗!
-  ///
   Future reset() async {
     await getfirstDate();
     await readPage();
@@ -109,35 +105,34 @@ class _communityState extends State<community> {
       print("위젯 빌드 date: $dt");
 
       DateTime _toDay = DateTime.now();
-      Duration duration= _toDay.difference(DateTime.parse(MAPLIST[i]['date']));
+      Duration duration = _toDay.difference(DateTime.parse(MAPLIST[i]['date']));
 
       int difsec = int.parse(duration.inSeconds.toString());
       int difmin = int.parse(duration.inMinutes.toString());
       int difhour = int.parse(duration.inHours.toString());
       int difday = int.parse(duration.inDays.toString());
-      String yyyy=DateFormat('yyyy').format(dt);
-      String MMdd=DateFormat('M/dd').format(dt);
-      String yyyyMMdd=DateFormat('yyyy.MM.dd').format(dt);
+      String yyyy = DateFormat('yyyy').format(dt);
+      String MMdd = DateFormat('M/dd').format(dt);
+      String yyyyMMdd = DateFormat('yyyy.MM.dd').format(dt);
 
-      String date='error: 변수 설정할 때 나오는 텍스트';
-      if(difsec<60){
+      String date = 'error: 변수 설정할 때 나오는 텍스트';
+      if (difsec < 60) {
         date = '$difsec초 전';
-      }else if(difmin<60){
+      } else if (difmin < 60) {
         date = '$difmin분 전';
-      }else if(difhour<24){
+      } else if (difhour < 24) {
         date = '$difhour시간 전';
-      } else if(difday<30){
+      } else if (difday < 30) {
         date = '$difday일 전';
-      }else if(difday<365){
+      } else if (difday < 365) {
         date = MMdd;
-        if(yyyy!=DateFormat('yyyy').format(_toDay)){
+        if (yyyy != DateFormat('yyyy').format(_toDay)) {
           print('작년이예요');
-          date=yyyyMMdd;
+          date = yyyyMMdd;
         }
-      }else {
-        date=yyyyMMdd;
+      } else {
+        date = yyyyMMdd;
       }
-
 
       //make widget
       Widget baby = Column(
@@ -149,7 +144,7 @@ class _communityState extends State<community> {
             child: Container(
               color: Colors.white,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10 , horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Column(
                 children: [
                   Container(
@@ -168,7 +163,8 @@ class _communityState extends State<community> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 5 , horizontal: 0),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                     alignment: Alignment.centerLeft,
                     child: Text(MAPLIST[i]['text'],
                         maxLines: 5,
@@ -180,7 +176,8 @@ class _communityState extends State<community> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 0 , horizontal: 5),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 0, horizontal: 5),
                           child: Row(
                             children: [
                               Icon(
@@ -223,7 +220,7 @@ class _communityState extends State<community> {
             child: Container(
               color: Colors.white,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10 , horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Column(
                 children: [
                   Container(
@@ -242,7 +239,8 @@ class _communityState extends State<community> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 5 , horizontal: 0),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                     alignment: Alignment.centerLeft,
                     child: Text(MAPLIST[i]['text'],
                         maxLines: 5,
@@ -254,7 +252,8 @@ class _communityState extends State<community> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 0 , horizontal: 5),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 0, horizontal: 5),
                           child: Row(
                             children: [
                               Icon(
@@ -303,9 +302,8 @@ class _communityState extends State<community> {
     reset();
   }
 
-
   RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -325,28 +323,27 @@ class _communityState extends State<community> {
       body: SmartRefresher(
         enablePullDown: true,
         enablePullUp: true,
-        header: WaterDropHeader(),
+        //header: WaterDropHeader(),
         footer: CustomFooter(
-          builder: (BuildContext context,LoadStatus? mode){
-            Widget body ;
-            if(mode==LoadStatus.idle){
-              body =  Text("pull up load");
-            }
-            else if(mode==LoadStatus.loading){
-              body =  CupertinoActivityIndicator();
-            }
-            else if(mode == LoadStatus.failed){
-              body = Text("Load Failed!Click retry!");
-            }
-            else if(mode == LoadStatus.canLoading){
-              body = Text("release to load more");
-            }
-            else{
-              body = Text("No more Data");
+          builder: (BuildContext context, LoadStatus? mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("마지막 글입니다."); //
+            } else if (mode == LoadStatus.loading) {
+
+            } else if (mode == LoadStatus.failed) {
+              body = Text("로딩에 실패했습니다.");
+            } else if (mode == LoadStatus.canLoading) {
+              body = Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [CupertinoActivityIndicator(), Text("로딩중...")],
+              );
+            } else {
+              body = Text("글이 없습니다.");
             }
             return Container(
               height: 55.0,
-              child: Center(child:body),
+              child: Center(child: body),
             );
           },
         ),
@@ -382,14 +379,6 @@ class _communityState extends State<community> {
       ),
     );
   }
-
-
-
-
-
-
-
-
 }
 
 class docToMap {
