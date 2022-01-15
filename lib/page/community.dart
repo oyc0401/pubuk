@@ -330,7 +330,10 @@ class _communityState extends State<community> {
             if (mode == LoadStatus.idle) {
               body = Text("마지막 글입니다."); //
             } else if (mode == LoadStatus.loading) {
-
+              body = Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [CupertinoActivityIndicator(), Text("로딩중...")],
+              );
             } else if (mode == LoadStatus.failed) {
               body = Text("로딩에 실패했습니다.");
             } else if (mode == LoadStatus.canLoading) {
