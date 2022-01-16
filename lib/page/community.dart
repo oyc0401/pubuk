@@ -112,7 +112,7 @@ class _communityState extends State<community> {
       body: SmartRefresher(
         enablePullDown: true,
         enablePullUp: true,
-        //header: WaterDropHeader(),
+        header: MaterialClassicHeader(),
         footer: CustomFooter(
           builder: (BuildContext context, LoadStatus? mode) {
             Widget body;
