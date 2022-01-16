@@ -149,7 +149,7 @@ class _viewState extends State<view> {
                 width: 200,
                 child: TextField(
                   onChanged: (text) {
-                    this.comment = text;
+                    comment = text;
                   },
                   keyboardType: TextInputType.multiline,
                   maxLines: null,

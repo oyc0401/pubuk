@@ -70,13 +70,13 @@ class _editState extends State<edit> {
               keyboardType: TextInputType.multiline,
               minLines: 4,
               maxLines: null,
-              decoration: const InputDecoration(
+              decoration: const InputDecoration(hintText: "내용을 입력하세요.",
                 border: InputBorder.none
               ),
             ),
             Container(
               height: 500,
-              color: Colors.green,)
+              color: Colors.grey,)
           ],
         ),
       ),
