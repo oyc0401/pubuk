@@ -24,9 +24,10 @@ class _communityState extends State<community> {
   String finalDate = '2022-01-15 00:09:27.614909';
   String firstDate = '';
   List<Widget> widgetList = [
-    SizedBox(height: 400, child: Center(child: CircularProgressIndicator()))
+    const SizedBox(height: 400, child: Center(child: CircularProgressIndicator()))
   ];
-  RefreshController _refreshController =
+
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   Future readFirst() async {
@@ -40,15 +41,16 @@ class _communityState extends State<community> {
         .limit(1)
         .get()
         .then((QuerySnapshot querySnapshot) {
-      print('처음값은');
+      //print('처음값은');
       String firstvalue = querySnapshot.docs[0]['date'];
-      print(firstvalue);
+      print("처음 날짜: $firstvalue");
       firstDate = firstvalue;
 
       docNameList.add(firstvalue);
       widgetList = [];
-      widgetList
-          .add(json2Widget(docToReadMap(doc: querySnapshot.docs[0]).recivedMap()));
+      widgetList.add(textWidget(
+          jsonConversion(json: querySnapshot.docs[0].data() as Map)
+              .changedJson()));
 
       finalDate = firstDate;
     });
@@ -65,13 +67,13 @@ class _communityState extends State<community> {
         .get()
         .then((QuerySnapshot querySnapshot) {
           querySnapshot.docs.forEach((doc) {
-            print(doc['date']);
             docNameList.add(doc['date']);
             finalDate = doc['date'];
-            widgetList.add(json2Widget(docToReadMap(doc: doc).recivedMap()));
+            widgetList.add(textWidget(
+                jsonConversion(json: doc.data() as Map).changedJson()));
           });
         });
-    print(docNameList);
+    //print(docNameList);
 
     setState(() {});
     _refreshController.loadComplete();
@@ -94,12 +96,12 @@ class _communityState extends State<community> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('게시판'),
+        title: const Text('게시판'),
         actions: [
           IconButton(
             onPressed: () {
               Navigator.push(
-                  context, CupertinoPageRoute(builder: (context) => edit()));
+                  context, CupertinoPageRoute(builder: (context) => const edit()));
             },
             icon: const Icon(Icons.edit),
           ),
@@ -108,29 +110,29 @@ class _communityState extends State<community> {
       body: SmartRefresher(
         enablePullDown: true,
         enablePullUp: true,
-        header: MaterialClassicHeader(),
+        header: const MaterialClassicHeader(),
         footer: CustomFooter(
           builder: (BuildContext context, LoadStatus? mode) {
             Widget body;
             if (mode == LoadStatus.idle) {
-              body = Text("마지막 글입니다."); //
+              body = const Text("마지막 글입니다."); //
             } else if (mode == LoadStatus.loading) {
               body = Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [CupertinoActivityIndicator(), Text("로딩중...")],
+                children: [const CupertinoActivityIndicator(), const Text("로딩중...")],
               );
             } else if (mode == LoadStatus.failed) {
-              body = Text("로딩에 실패했습니다.");
+              body = const Text("로딩에 실패했습니다.");
             } else if (mode == LoadStatus.canLoading) {
               body = Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.arrow_downward_rounded),
-                  Text("아래로 당겨주세요")
+                  const Icon(Icons.arrow_downward_rounded),
+                  const Text("아래로 당겨주세요")
                 ],
               );
             } else {
-              body = Text("글이 없습니다.");
+              body = const Text("글이 없습니다.");
             }
             return Container(
               height: 50.0,
@@ -142,7 +144,7 @@ class _communityState extends State<community> {
         onRefresh: reset,
         onLoading: readPage,
         child: ListView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           children: [...widgetList],
         ),
       ),
@@ -150,13 +152,13 @@ class _communityState extends State<community> {
   }
 
   // 이거 나중에 밑에 있는 클래스로 이전해도 괜찮을듯
-  Widget json2Widget(Map json) {
-    print("위젯을 추가합니다!");
+  Widget textWidget(Map json) {
+    print("json2Widget");
     //print(json);
 
     // 시간 다루기
     DateTime dt = DateTime.parse(json['date']);
-    print("위젯 빌드 date: $dt");
+    //print("위젯 빌드 date: $dt");
 
     DateTime _toDay = DateTime.now();
     Duration duration = _toDay.difference(DateTime.parse(json['date']));
@@ -196,8 +198,7 @@ class _communityState extends State<community> {
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) =>
-                        view(url: json['date'])));
+                    builder: (context) => view(url: json['date'])));
           },
           child: Container(
             color: Colors.white,
@@ -210,13 +211,13 @@ class _communityState extends State<community> {
                     children: [
                       Text(json['nickname'],
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                               color: Colors.black)),
                       Text(date,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.black)),
+                          style: const TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
@@ -227,7 +228,7 @@ class _communityState extends State<community> {
                   child: Text(json['text'],
                       maxLines: 5,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.black)),
+                      style: const TextStyle(color: Colors.black)),
                 ),
                 Container(
                   child: Row(
@@ -238,21 +239,21 @@ class _communityState extends State<community> {
                             vertical: 0, horizontal: 5),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.thumb_up,
                               size: 15,
                             ),
-                            Text('0'),
+                            const Text('0'),
                           ],
                         ),
                       ),
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.comment,
                             size: 15,
                           ),
-                          Text('0'),
+                          const Text('0'),
                         ],
                       ),
                     ],
@@ -273,25 +274,38 @@ class _communityState extends State<community> {
   }
 }
 
-class docToReadMap {
-  QueryDocumentSnapshot<Object?> doc;
+class jsonConversion {
+  /// 나중에 db에 새로운 필드가 추가될 것을 대비해서 만든 클래스
 
-  docToReadMap({required this.doc});
+  Map json = {};
 
-  Map recivedMap() {
-    String text = doc['text'] ?? '내용이 없습니다.';
-    String id = doc['id'] ?? '알수없는 사용자43242';
-    String nickname = doc['nickname'] ?? '닉네임이 없습니다32131321';
-    String date = doc['date'] ?? '';
-    String image = doc['image'] ?? '';
-    Map box = {
+  jsonConversion({required this.json});
+
+  Map changedJson() {
+    // 인수 9개
+    String text = json['text'] ?? '내용이 없습니다.';
+    String id = json['id'] ?? '알수없는 사용자43242';
+    String nickname = json['nickname'] ?? '닉네임이 없습니다32131321';
+    String date = json['date'] ?? '';
+    String image = json['image'] ?? '';
+
+    String title = json['title'] ?? '제목';
+    int heart = json['heart'] ?? 0;
+    int comment = json['comment'] ?? 0;
+    String auth = json['auth'] ?? 'student';
+
+    final Json = {
       "id": id,
       "nickname": nickname,
       "date": date,
       "text": text,
-      "image": image
+      "image": image,
+      'title': title,
+      'heart': heart,
+      'comment': comment,
+      'auth': auth,
     };
 
-    return box;
+    return Json;
   }
 }

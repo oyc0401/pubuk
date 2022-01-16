@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,33 +16,11 @@ class edit extends StatefulWidget {
 }
 
 class _editState extends State<edit> {
-  CollectionReference pubuk = FirebaseFirestore.instance.collection('pubuk');
+  String text = '';
 
-  String text = '빈칸입니다';
-
-  Future<void> addUser() async {
-    DateTime startDate = DateTime.now().toLocal();
-    int offset = await NTP.getNtpOffset(localTime: startDate);
-    print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
-    String date = "${startDate.add(Duration(milliseconds: offset))}";
-    pubuk.doc(date).set({
-      'id': "oyc0401",
-      'nickname': "유찬이",
-      'text': text,
-      'title': text,
-      'image': "abc,bcd,fds,rew",
-      'date': date,
-    }).then((value) {
-      print("User Added");
-      // 창 나가기
-      //Navigator.of(context).pop(true);
-    }).catchError((error) => print("Failed to add user: $error"));
-  }
-
-
-
-  Future<void> updateUser() {
-    return pubuk
+  Future _updateUser() {
+    return FirebaseFirestore.instance
+        .collection('pubuk')
         .doc('2022-01-14 14:11:23.2334')
         .update({'content': "이걸로 수정했어"})
         .then((value) => print("User Updated"))
@@ -58,28 +38,45 @@ class _editState extends State<edit> {
             icon: const Icon(Icons.delete),
           ),
           IconButton(
-            onPressed: addUser,
+            onPressed: () {
+              if(text!='') {
+                write(
+                    collection: 'pubuk',
+                    id: 'oyc0401',
+                    nickname: "유찬",
+                    text: text,
+                    title: ' ')
+                    .addText()
+                    .then((value) {
+                  Navigator.of(context).pop(true);
+                });
+              }else{
+                _showDialog();
+
+              }
+            },
             icon: const Icon(Icons.save),
           )
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
+        child: ListView(
           children: [
-            Container(
-              height: 500,
-              child: SingleChildScrollView(
-                child: TextField(
-                  onChanged: (text) {
-                    this.text = text;
-                  },
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration: const InputDecoration(hintText: '내용을 적어주세요'),
-                ),
+            TextField(
+              onChanged: (text) {
+                this.text = text;
+              },
+              keyboardType: TextInputType.multiline,
+              minLines: 4,
+              maxLines: null,
+              decoration: const InputDecoration(
+                border: InputBorder.none
               ),
             ),
+            Container(
+              height: 500,
+              color: Colors.green,)
           ],
         ),
       ),
@@ -87,90 +84,71 @@ class _editState extends State<edit> {
   }
 
 
+  void _showDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: const Text("알림"),
+          content: const Text("내용을 입력하세요."),
+          actions: <Widget>[
+            CupertinoButton(
+              child: const Text("확인"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
 
+class write {
+  String collection;
 
-  Future<void> TimeTest() async {
-    //몇분전 이런거 테스트하는 함수 addUser대신 이걸 넣으세요
+  String id;
+  String nickname;
+  String title;
+  String text;
+
+  String? auth;
+  List<String>? image;
+  int? heart = 0;
+  int? comment = 0;
+
+  write({
+    required this.collection,
+    required this.id,
+    required this.nickname,
+    required this.text,
+    required this.title,
+    this.auth,
+    this.image,
+    this.heart,
+    this.comment,
+  });
+
+  Future addText() async {
     DateTime startDate = DateTime.now().toLocal();
     int offset = await NTP.getNtpOffset(localTime: startDate);
     print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
     String date = "${startDate.add(Duration(milliseconds: offset))}";
 
-    //6년전
-    date = '2016-01-15 05:01:52.056883'; //지워라!!!
-    pubuk.doc(date).set({
-      'id': "oyc0401",
-      'nickname': "유찬이",
+    FirebaseFirestore.instance.collection(collection).doc(date).set({
+      'id': id,
+      'nickname': nickname,
       'text': text,
-      'title': text,
-      'image': "abc,bcd,fds,rew",
+      'title': title,
+      'heart': heart,
+      'commment': comment,
+      'auth': auth,
+      'image': image,
       'date': date,
     }).then((value) {
       print("User Added");
-      // 창 나가기
-      //Navigator.of(context).pop(true);
     }).catchError((error) => print("Failed to add user: $error"));
-
-    //6달전
-    date = '2021-07-15 05:01:52.056883'; //지워라!!!
-    pubuk.doc(date).set({
-      'id': "oyc0401",
-      'nickname': "유찬이",
-      'text': text,
-      'title': text,
-      'image': "abc,bcd,fds,rew",
-      'date': date,
-    }).then((value) {
-      print("User Added");
-      // 창 나가기
-      //Navigator.of(context).pop(true);
-    }).catchError((error) => print("Failed to add user: $error"));
-
-    //14일전
-    date = '2022-01-01 05:01:52.056883'; //지워라!!!
-    pubuk.doc(date).set({
-      'id': "oyc0401",
-      'nickname': "유찬이",
-      'text': text,
-      'title': text,
-      'image': "abc,bcd,fds,rew",
-      'date': date,
-    }).then((value) {
-      print("User Added");
-      // 창 나가기
-      //Navigator.of(context).pop(true);
-    }).catchError((error) => print("Failed to add user: $error"));
-
-    //10시간전
-    date = '2022-01-15 11:01:52.056883'; //지워라!!!
-    pubuk.doc(date).set({
-      'id': "oyc0401",
-      'nickname': "유찬이",
-      'text': text,
-      'title': text,
-      'image': "abc,bcd,fds,rew",
-      'date': date,
-    }).then((value) {
-      print("User Added");
-      // 창 나가기
-      //Navigator.of(context).pop(true);
-    }).catchError((error) => print("Failed to add user: $error"));
-
-    //20분전
-    date = '2022-01-15 21:01:37.725114'; //지워라!!!
-    pubuk.doc(date).set({
-      'id': "oyc0401",
-      'nickname': "유찬이",
-      'text': text,
-      'title': text,
-      'image': "abc,bcd,fds,rew",
-      'date': date,
-    }).then((value) {
-      print("User Added");
-      // 창 나가기
-      //Navigator.of(context).pop(true);
-    }).catchError((error) => print("Failed to add user: $error"));
-
-
   }
 }
