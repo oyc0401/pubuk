@@ -107,6 +107,13 @@ class _communityState extends State<community> {
             },
             icon: const Icon(Icons.edit),
           ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context, CupertinoPageRoute(builder: (context) => view()));
+            },
+            icon: const Icon(Icons.image),
+          ),
         ],
       ),
       body: SmartRefresher(
