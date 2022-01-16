@@ -37,6 +37,58 @@ class _editState extends State<edit> {
     }).catchError((error) => print("Failed to add user: $error"));
   }
 
+
+
+  Future<void> updateUser() {
+    return pubuk
+        .doc('2022-01-14 14:11:23.2334')
+        .update({'content': "이걸로 수정했어"})
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.delete),
+          ),
+          IconButton(
+            onPressed: addUser,
+            icon: const Icon(Icons.save),
+          )
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Container(
+              height: 500,
+              child: SingleChildScrollView(
+                child: TextField(
+                  onChanged: (text) {
+                    this.text = text;
+                  },
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  decoration: const InputDecoration(hintText: '내용을 적어주세요'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
+
   Future<void> TimeTest() async {
     //몇분전 이런거 테스트하는 함수 addUser대신 이걸 넣으세요
     DateTime startDate = DateTime.now().toLocal();
@@ -120,52 +172,5 @@ class _editState extends State<edit> {
     }).catchError((error) => print("Failed to add user: $error"));
 
 
-  }
-
-  Future<void> updateUser() {
-    return pubuk
-        .doc('2022-01-14 14:11:23.2334')
-        .update({'content': "이걸로 수정했어"})
-        .then((value) => print("User Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.delete),
-          ),
-          IconButton(
-            onPressed: addUser,
-            icon: const Icon(Icons.save),
-          )
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Container(
-              height: 500,
-              child: SingleChildScrollView(
-                child: TextField(
-                  onChanged: (text) {
-                    this.text = text;
-                  },
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration: const InputDecoration(hintText: '내용을 적어주세요'),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

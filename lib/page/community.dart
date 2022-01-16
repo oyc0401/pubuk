@@ -20,20 +20,19 @@ class community extends StatefulWidget {
 }
 
 class _communityState extends State<community> {
-
   List docNameList = []; //이거 지금은 필요 없는데 나중에 지워도 괜찮을듯
   String finalDate = '2022-01-15 00:09:27.614909';
   String firstDate = '';
-  List<Widget> widgetList = [SizedBox(
-      height: 400, child: Center(child: CircularProgressIndicator()))];
+  List<Widget> widgetList = [
+    SizedBox(height: 400, child: Center(child: CircularProgressIndicator()))
+  ];
   RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   Future readFirst() async {
     print('readFirst');
     //reset All DATA
     docNameList = [];
-
 
     await FirebaseFirestore.instance
         .collection('pubuk')
@@ -49,7 +48,7 @@ class _communityState extends State<community> {
       docNameList.add(firstvalue);
       widgetList = [];
       widgetList
-          .add(json2Widget(docToMap(doc: querySnapshot.docs[0]).recivedMap()));
+          .add(json2Widget(docToReadMap(doc: querySnapshot.docs[0]).recivedMap()));
 
       finalDate = firstDate;
     });
@@ -65,19 +64,16 @@ class _communityState extends State<community> {
         .limit(10)
         .get()
         .then((QuerySnapshot querySnapshot) {
-
-      querySnapshot.docs.forEach((doc) {
-        print(doc['date']);
-        docNameList.add(doc['date']);
-        finalDate = doc['date'];
-        widgetList
-            .add(json2Widget(docToMap(doc: doc).recivedMap()));
-      });
-    });
+          querySnapshot.docs.forEach((doc) {
+            print(doc['date']);
+            docNameList.add(doc['date']);
+            finalDate = doc['date'];
+            widgetList.add(json2Widget(docToReadMap(doc: doc).recivedMap()));
+          });
+        });
     print(docNameList);
 
-    setState(() {
-    });
+    setState(() {});
     _refreshController.loadComplete();
   }
 
@@ -106,13 +102,6 @@ class _communityState extends State<community> {
                   context, CupertinoPageRoute(builder: (context) => edit()));
             },
             icon: const Icon(Icons.edit),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context, CupertinoPageRoute(builder: (context) => view()));
-            },
-            icon: const Icon(Icons.image),
           ),
         ],
       ),
@@ -163,7 +152,7 @@ class _communityState extends State<community> {
   // 이거 나중에 밑에 있는 클래스로 이전해도 괜찮을듯
   Widget json2Widget(Map json) {
     print("위젯을 추가합니다!");
-    print(json);
+    //print(json);
 
     // 시간 다루기
     DateTime dt = DateTime.parse(json['date']);
@@ -204,6 +193,11 @@ class _communityState extends State<community> {
         GestureDetector(
           onTap: () {
             print('눌렀어');
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) =>
+                        view(url: json['date'])));
           },
           child: Container(
             color: Colors.white,
@@ -228,7 +222,7 @@ class _communityState extends State<community> {
                 ),
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                   alignment: Alignment.centerLeft,
                   child: Text(json['text'],
                       maxLines: 5,
@@ -279,17 +273,17 @@ class _communityState extends State<community> {
   }
 }
 
-class docToMap {
+class docToReadMap {
   QueryDocumentSnapshot<Object?> doc;
 
-  docToMap({required this.doc});
+  docToReadMap({required this.doc});
 
   Map recivedMap() {
-    String text = doc['text'];
-    String id = doc['id'];
-    String nickname = doc['nickname'];
-    String date = doc['date'];
-    String image = doc['image'];
+    String text = doc['text'] ?? '내용이 없습니다.';
+    String id = doc['id'] ?? '알수없는 사용자43242';
+    String nickname = doc['nickname'] ?? '닉네임이 없습니다32131321';
+    String date = doc['date'] ?? '';
+    String image = doc['image'] ?? '';
     Map box = {
       "id": id,
       "nickname": nickname,
