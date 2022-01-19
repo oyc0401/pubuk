@@ -43,7 +43,7 @@ class _editState extends State<edit> {
                 write(
                     collection: 'pubuk',
                     id: 'oyc0401',
-                    nickname: "유찬",
+                    nickname: "닉네임",
                     text: text,
                     title: ' ')
                     .addText()
