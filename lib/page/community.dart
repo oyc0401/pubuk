@@ -283,8 +283,9 @@ class jsonConversion {
 
   Map changedJson() {
     // 인수 9개
+    String ID=json['ID']?? 'oo';
     String text = json['text'] ?? '내용이 없습니다.';
-    String id = json['id'] ?? '알수없는 사용자43242';
+    String userid = json['userid'] ?? '알수없는 사용자43242';
     String nickname = json['nickname'] ?? '닉네임이 없습니다32131321';
     String date = json['date'] ?? '';
     String image = json['image'] ?? '';
@@ -295,7 +296,8 @@ class jsonConversion {
     String auth = json['auth'] ?? 'student';
 
     final Json = {
-      "id": id,
+      "ID":ID,
+      "userid": userid,
       "nickname": nickname,
       "date": date,
       "text": text,

@@ -138,7 +138,8 @@ class write {
     String date = "${startDate.add(Duration(milliseconds: offset))}";
 
     FirebaseFirestore.instance.collection(collection).doc(date).set({
-      'id': id,
+      'ID':date,
+      'userid': id,
       'nickname': nickname,
       'text': text,
       'title': title,

@@ -1,167 +1,170 @@
+import 'dart:core';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/edit.dart';
+import 'package:flutterschool/page/view.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'comment.dart';
 import 'community.dart';
 
-class view extends StatefulWidget {
-  view({Key? key, required this.url}) : super(key: key);
-  String url = 'cc'; //  부모의 ID
-
+class comment extends StatefulWidget {
+   comment({Key? key,required this.json,required this.url}) : super(key: key);
+Map json={};
+String url;
   @override
-  _viewState createState() => _viewState();
+  _commentState createState() => _commentState();
 }
 
-class _viewState extends State<view> {
-  String writedComment = '241';
-  Widget Context = Container();
-  Widget Comment = Container();
+class _commentState extends State<comment> {
+  List reply=[];
+  String Writedreply = 'ff';
 
-  Future read() async {
-    FirebaseFirestore.instance
-        .collection('pubuk')
-        .doc(widget.url)
-        .get()
-        .then((doc) {
-      setState(() {
-        Context = ContextWidget(
-            jsonConversion(json: doc.data() as Map).changedJson());
-      });
-    });
-  }
-
-  Future readComment() async {
-    print('댓글 불러옴');
-    List<Widget> listcomment = [];
-
-//댓글 10개 읽기
-    await FirebaseFirestore.instance
-        .collection('pubuk')
-        .doc(widget.url)
-        .collection('comment')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        listcomment.add(comment(
-            json: jsonConversion(json: doc.data() as Map).changedJson(),
-        url: widget.url,),
-        );
-      });
-    });
-
-    setState(() {
-      Comment = Column(
-        children: [...listcomment],
-      );
-    });
-  }
-
-  Future<void> write() async {
+  Future<void> writeReply() async {
     DateTime startDate = DateTime.now().toLocal();
     int offset = await NTP.getNtpOffset(localTime: startDate);
     print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
-    String date = "${startDate.add(Duration(milliseconds: offset))}";
+    String nowdate = "${startDate.add(Duration(milliseconds: offset))}";
     FirebaseFirestore.instance
         .collection('pubuk')
         .doc(widget.url)
         .collection('comment')
-        .doc(date)
+        .doc(widget.json['ID']).collection('reply')
+        .doc(nowdate)
         .set({
-      'ID': date,
+      'ID': nowdate,
       'userid': "oyc0401",
       'nickname': "유찬이",
-      'text': writedComment,
-      'url': widget.url,
-      'date': date,
+      'text': Writedreply,
+      'url': widget.json['ID'],
+      'date': nowdate,
     }).then((value) {
-      print("Comment Added");
+      print("Reply Added");
     }).catchError((error) => print("Failed to add user: $error"));
-    readComment();
+    readReply();
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    read();
-    readComment();
+    readReply();
   }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              read();
-            },
-            icon: const Icon(Icons.image),
-          ),
-          IconButton(
-            onPressed: () {
-              readComment();
-            },
-            icon: const Icon(Icons.comment),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
+    return Column(children: [
+      Container(
+        color: Colors.white,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: Column(
           children: [
-            IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {},
+            Container(
+              child: Row(
+                children: [
+                  Text(widget.json['nickname'],
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.black)),
+                  Text(dateClean (widget.json['date']),
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.black)),
+                ],
+              ),
             ),
-            Spacer(),
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {},
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+              alignment: Alignment.centerLeft,
+              child: Text(widget.json['text'],
+                  maxLines: null,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.black)),
             ),
-            IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: () {},
-            )
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.thumb_up,
+                          size: 15,
+                        ),
+                        Text('3'),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.comment,
+                        size: 15,
+                      ),
+                      Text('2'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 200,
+                  child: TextField(
+                    onChanged: (text) {
+                      Writedreply = text;
+                    },
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: const InputDecoration(hintText: '답글을 적어주세요'),
+                  ),
+                ),
+                CupertinoButton(
+                    child: Text('dsa'),
+                    onPressed: () {
+                      writeReply();
+                    }),
+              ],
+            ),
           ],
         ),
       ),
-      body: ListView(
-        children: [
-          Context,
-          Row(
-            children: [
-              Container(
-                width: 200,
-                child: TextField(
-                  onChanged: (text) {
-                    writedComment = text;
-                  },
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration: const InputDecoration(hintText: '댓글을 적어주세요'),
-                ),
-              ),
-              CupertinoButton(
-                  child: Text('댓글쓰기'),
-                  onPressed: () {
-                    write();
-                  })
-            ],
-          ),
-          Comment
-        ],
-      ),
-    );
+      ...reply
+    ]);
   }
 
-  Widget ContextWidget(Map json) {
+
+  Future readReply() async{
+    reply=[];
+    await FirebaseFirestore.instance
+        .collection('pubuk')
+        .doc(widget.url)
+        .collection('comment')
+        .doc(widget.json['ID'])
+        .collection('reply')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        reply.add(ReplyWidget(jsonConversion(json: doc.data() as Map).changedJson()) );
+      });
+    });
+    setState(() {
+
+    });
+
+  }
+
+  Widget ReplyWidget(Map json) {
     print("위젯을 추가합니다!");
 
     // 시간 다루기
@@ -196,12 +199,13 @@ class _viewState extends State<view> {
     } else {
       date = yyyyMMdd;
     }
+    //
 
     //make widget
     Widget baby = Container(
       color: Colors.white,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
       child: Column(
         children: [
           Container(
@@ -233,14 +237,14 @@ class _viewState extends State<view> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                  const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                   child: Row(
                     children: [
                       Icon(
                         Icons.thumb_up,
                         size: 15,
                       ),
-                      Text('0'),
+                      Text('3'),
                     ],
                   ),
                 ),
@@ -250,7 +254,7 @@ class _viewState extends State<view> {
                       Icons.comment,
                       size: 15,
                     ),
-                    Text('0'),
+                    Text('2'),
                   ],
                 ),
               ],
@@ -296,4 +300,6 @@ class _viewState extends State<view> {
 
     return clean;
   }
+
 }
+
