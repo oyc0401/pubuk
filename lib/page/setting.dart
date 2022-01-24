@@ -1,9 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
 
 class setting extends StatefulWidget {
   const setting({Key? key}) : super(key: key);
@@ -22,28 +22,36 @@ class _settingState extends State<setting> {
     _loadProfile();
   }
 
-  _loadProfile() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      Grade = (prefs.getInt('Grade') ?? 1);
-      Class = (prefs.getInt('Class') ?? 1);
-      print(Grade);
-      print(Class);
-    });
+  Future _login() async {
+    signInWithGoogle();
   }
 
-  _setGrade(int num) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setInt('Grade', num);
-    });
+  Future _finduser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    print(auth.currentUser?.uid);
+    print(auth.currentUser?.email);
+    print(auth.currentUser?.phoneNumber);
+    print(auth.currentUser?.displayName);
+    print(auth.currentUser?.emailVerified);
+    print(auth.currentUser?.photoURL);
+    print(auth.currentUser?.refreshToken);
+    print(auth.currentUser?.tenantId);
   }
 
-  _setClass(int num) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setInt('Class', num);
-    });
+  Future<UserCredential> signInWithGoogle() async {
+
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+
+
+
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   @override
@@ -56,6 +64,29 @@ class _settingState extends State<setting> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            CupertinoButton(
+                onPressed: _login,
+                color: Colors.blue,
+                child: Text(
+                  '구글 로그인',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                )),
+            SizedBox(
+              height: 50,
+            ),
+            CupertinoButton(
+                onPressed: _finduser,
+                color: Colors.blue,
+                child: Text(
+                  '확인 작업',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                )),
             Row(
               children: [
                 Text("학년:"),
@@ -83,6 +114,30 @@ class _settingState extends State<setting> {
         ),
       ),
     );
+  }
+
+  _loadProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      Grade = (prefs.getInt('Grade') ?? 1);
+      Class = (prefs.getInt('Class') ?? 1);
+      print(Grade);
+      print(Class);
+    });
+  }
+
+  _setGrade(int num) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setInt('Grade', num);
+    });
+  }
+
+  _setClass(int num) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setInt('Class', num);
+    });
   }
 
   showGradeDialog(BuildContext context) {
