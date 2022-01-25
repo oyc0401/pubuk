@@ -7,6 +7,8 @@ import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'myprofile.dart';
+
 class login extends StatefulWidget {
   const login({Key? key}) : super(key: key);
 
@@ -32,10 +34,9 @@ class _loginState extends State<login> {
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
-
       await FirebaseAuth.instance.signInWithCredential(credential);
       await _addUser();
-      Navigator.of(context).pop(true);
+
     } else {
       print('로그인 취소');
     }
@@ -82,6 +83,10 @@ class _loginState extends State<login> {
             }).catchError((error) {
               print("Failed to Sign up: $error");
             });
+            Navigator.of(context).pop(true);
+            Navigator.push(context,
+                CupertinoPageRoute(builder: (context) => myprofile()));
+
             //기존 로그인
           }else{
             print('기존 로그인');
@@ -98,6 +103,7 @@ class _loginState extends State<login> {
 
             prefs.setInt('Grade', 1);
             prefs.setInt('Class', 1);
+            Navigator.of(context).pop(true);
           }
 
     });

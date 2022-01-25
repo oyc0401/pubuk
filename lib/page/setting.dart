@@ -87,7 +87,7 @@ class _settingState extends State<setting> {
             .then((value) {
           nickname = value['nickname'];
         }).catchError((error) {
-          print("Failed to Sign in: $error");
+          print("Failed to get nickname: $error");
         });
         //로그인 되어있을시 내정보 위젯으로 변환
         setState(() {
