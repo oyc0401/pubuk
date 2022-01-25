@@ -7,7 +7,7 @@ import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'myprofile.dart';
+import 'setting.dart';
 
 class login extends StatefulWidget {
   const login({Key? key}) : super(key: key);
@@ -85,7 +85,7 @@ class _loginState extends State<login> {
             });
             Navigator.of(context).pop(true);
             Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => myprofile()));
+                CupertinoPageRoute(builder: (context) => setting()));
 
             //기존 로그인
           }else{

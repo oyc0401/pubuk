@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,6 @@ import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'login.dart';
-import 'myprofile.dart';
 
 class setting extends StatefulWidget {
   const setting({Key? key}) : super(key: key);
@@ -18,114 +18,188 @@ class setting extends StatefulWidget {
 }
 
 class _settingState extends State<setting> {
-  int Grade = 1;
-  int Class = 1;
-  String nickname = '';
+  int Grade = 0;
+  int Class = 0;
+  String nickname = '로딩중...';
+  String id = '';
+
+  Widget textfield = Container();
 
   @override
   void initState() {
     super.initState();
-    _getProfile();
+    _loadProfile();
   }
-
-
-
-  Future _getProfile() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-
-    FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
-      // 비로그인 시
-      if (user == null) {
-        print('User is currently signed out!');
-        //로그인 안되어있을시 로그인 위젯으로 변환
-        setState(() {
-          profile = Center(
-            child: CupertinoButton(
-                color: Colors.grey,
-                child: Text('로그인'),
-                onPressed: () {
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder: (context) => login()));
-                }),
-          );
-        });
-      } else {
-        // 로그인 돼있을 시
-        print('User is signed in!');
-
-        String id = auth.currentUser?.uid ?? '게스트';
-        String email = auth.currentUser?.email ?? '이메일이 없습니다.';
-        String displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
-        String photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
-        String nickname = '';
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-
-        await FirebaseFirestore.instance
-            .collection('user')
-            .doc(id)
-            .get()
-            .then((value) {
-          nickname = value['nickname'];
-        }).catchError((error) {
-          print("Failed to get nickname: $error");
-        });
-        //로그인 되어있을시 내정보 위젯으로 변환
-        setState(() {
-          profile = Container(
-            height: 120,
-            child: CupertinoButton(
-              color: Colors.grey,
-              onPressed: () {
-                Navigator.push(context,
-                    CupertinoPageRoute(builder: (context) => myprofile()));
-              },
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        email,
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          photoURL,
-                          width: 50,
-                          height: 50,
-                        ),
-                      )
-                    ],
-                  ),
-                  Text(nickname),
-                ],
-              ),
-            ),
-          );
-        });
-      }
-    });
-  }
-
-  Widget profile = Container(
-    height: 120,
-    child: CupertinoButton(color: Colors.grey, onPressed: () {}, child: Row()),
-  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('내 정보'),
+        title: Text('정보 수정'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Save();
+              },
+              child: Text(
+                '저장',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              )),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            profile,
+            Row(
+              children: [Text("닉네임:"), textfield],
+            ),
+            Row(
+              children: [
+                Text("학년:"),
+                TextButton(
+                    onPressed: () {
+                      showGradeDialog(context);
+                    },
+                    child: Text("$Grade학년")),
+              ],
+            ),
+            Row(
+              children: [
+                Text("반:"),
+                TextButton(
+                    onPressed: () {
+                      showClassDialog(context);
+                    },
+                    child: Text("$Class반"))
+              ],
+            ),
+            CupertinoButton(
+                child: Text('로그아웃'),
+                color: Colors.blue,
+                onPressed: () {
+                  Logout();
+                }),
+            SizedBox(
+              height: 20,
+            ),
+            CupertinoButton(
+                child: Text('회원 탈퇴'),
+                color: Colors.blue,
+                onPressed: () {
+                  DeleteUser();
+                  Navigator.of(context).pop(true);
+                })
           ],
         ),
       ),
+    );
+  }
+
+  Future _loadProfile() async {
+    id = FirebaseAuth.instance.currentUser?.uid ?? '게스트 모드';
+    print("ID: $id");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      nickname = prefs.getString('Nickname') ?? '게스트';
+      Grade = prefs.getInt('Grade') ?? 1;
+      Class = prefs.getInt('Class') ?? 1;
+      print("$Grade학년");
+      print("$Class반");
+
+      textfield = Container(
+        width: 200,
+        child: TextFormField(
+          onChanged: (text) {
+            nickname = text;
+          },
+          initialValue: nickname,
+          keyboardType: TextInputType.multiline,
+          maxLines: 1,
+          decoration: const InputDecoration(border: InputBorder.none),
+        ),
+      );
+    });
+  }
+
+  Future Save() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('Grade', Grade);
+    prefs.setInt('Class', Class);
+    prefs.setString('Nickname', nickname);
+
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(id)
+        .update({'grade': Grade, 'class': Class, 'nickname': nickname}).then(
+            (value) async {
+      print('Class Update');
+    }).catchError((error) => print("Failed to change Class: $error"));
+    Navigator.of(context).pop(true);
+  }
+
+  Future Logout() async {
+    await FirebaseAuth.instance.signOut();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('ID', '게스트');
+    prefs.setString('Nickname', '게스트');
+    Navigator.of(context).pop(true);
+  }
+
+  Future DeleteUser() async {
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        print(
+            'The user must reauthenticate before this operation can be executed.');
+      }
+    }
+
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(id)
+        .delete()
+        .then((value) => print("User Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
+  }
+
+  showClassDialog(BuildContext context) {
+    SelectDialog.showModal<String>(
+      context,
+      label: "반을 선택하세요",
+      selectedValue: "$Class반",
+      items: List.generate(9, (index) {
+        var num = index + 1;
+        return "$num반";
+      }),
+      onChange: (String selected) {
+        setState(() {
+          var dd = selected.split('');
+          Class = int.parse(dd[0]);
+        });
+      },
+      showSearchBox: false,
+    );
+  }
+
+  showGradeDialog(BuildContext context) {
+    SelectDialog.showModal<String>(
+      context,
+      label: "학년을 선택하세요",
+      selectedValue: "$Grade학년",
+      items: List.generate(3, (index) {
+        var num = index + 1;
+        return "$num학년";
+      }),
+      onChange: (String selected) {
+        setState(() {
+          var dd = selected.split('');
+          Grade = int.parse(dd[0]);
+        });
+      },
+      showSearchBox: false,
     );
   }
 }

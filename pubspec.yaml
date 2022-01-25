@@ -50,6 +50,9 @@ dependencies:
   pull_to_refresh: ^2.0.0
   google_sign_in: ^5.2.3
 
+  sqflite:
+  path:
+
 
 dev_dependencies:
   flutter_test:
