@@ -18,10 +18,12 @@ class myprofile extends StatefulWidget {
 }
 
 class _myprofileState extends State<myprofile> {
-  int Grade = 1;
-  int Class = 1;
-  String nickname='';
-  String id='1';
+  int Grade = 0;
+  int Class = 0;
+  String nickname = '로딩중...';
+  String id = '';
+
+  Widget textfield = Container();
 
   @override
   void initState() {
@@ -33,21 +35,24 @@ class _myprofileState extends State<myprofile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('내 정보'),
+        title: Text('정보 수정'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Save();
+              },
+              child: Text(
+                '저장',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              )),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             Row(
-              children: [
-                Text("닉네임:"),
-                TextButton(
-                    onPressed: () {
-                      //showClassDialog(context);
-                    },
-                    child: Text("$nickname")),
-              ],
+              children: [Text("닉네임:"), textfield],
             ),
             Row(
               children: [
@@ -71,14 +76,18 @@ class _myprofileState extends State<myprofile> {
             ),
             CupertinoButton(
                 child: Text('로그아웃'),
+                color: Colors.blue,
                 onPressed: () {
-                  _Logout();
+                  Logout();
                 }),
+            SizedBox(
+              height: 20,
+            ),
             CupertinoButton(
                 child: Text('회원 탈퇴'),
+                color: Colors.blue,
                 onPressed: () {
-
-                  Delete();
+                  DeleteUser();
                   Navigator.of(context).pop(true);
                 })
           ],
@@ -87,38 +96,50 @@ class _myprofileState extends State<myprofile> {
     );
   }
 
-  Future Delete() async {
-    try {
-      await FirebaseAuth.instance.currentUser!.delete();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        print('The user must reauthenticate before this operation can be executed.');
-      }
-    }
-
-    FirebaseFirestore.instance
-        .collection('user')
-        .doc(id)
-          .delete()
-          .then((value) => print("User Deleted"))
-          .catchError((error) => print("Failed to delete user: $error"));
-
-  }
-
-  _loadProfile() async {
+  Future _loadProfile() async {
     id = FirebaseAuth.instance.currentUser?.uid ?? '게스트 모드';
     print("ID: $id");
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     setState(() {
       nickname = prefs.getString('Nickname') ?? '게스트';
       Grade = prefs.getInt('Grade') ?? 1;
       Class = prefs.getInt('Class') ?? 1;
       print("$Grade학년");
       print("$Class반");
+
+      textfield = Container(
+        width: 200,
+        child: TextFormField(
+          onChanged: (text) {
+            nickname = text;
+          },
+          initialValue: nickname,
+          keyboardType: TextInputType.multiline,
+          maxLines: 1,
+          decoration: const InputDecoration(border: InputBorder.none),
+        ),
+      );
     });
   }
 
-  Future _Logout() async {
+  Future Save() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('Grade', Grade);
+    prefs.setInt('Class', Class);
+    prefs.setString('Nickname', nickname);
+
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(id)
+        .update({'grade': Grade, 'class': Class, 'nickname': nickname}).then(
+            (value) async {
+      print('Class Update');
+    }).catchError((error) => print("Failed to change Class: $error"));
+    Navigator.of(context).pop(true);
+  }
+
+  Future Logout() async {
     await FirebaseAuth.instance.signOut();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('ID', '게스트');
@@ -126,30 +147,22 @@ class _myprofileState extends State<myprofile> {
     Navigator.of(context).pop(true);
   }
 
-  _setGrade(int num) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setInt('Grade', num);
-    });
-    FirebaseFirestore.instance
-        .collection('user')
-        .doc(id)
-        .update({'grade': num}).then((value) async {
-      print('Grade Update');
-    }).catchError((error) => print("Failed to change Grade: $error"));
-  }
+  Future DeleteUser() async {
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        print(
+            'The user must reauthenticate before this operation can be executed.');
+      }
+    }
 
-  _setClass(int num) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setInt('Class', num);
-    });
     FirebaseFirestore.instance
         .collection('user')
         .doc(id)
-        .update({'class': num}).then((value) async {
-      print('Class Update');
-    }).catchError((error) => print("Failed to change Class: $error"));
+        .delete()
+        .then((value) => print("User Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
   }
 
   showClassDialog(BuildContext context) {
@@ -165,7 +178,6 @@ class _myprofileState extends State<myprofile> {
         setState(() {
           var dd = selected.split('');
           Class = int.parse(dd[0]);
-          _setClass(Class);
         });
       },
       showSearchBox: false,
@@ -185,12 +197,9 @@ class _myprofileState extends State<myprofile> {
         setState(() {
           var dd = selected.split('');
           Grade = int.parse(dd[0]);
-          _setGrade(Grade);
         });
       },
       showSearchBox: false,
     );
   }
-
-
 }

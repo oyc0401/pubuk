@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,6 +23,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+
+  Future getInstance()async{
+    //정보 얻어오기
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String? id = auth.currentUser?.uid ?? '로그인 해주세요';
+    String? email = auth.currentUser?.email ?? '이메일이 없습니다.';
+    String? displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
+    String? photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    FirebaseFirestore.instance.collection('user').doc(id).get().then((value) {
+      prefs.setString('ID', value['ID']);
+      prefs.setString('Nickname', value['nickname']);
+      prefs.setString('Auth', value['auth']);
+      prefs.setInt('Grade', value['grade']);
+      prefs.setInt('Class', value['class']);
+    }).catchError((error) {
+      print("Failed to Sign in: $error");
+    });
+  }
+
   Future TimeTableFetchPost() async {
     var now = DateTime.now();
     var mon = DateFormat('yyyyMMdd')
@@ -57,7 +80,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     TimeTableFetchPost();
-    Firebase.initializeApp();
+    Firebase.initializeApp().then((value) {
+      getInstance();
+    });
+
   }
 
   @override
