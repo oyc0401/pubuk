@@ -23,6 +23,13 @@ class _viewState extends State<view> {
   String writedComment = '241';
   Widget Context = Container();
   Widget Comment = Container();
+String id='';
+String nickname='';
+  getProfile()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id=prefs.getString('ID')??'빈 사용자';
+    nickname=prefs.getString('Nickname')??'빈 사용자';
+  }
 
   Future read() async {
     FirebaseFirestore.instance
@@ -63,7 +70,7 @@ class _viewState extends State<view> {
     });
   }
 
-  Future<void> write() async {
+  Future<void> writeComment() async {
     DateTime startDate = DateTime.now().toLocal();
     int offset = await NTP.getNtpOffset(localTime: startDate);
     print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
@@ -75,8 +82,8 @@ class _viewState extends State<view> {
         .doc(date)
         .set({
       'ID': date,
-      'userid': "oyc0401",
-      'nickname': "유찬이",
+      'userid': id,
+      'nickname': nickname,
       'text': writedComment,
       'url': widget.url,
       'date': date,
@@ -90,8 +97,10 @@ class _viewState extends State<view> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getProfile();
     read();
     readComment();
+
   }
 
   @override
@@ -151,7 +160,7 @@ class _viewState extends State<view> {
               CupertinoButton(
                   child: Text('댓글쓰기'),
                   onPressed: () {
-                    write();
+                    writeComment();
                   })
             ],
           ),

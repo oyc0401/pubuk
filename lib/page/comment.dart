@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import 'community.dart';
@@ -22,6 +23,13 @@ String url;
 class _commentState extends State<comment> {
   List reply=[];
   String Writedreply = 'ff';
+  String id='';
+String nickname='';
+  getProfile()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id=prefs.getString('ID')??'빈 사용자';
+    nickname=prefs.getString('Nickname')??'빈 사용자';
+  }
 
   Future<void> writeReply() async {
     DateTime startDate = DateTime.now().toLocal();
@@ -36,8 +44,8 @@ class _commentState extends State<comment> {
         .doc(nowdate)
         .set({
       'ID': nowdate,
-      'userid': "oyc0401",
-      'nickname': "유찬이",
+      'userid': id,
+      'nickname': nickname,
       'text': Writedreply,
       'url': widget.json['ID'],
       'date': nowdate,
@@ -50,6 +58,7 @@ class _commentState extends State<comment> {
   @override
   void initState() {
     super.initState();
+    getProfile();
     readReply();
   }
   @override

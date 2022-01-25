@@ -17,6 +17,8 @@ class edit extends StatefulWidget {
 
 class _editState extends State<edit> {
   String text = '';
+  String id='';
+  String nickname='';
 
   Future _updateUser() {
     return FirebaseFirestore.instance
@@ -27,6 +29,18 @@ class _editState extends State<edit> {
         .catchError((error) => print("Failed to update user: $error"));
   }
 
+  getProfile()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id=prefs.getString('ID')??'빈 사용자';
+    nickname=prefs.getString('Nickname')??'빈 사용자';
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getProfile();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +56,8 @@ class _editState extends State<edit> {
               if(text!='') {
                 write(
                     collection: 'pubuk',
-                    id: 'oyc0401',
-                    nickname: "닉네임",
+                    id: id,
+                    nickname: nickname,
                     text: text,
                     title: ' ')
                     .addText()
