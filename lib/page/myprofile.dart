@@ -73,6 +73,13 @@ class _myprofileState extends State<myprofile> {
                 child: Text('로그아웃'),
                 onPressed: () {
                   _Logout();
+                }),
+            CupertinoButton(
+                child: Text('회원 탈퇴'),
+                onPressed: () {
+
+                  Delete();
+                  Navigator.of(context).pop(true);
                 })
           ],
         ),
@@ -80,6 +87,23 @@ class _myprofileState extends State<myprofile> {
     );
   }
 
+  Future Delete() async {
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        print('The user must reauthenticate before this operation can be executed.');
+      }
+    }
+
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(id)
+          .delete()
+          .then((value) => print("User Deleted"))
+          .catchError((error) => print("Failed to delete user: $error"));
+
+  }
 
   _loadProfile() async {
     id = FirebaseAuth.instance.currentUser?.uid ?? '게스트 모드';

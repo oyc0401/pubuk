@@ -28,27 +28,7 @@ class _settingState extends State<setting> {
     _getProfile();
   }
 
-  Future Delete() async {
-    // Prompt the user to enter their email and password
-    String email = 'barry.allen@example.com';
-    String password = 'SuperSecretPassword!';
 
-// Create a credential
-    AuthCredential credential =
-        EmailAuthProvider.credential(email: email, password: password);
-
-// Reauthenticate
-    await FirebaseAuth.instance.currentUser!
-        .reauthenticateWithCredential(credential);
-    try {
-      await FirebaseAuth.instance.currentUser!.delete();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        print(
-            'The user must reauthenticate before this operation can be executed.');
-      }
-    }
-  }
 
   Future _getProfile() async {
     FirebaseAuth auth = FirebaseAuth.instance;

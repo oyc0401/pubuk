@@ -89,6 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(context,
                       CupertinoPageRoute(builder: (context) => community()));
                 }),
+            CupertinoButton(
+                child: Text('저장소 확인'),
+                onPressed: () {
+                  saving();
+                }),
             const SizedBox(height: 30),
             const Padding(padding: EdgeInsets.all(12.0), child: Lunch()
                 //Text('ggg')
@@ -100,5 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  Future saving()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print(prefs.getKeys());
+    //print(prefs.toString());
+    // print(prefs.);
+    print(prefs.get('ID'));
+    print(prefs.get('Grade'));
+    print(prefs.get('Class'));
+    print(prefs.get('Nickname'));
+    print(prefs.get('Auth'));
   }
 }
