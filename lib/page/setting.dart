@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/saveKey.dart';
 
 import 'package:select_dialog/select_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 
 class setting extends StatefulWidget {
   const setting({Key? key}) : super(key: key);
@@ -97,12 +95,12 @@ class _settingState extends State<setting> {
   Future _loadProfile() async {
     id = FirebaseAuth.instance.currentUser?.uid ?? '게스트 모드';
     print("ID: $id");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    SaveKey key = await SaveKey().getInstance();
     setState(() {
-      nickname = prefs.getString('Nickname')??'게스트';
-      Grade = prefs.getInt('Grade') ?? 1;
-      Class = prefs.getInt('Class') ?? 1;
+      nickname = key.nickname();
+      Grade = key.Grade();
+      Class = key.Class();
       print("$Grade학년");
       print("$Class반");
 
@@ -122,7 +120,8 @@ class _settingState extends State<setting> {
   }
 
   Future Save() async {
-    saveKey().Changeinfo(nickname,Grade,Class);
+    SaveKey key = await SaveKey().getInstance();
+    key.Changeinfo(nickname, Grade, Class);
 
     FirebaseFirestore.instance
         .collection('user')
@@ -136,7 +135,8 @@ class _settingState extends State<setting> {
 
   Future Logout() async {
     await FirebaseAuth.instance.signOut();
-    saveKey().SwitchGuest();
+    SaveKey key = await SaveKey().getInstance();
+    key.SwitchGuest();
     Navigator.of(context).pop(true);
   }
 

@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/saveKey.dart';
 import 'package:flutterschool/page/edit.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'comment.dart';
 import 'community.dart';
@@ -23,12 +23,13 @@ class _viewState extends State<view> {
   String writedComment = '241';
   Widget Context = Container();
   Widget Comment = Container();
-String id='';
-String nickname='';
-  getProfile()async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    id=prefs.getString('ID')??'빈 사용자';
-    nickname=prefs.getString('Nickname')??'빈 사용자';
+  String id = '';
+  String nickname = '';
+
+  getProfile() async {
+    SaveKey key = await SaveKey().getInstance();
+    id = key.uid();
+    nickname = key.nickname();
   }
 
   Future read() async {
@@ -56,9 +57,11 @@ String nickname='';
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        listcomment.add(comment(
+        listcomment.add(
+          comment(
             json: jsonConversion(json: doc.data() as Map).changedJson(),
-        url: widget.url,),
+            url: widget.url,
+          ),
         );
       });
     });
@@ -100,7 +103,6 @@ String nickname='';
     getProfile();
     read();
     readComment();
-
   }
 
   @override
@@ -272,7 +274,7 @@ String nickname='';
     return baby;
   }
 
-  String dateClean(String Date){
+  String dateClean(String Date) {
     DateTime dt = DateTime.parse(Date);
     DateTime _toDay = DateTime.now();
     Duration duration = _toDay.difference(DateTime.parse(Date));

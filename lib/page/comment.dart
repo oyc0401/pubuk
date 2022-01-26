@@ -1,34 +1,33 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/saveKey.dart';
 
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 
 import 'community.dart';
 
 class comment extends StatefulWidget {
-   comment({Key? key,required this.json,required this.url}) : super(key: key);
-Map json={};
-String url;
+  comment({Key? key, required this.json, required this.url}) : super(key: key);
+  Map json = {};
+  String url;
+
   @override
   _commentState createState() => _commentState();
 }
 
 class _commentState extends State<comment> {
-  List reply=[];
+  List reply = [];
   String Writedreply = 'ff';
-  String id='';
-String nickname='';
-  getProfile()async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    id=prefs.getString('ID')??'빈 사용자';
-    nickname=prefs.getString('Nickname')??'빈 사용자';
+  String id = '';
+  String nickname = '';
+
+  getProfile() async {
+    SaveKey key = await SaveKey().getInstance();
+    id = key.uid();
+    nickname = key.nickname();
   }
 
   Future<void> writeReply() async {
@@ -40,7 +39,8 @@ String nickname='';
         .collection('pubuk')
         .doc(widget.url)
         .collection('comment')
-        .doc(widget.json['ID']).collection('reply')
+        .doc(widget.json['ID'])
+        .collection('reply')
         .doc(nowdate)
         .set({
       'ID': nowdate,
@@ -61,6 +61,7 @@ String nickname='';
     getProfile();
     readReply();
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(children: [
@@ -79,7 +80,7 @@ String nickname='';
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                           color: Colors.black)),
-                  Text(dateClean (widget.json['date']),
+                  Text(dateClean(widget.json['date']),
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: Colors.black)),
                 ],
@@ -99,7 +100,7 @@ String nickname='';
                 children: [
                   Padding(
                     padding:
-                    const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                     child: Row(
                       children: [
                         Icon(
@@ -149,9 +150,8 @@ String nickname='';
     ]);
   }
 
-
-  Future readReply() async{
-    reply=[];
+  Future readReply() async {
+    reply = [];
     await FirebaseFirestore.instance
         .collection('pubuk')
         .doc(widget.url)
@@ -161,13 +161,11 @@ String nickname='';
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        reply.add(ReplyWidget(jsonConversion(json: doc.data() as Map).changedJson()) );
+        reply.add(
+            ReplyWidget(jsonConversion(json: doc.data() as Map).changedJson()));
       });
     });
-    setState(() {
-
-    });
-
+    setState(() {});
   }
 
   Widget ReplyWidget(Map json) {
@@ -243,7 +241,7 @@ String nickname='';
               children: [
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                   child: Row(
                     children: [
                       Icon(
@@ -273,7 +271,7 @@ String nickname='';
     return baby;
   }
 
-  String dateClean(String Date){
+  String dateClean(String Date) {
     DateTime dt = DateTime.parse(Date);
     DateTime _toDay = DateTime.now();
     Duration duration = _toDay.difference(DateTime.parse(Date));
@@ -306,6 +304,4 @@ String nickname='';
 
     return clean;
   }
-
 }
-

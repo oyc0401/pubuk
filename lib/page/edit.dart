@@ -6,7 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+
+import '../DB/saveKey.dart';
 
 class edit extends StatefulWidget {
   const edit({Key? key}) : super(key: key);
@@ -30,9 +32,9 @@ class _editState extends State<edit> {
   }
 
   getProfile()async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    id=prefs.getString('ID')??'빈 사용자';
-    nickname=prefs.getString('Nickname')??'빈 사용자';
+    SaveKey key= await SaveKey().getInstance();
+    id=key.uid();
+    nickname=key.nickname();
   }
 
   @override

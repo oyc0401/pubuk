@@ -1,40 +1,60 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class saveKey {
+class SaveKey {
   late SharedPreferences prefs;
 
+  getInstance() async {
+    SaveKey key = SaveKey();
+    key.prefs = await SharedPreferences.getInstance();
+    return key;
+  }
 
+  int Grade() {
+    return prefs.getInt('Grade') ?? 1;
+  }
 
-init()async{
-  prefs = await SharedPreferences.getInstance();
+  int Class() {
+    return prefs.getInt('Class') ?? 1;
+  }
 
-}
+  String uid() {
+    return prefs.getString('ID') ?? '게스트id';
+  }
 
-
-  nickname(){
-    return prefs.getString('Nickname')??'게스트';
+  String nickname() {
+    return prefs.getString('Nickname') ?? '게스트';
   }
 
 
-  SwitchGuest() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  SwitchGuest() {
     prefs.setString('ID', '게스트');
     prefs.setString('Nickname', '게스트');
     prefs.setString('Auth', 'guest');
+    print('saveKey: 게스트가 되었습니다.');
   }
 
-  ChangeGrade(int Grade, int Class) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt('Grade', Grade);
-    prefs.setInt('Class', Class);
-  }
-
-  Changeinfo(String nickname,int Grade, int Class) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Changeinfo(String nickname, int Grade, int Class) {
     prefs.setString('Nickname', nickname);
     prefs.setInt('Grade', Grade);
     prefs.setInt('Class', Class);
-    print('정보 변경');
+    print('saveKey: 정보 변경');
   }
 
+  SetUser(String uid, String nickname, String auth, int Grade, int Class) {
+    prefs.setString('ID', uid);
+    prefs.setString('Nickname', nickname);
+    prefs.setString('Auth', auth);
+    prefs.setInt('Grade', Grade);
+    prefs.setInt('Class', Class);
+    print('saveKey: 유저 값 저장');
+  }
+
+  printAll() {
+    print(prefs.getKeys());
+    print(prefs.get('ID'));
+    print(prefs.get('Grade'));
+    print(prefs.get('Class'));
+    print(prefs.get('Nickname'));
+    print(prefs.get('Auth'));
+  }
 }

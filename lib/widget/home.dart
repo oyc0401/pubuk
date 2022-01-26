@@ -9,7 +9,7 @@ import 'package:flutterschool/DB/saveKey.dart';
 import 'package:flutterschool/page/community.dart';
 import 'package:flutterschool/page/myinfo.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:http/http.dart' as http;
 import '../DB/Userboxorigin.dart';
 
@@ -26,9 +26,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-  Future getInstance()async{
-
+  Future getInstance() async {
     //정보 얻어오기
     FirebaseAuth auth = FirebaseAuth.instance;
     String? id = auth.currentUser?.uid ?? '로그인 해주세요';
@@ -36,13 +34,10 @@ class _MyHomePageState extends State<MyHomePage> {
     String? displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
     String? photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SaveKey key = await SaveKey().getInstance();
     FirebaseFirestore.instance.collection('user').doc(id).get().then((value) {
-      prefs.setString('ID', value['ID']);
-      prefs.setString('Nickname', value['nickname']);
-      prefs.setString('Auth', value['auth']);
-      prefs.setInt('Grade', value['grade']);
-      prefs.setInt('Class', value['class']);
+      key.SetUser(value['ID'], value['nickname'], value['auth'], value['grade'],
+          value['class']);
     }).catchError((error) {
       print("Failed to Sign in: $error");
     });
@@ -54,10 +49,10 @@ class _MyHomePageState extends State<MyHomePage> {
         .format(now.add(Duration(days: -1 * now.weekday + 1)));
     var fri = DateFormat('yyyyMMdd')
         .format(now.add(Duration(days: -1 * now.weekday + 5))); // weekday 금요일=5
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SaveKey key = await SaveKey().getInstance();
+    int Grade = key.Grade();
+    int Class = key.Class();
 
-    var Grade = prefs.getInt('Grade') ?? 1;
-    var Class = prefs.getInt('Class') ?? 1;
     const SchoolCode = 7530072;
 
     Uri uri = Uri.parse(
@@ -87,7 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Firebase.initializeApp().then((value) {
       getInstance();
     });
-
   }
 
   @override
@@ -137,15 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future saving()async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(prefs.getKeys());
-    //print(prefs.toString());
-    // print(prefs.);
-    print(prefs.get('ID'));
-    print(prefs.get('Grade'));
-    print(prefs.get('Class'));
-    print(prefs.get('Nickname'));
-    print(prefs.get('Auth'));
+  Future saving() async {
+    SaveKey key = await SaveKey().getInstance();
+    key.printAll();
   }
 }

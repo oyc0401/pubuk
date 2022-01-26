@@ -5,10 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/edit.dart';
-import 'package:flutterschool/page/view.dart';
-import 'package:ntp/ntp.dart';
-import 'package:select_dialog/select_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class community33 extends StatefulWidget {
   const community33({Key? key}) : super(key: key);

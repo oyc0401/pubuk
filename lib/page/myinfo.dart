@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 import 'login.dart';
 import 'setting.dart';
@@ -58,7 +58,6 @@ class _myinfoState extends State<myinfo> {
         String displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
         String photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
         String nickname = '';
-        SharedPreferences prefs = await SharedPreferences.getInstance();
 
         await FirebaseFirestore.instance
             .collection('user')

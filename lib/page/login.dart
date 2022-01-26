@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+
+import '../DB/saveKey.dart';
 import 'setting.dart';
 
 class login extends StatefulWidget {
@@ -36,7 +37,6 @@ class _loginState extends State<login> {
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
       await _addUser();
-
     } else {
       print('로그인 취소');
     }
@@ -54,61 +54,45 @@ class _loginState extends State<login> {
     String? displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
     String? photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    SaveKey key = await SaveKey().getInstance();
     // id가 저장되어있는지 체크
     await FirebaseFirestore.instance
         .collection('user')
         .doc(id)
-        .get().then((value) {
-          //신규 가입일 때
-          if(value.data()==null){
-            print('신규 가입');
-            int Grade=prefs.getInt('Grade')??1;
-            int Class=prefs.getInt('Class')??1;
-            FirebaseFirestore.instance.collection('user').doc(id).set({
-              'ID': id,
-              'userid': id,
-              'email': email,
-              'nickname':displayName,
-              'displayName': displayName,
-              'photoURL': photoURL,
-              'signupDate': date,
-              'grade':Grade,
-              'class':Class,
-              'auth':'user'
-            }).then((value) {
-              prefs.setString('ID', id);
-              print("User Sign up");
-            }).catchError((error) {
-              print("Failed to Sign up: $error");
-            });
-            Navigator.of(context).pop(true);
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => setting()));
+        .get()
+        .then((value) {
+      //신규 가입일 때
+      if (value.data() == null) {
+        print('신규 가입');
+        FirebaseFirestore.instance.collection('user').doc(id).set({
+          'ID': id,
+          'userid': id,
+          'email': email,
+          'nickname': displayName,
+          'displayName': displayName,
+          'photoURL': photoURL,
+          'signupDate': date,
+          'grade': 1,
+          'class': 1,
+          'auth': 'user'
+        }).then((value) {
+          key.SetUser(id,displayName,'user',1,1);
+          print("User Sign up");
+        }).catchError((error) {
+          print("Failed to Sign up: $error");
+        });
+        Navigator.of(context).pop(true);
+        Navigator.push(
+            context, CupertinoPageRoute(builder: (context) => setting()));
 
-            //기존 로그인
-          }else{
-            print('기존 로그인');
-            FirebaseFirestore.instance.collection('user').doc(id).get().then((value) {
-              prefs.setString('ID', value['ID']);
-              prefs.setString('Nickname', value['nickname']);
-              prefs.setString('Auth', value['auth']);
-              prefs.setInt('Grade', value['grade']);
-              prefs.setInt('Class', value['class']);
-            }).catchError((error) {
-              print("Failed to Sign in: $error");
-            });
-
-
-            prefs.setInt('Grade', 1);
-            prefs.setInt('Class', 1);
-            Navigator.of(context).pop(true);
-          }
-
+        //기존 로그인
+      } else {
+        print('기존 로그인');
+        key.SetUser(value['ID'], value['nickname'], value['auth'],
+            value['grade'], value['class']);
+        Navigator.of(context).pop(true);
+      }
     });
-
-
   }
 
   @override
