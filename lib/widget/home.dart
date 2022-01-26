@@ -5,13 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/saveKey.dart';
 import 'package:flutterschool/page/community.dart';
 import 'package:flutterschool/page/myinfo.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import '../DB/Userbox.dart';
-import '../DB/databox.dart';
+import '../DB/Userboxorigin.dart';
+
 import 'lunch.dart';
 import 'timetable.dart';
 
@@ -25,46 +26,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-
-  start()async{
-    final initialUser = Userbox(
-        id: 0,
-        uid: 't',
-        nickname: 't',
-        auth: 't',
-        email: 't',
-        displayName: 't',
-        signupDate: 't',
-        photoURL: 't',
-        Grade: 1,
-        Class: 1
-    );
-    databox db=databox();
-    await db.insertUser(initialUser);
-
-  }
-
-
-  Future<void> saveDB() async {
-    databox sd =databox();
-    var fido=Userbox(
-        id: 0,
-        uid: 't',
-        nickname: 't',
-        auth: 't',
-        email: 't',
-        displayName: 't',
-        signupDate: 't',
-        photoURL: 't',
-        Grade: 1,
-        Class: 1
-    );
-
-    await sd.insertUser(fido);
-
-    print(await sd.getuser());
-  }
 
   Future getInstance()async{
 
@@ -161,8 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
             CupertinoButton(
                 child: Text('저장소 확인'),
                 onPressed: () {
-                  saveDB();
-                  //saving();
+                  saving();
                 }),
             const SizedBox(height: 30),
             const Padding(padding: EdgeInsets.all(12.0), child: Lunch()

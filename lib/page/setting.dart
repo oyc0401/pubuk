@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ntp/ntp.dart';
+import 'package:flutterschool/DB/saveKey.dart';
+
 import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'login.dart';
 
 class setting extends StatefulWidget {
   const setting({Key? key}) : super(key: key);
@@ -102,7 +100,7 @@ class _settingState extends State<setting> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      nickname = prefs.getString('Nickname') ?? '게스트';
+      nickname = prefs.getString('Nickname')??'게스트';
       Grade = prefs.getInt('Grade') ?? 1;
       Class = prefs.getInt('Class') ?? 1;
       print("$Grade학년");
@@ -124,10 +122,7 @@ class _settingState extends State<setting> {
   }
 
   Future Save() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt('Grade', Grade);
-    prefs.setInt('Class', Class);
-    prefs.setString('Nickname', nickname);
+    saveKey().Changeinfo(nickname,Grade,Class);
 
     FirebaseFirestore.instance
         .collection('user')
@@ -141,9 +136,7 @@ class _settingState extends State<setting> {
 
   Future Logout() async {
     await FirebaseAuth.instance.signOut();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('ID', '게스트');
-    prefs.setString('Nickname', '게스트');
+    saveKey().SwitchGuest();
     Navigator.of(context).pop(true);
   }
 
