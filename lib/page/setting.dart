@@ -85,6 +85,7 @@ class _settingState extends State<setting> {
                 onPressed: () {
                   DeleteUser();
                   Navigator.of(context).pop(true);
+
                 })
           ],
         ),

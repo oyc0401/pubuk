@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 class TimeTable extends StatefulWidget {
   TimeTable({Key? key,required this.post}) : super(key: key);
-Post post;
+TableJsonPost post;
 
   @override
   _TimeTableState createState() => _TimeTableState();
@@ -15,35 +15,109 @@ class _TimeTableState extends State<TimeTable> {
 
   @override
   Widget build(BuildContext context) {
-          return TimeTableView(widget.post).TimeTableWidget();
-  }
-}
-
-class TimeTableView {
-  late Post post;
-
-  TimeTableView(this.post);
-
-  Table TimeTableWidget() {
-    return Table(
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      border: TableBorder.all(),
-      columnWidths: const {
-        0: FlexColumnWidth(1),
-        1: FlexColumnWidth(2),
-        2: FlexColumnWidth(2),
-        3: FlexColumnWidth(2),
-        4: FlexColumnWidth(2),
-        5: FlexColumnWidth(2),
-      },
-      children: [...tableRows()],
-    );
+          return Table(
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            border: TableBorder.all(),
+            columnWidths: const {
+              0: FlexColumnWidth(1),
+              1: FlexColumnWidth(2),
+              2: FlexColumnWidth(2),
+              3: FlexColumnWidth(2),
+              4: FlexColumnWidth(2),
+              5: FlexColumnWidth(2),
+            },
+            children: [...tableRows()],
+          );
   }
 
-  double height = 60;
-  double halfheight = 30;
+  //테이블 총 세로길이 450
+  final double height = 60;
+  final double halfheight = 30;
+  final TextStyle textStyle= const TextStyle(fontSize: 12);
 
   List<TableRow> tableRows() {
+
+    List<Widget> weekends() {
+      List<Widget> list = [];
+      list.add(Container(
+          height: halfheight,
+          child: Center(
+              child: Text(
+                " ",
+                style: textStyle,
+              ))));
+      list.add(Text(
+        "월요일",
+        textAlign: TextAlign.center,
+        style: textStyle,
+      ));
+      list.add(Text(
+        "화요일",
+        textAlign: TextAlign.center,
+        style: textStyle,
+      ));
+      list.add(Text(
+        "수요일",
+        textAlign: TextAlign.center,
+        style: textStyle,
+      ));
+      list.add(Text(
+        "목요일",
+        textAlign: TextAlign.center,
+        style: textStyle,
+      ));
+      list.add(Text(
+        "금요일",
+        textAlign: TextAlign.center,
+        style: textStyle,
+      ));
+      return list;
+    }
+
+    List<Widget> subjects(int num) {
+      List<Widget> list = [];
+      int kosy = num + 1;
+      list.add(Container(
+          height: height,
+          child: Center(
+              child: Text(
+                "$kosy",
+                textAlign: TextAlign.center,
+                style: textStyle,
+              ))));
+      list.add(Center(
+          child: Text(
+            widget.post.Mon[num],
+            textAlign: TextAlign.center,
+            style: textStyle,
+          )));
+      list.add(Center(
+          child: Text(
+            widget.post.Tue[num],
+            textAlign: TextAlign.center,
+            style: textStyle,
+          )));
+      list.add(Center(
+          child: Text(
+            widget.post.Wed[num],
+            textAlign: TextAlign.center,
+            style: textStyle,
+          )));
+      list.add(Center(
+          child: Text(
+            widget.post.Thu[num],
+            textAlign: TextAlign.center,
+            style: textStyle,
+          )));
+      list.add(Center(
+          child: Text(
+            widget.post.Fri[num],
+            textAlign: TextAlign.center,
+            style: textStyle,
+          )));
+      return list;
+    }
+
     List<TableRow> list = [];
     list.add(TableRow(children: [...weekends()]));
     for (int i = 0; i <= 6; i++) {
@@ -52,94 +126,12 @@ class TimeTableView {
     return list;
   }
 
-  TextStyle textStyle() => TextStyle(fontSize: 12);
-
-  List<Widget> weekends() {
-    List<Widget> list = [];
-    list.add(Container(
-        height: halfheight,
-        child: Center(
-            child: Text(
-          " ",
-          style: textStyle(),
-        ))));
-    list.add(Text(
-      "월요일",
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    ));
-    list.add(Text(
-      "화요일",
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    ));
-    list.add(Text(
-      "수요일",
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    ));
-    list.add(Text(
-      "목요일",
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    ));
-    list.add(Text(
-      "금요일",
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    ));
-    return list;
-  }
-
-  List<Widget> subjects(int num) {
-    List<Widget> list = [];
-    int kosy = num + 1;
-    list.add(Container(
-        height: height,
-        child: Center(
-            child: Text(
-          "$kosy",
-          textAlign: TextAlign.center,
-          style: textStyle(),
-        ))));
-    list.add(Center(
-        child: Text(
-      post.Mon[num],
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    )));
-    list.add(Center(
-        child: Text(
-          post.Tue[num],
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    )));
-    list.add(Center(
-        child: Text(
-          post.Wed[num],
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    )));
-    list.add(Center(
-        child: Text(
-          post.Thu[num],
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    )));
-    list.add(Center(
-        child: Text(
-          post.Fri[num],
-      textAlign: TextAlign.center,
-      style: textStyle(),
-    )));
-    return list;
-  }
 }
 
-class Post {
+class TableJsonPost {
   final List<String> Mon, Tue, Wed, Thu, Fri;
 
-  Post({
+  TableJsonPost({
     required this.Mon,
     required this.Tue,
     required this.Wed,
@@ -147,7 +139,7 @@ class Post {
     required this.Fri,
   });
 
-  factory Post.fromJson(Map<String, dynamic> json) {
+  factory TableJsonPost.fromJson(Map<String, dynamic> json) {
     // 요일의 날짜 구하기
     var mon, tue, wed, thu, fri;
     var now = new DateTime.now();
@@ -200,7 +192,7 @@ class Post {
 
     print("TimeTable: $arrMon\n$arrTue\n$arrWed\n$arrThu\n$arrFri");
 
-    return Post(
+    return TableJsonPost(
       Mon: arrMon,
       Tue: arrTue,
       Wed: arrWed,
