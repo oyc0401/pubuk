@@ -72,7 +72,7 @@ class _community33State extends State<community33> {
           IconButton(
             onPressed: () {
               Navigator.push(
-                  context, CupertinoPageRoute(builder: (context) => edit()));
+                  context, CupertinoPageRoute(builder: (context) => write()));
             },
             icon: const Icon(Icons.edit),
           ),

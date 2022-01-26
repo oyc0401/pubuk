@@ -10,6 +10,7 @@ import 'package:select_dialog/select_dialog.dart';
 
 import 'comment.dart';
 import 'community.dart';
+import 'edit.dart';
 
 class view extends StatefulWidget {
   view({Key? key, required this.url}) : super(key: key);
@@ -23,77 +24,17 @@ class _viewState extends State<view> {
   String writedComment = '241';
   Widget Context = Container();
   Widget Comment = Container();
-  String id = '';
+  String uid = '';
   String nickname = '';
+
+  IconButton editButton = IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
+
+  IconButton deleteButton = IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
 
   getProfile() async {
     SaveKey key = await SaveKey().getInstance();
-    id = key.uid();
+    uid = key.uid();
     nickname = key.nickname();
-  }
-
-  Future read() async {
-    FirebaseFirestore.instance
-        .collection('pubuk')
-        .doc(widget.url)
-        .get()
-        .then((doc) {
-      setState(() {
-        Context = ContextWidget(
-            jsonConversion(json: doc.data() as Map).changedJson());
-      });
-    });
-  }
-
-  Future readComment() async {
-    print('댓글 불러옴');
-    List<Widget> listcomment = [];
-
-//댓글 10개 읽기
-    await FirebaseFirestore.instance
-        .collection('pubuk')
-        .doc(widget.url)
-        .collection('comment')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        listcomment.add(
-          comment(
-            json: jsonConversion(json: doc.data() as Map).changedJson(),
-            url: widget.url,
-          ),
-        );
-      });
-    });
-
-    setState(() {
-      Comment = Column(
-        children: [...listcomment],
-      );
-    });
-  }
-
-  Future<void> writeComment() async {
-    DateTime startDate = DateTime.now().toLocal();
-    int offset = await NTP.getNtpOffset(localTime: startDate);
-    print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
-    String date = "${startDate.add(Duration(milliseconds: offset))}";
-    FirebaseFirestore.instance
-        .collection('pubuk')
-        .doc(widget.url)
-        .collection('comment')
-        .doc(date)
-        .set({
-      'ID': date,
-      'userid': id,
-      'nickname': nickname,
-      'text': writedComment,
-      'url': widget.url,
-      'date': date,
-    }).then((value) {
-      print("Comment Added");
-    }).catchError((error) => print("Failed to add user: $error"));
-    readComment();
   }
 
   @override
@@ -101,27 +42,19 @@ class _viewState extends State<view> {
     // TODO: implement initState
     super.initState();
     getProfile();
-    read();
+    readView();
     readComment();
   }
+Widget dd=IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Center(child: const Text('게시물')),
         actions: [
-          IconButton(
-            onPressed: () {
-              read();
-            },
-            icon: const Icon(Icons.image),
-          ),
-          IconButton(
-            onPressed: () {
-              readComment();
-            },
-            icon: const Icon(Icons.comment),
-          ),
+          deleteButton,editButton
         ],
       ),
       bottomNavigationBar: BottomAppBar(
@@ -170,6 +103,101 @@ class _viewState extends State<view> {
         ],
       ),
     );
+  }
+
+  Future deleteUser()async {
+    FirebaseFirestore.instance
+        .collection('pubuk')
+        .doc(widget.url)
+        .delete()
+        .then((value) => print("Deleted"))
+        .catchError((error) => print("Failed to delete: $error"));
+  }
+
+  Future readView() async {
+    FirebaseFirestore.instance
+        .collection('pubuk')
+        .doc(widget.url)
+        .get()
+        .then((doc) {
+      setState(() {
+        if (uid == doc['userid']) {
+          editButton = IconButton(
+            onPressed: () {
+              print('넘어갑니다.');
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => edit(
+                            url: widget.url,
+                          )));
+            },
+            icon: const Icon(Icons.edit),
+          );
+          deleteButton = IconButton(
+              onPressed: () {
+                print('삭제합니다.');
+                deleteUser();
+                Navigator.of(context).pop(true);
+              },
+              icon: const Icon(Icons.delete));
+        }
+
+        Context = ContextWidget(
+            jsonConversion(json: doc.data() as Map).changedJson());
+      });
+    });
+  }
+
+  Future readComment() async {
+    print('댓글 불러옴');
+    List<Widget> listcomment = [];
+
+//댓글 10개 읽기
+    await FirebaseFirestore.instance
+        .collection('pubuk')
+        .doc(widget.url)
+        .collection('comment')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        listcomment.add(
+          comment(
+            json: jsonConversion(json: doc.data() as Map).changedJson(),
+            url: widget.url,
+          ),
+        );
+      });
+    });
+
+    setState(() {
+      Comment = Column(
+        children: [...listcomment],
+      );
+    });
+  }
+
+  Future<void> writeComment() async {
+    DateTime startDate = DateTime.now().toLocal();
+    int offset = await NTP.getNtpOffset(localTime: startDate);
+    print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
+    String date = "${startDate.add(Duration(milliseconds: offset))}";
+    FirebaseFirestore.instance
+        .collection('pubuk')
+        .doc(widget.url)
+        .collection('comment')
+        .doc(date)
+        .set({
+      'ID': date,
+      'userid': uid,
+      'nickname': nickname,
+      'text': writedComment,
+      'url': widget.url,
+      'date': date,
+    }).then((value) {
+      print("Comment Added");
+    }).catchError((error) => print("Failed to add user: $error"));
+    readComment();
   }
 
   Widget ContextWidget(Map json) {

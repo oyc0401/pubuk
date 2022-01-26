@@ -10,14 +10,14 @@ import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/saveKey.dart';
 
-class edit extends StatefulWidget {
-  const edit({Key? key}) : super(key: key);
+class write extends StatefulWidget {
+  const write({Key? key}) : super(key: key);
 
   @override
-  _editState createState() => _editState();
+  _writeState createState() => _writeState();
 }
 
-class _editState extends State<edit> {
+class _writeState extends State<write> {
   String text = '';
   String id='';
   String nickname='';
@@ -48,11 +48,8 @@ class _editState extends State<edit> {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        title: const Text('글쓰기'),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.delete),
-          ),
           IconButton(
             onPressed: () {
               if(text!='') {
