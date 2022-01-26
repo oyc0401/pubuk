@@ -8,7 +8,7 @@ import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 
-import '../DB/saveKey.dart';
+import '../../DB/saveKey.dart';
 
 class edit extends StatefulWidget {
   const edit({Key? key}) : super(key: key);
@@ -56,7 +56,7 @@ class _editState extends State<edit> {
           IconButton(
             onPressed: () {
               if(text!='') {
-                write(
+                writepubuk(
                     collection: 'pubuk',
                     id: id,
                     nickname: nickname,
@@ -122,7 +122,7 @@ class _editState extends State<edit> {
   }
 }
 
-class write {
+class writepubuk {
   String collection;
 
   String id;
@@ -135,7 +135,7 @@ class write {
   int? heart = 0;
   int? comment = 0;
 
-  write({
+  writepubuk({
     required this.collection,
     required this.id,
     required this.nickname,

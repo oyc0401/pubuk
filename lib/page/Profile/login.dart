@@ -7,7 +7,7 @@ import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 
-import '../DB/saveKey.dart';
+import '../../DB/saveKey.dart';
 import 'setting.dart';
 
 class login extends StatefulWidget {

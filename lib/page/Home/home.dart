@@ -6,12 +6,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/saveKey.dart';
-import 'package:flutterschool/page/community.dart';
-import 'package:flutterschool/page/myinfo.dart';
+import 'package:flutterschool/page/Community/community.dart';
+import 'package:flutterschool/page/Profile/myinfo.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
-import '../DB/Userboxorigin.dart';
+import '../../DB/Userboxorigin.dart';
 
 import 'lunch.dart';
 import 'timetable.dart';
@@ -50,16 +50,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future TimeTableFetchPost() async {
     SaveKey key = await SaveKey().getInstance();
-      int Grade = key.Grade();
-      int Class = key.Class();
-
+    int Grade = key.Grade();
+    int Class = key.Class();
 
     var now = DateTime.now();
     var mon = DateFormat('yyyyMMdd')
         .format(now.add(Duration(days: -1 * now.weekday + 1)));
     var fri = DateFormat('yyyyMMdd')
         .format(now.add(Duration(days: -1 * now.weekday + 5))); // weekday 금요일=5
-
 
     const SchoolCode = 7530072;
 
@@ -73,36 +71,36 @@ class _MyHomePageState extends State<MyHomePage> {
     if (response.statusCode == 200) {
       print("home: 시간표 json 파싱 완료 $uri");
       setState(() {
-        table =
-            Column(
-              children: [
-                SizedBox(
-                  height: 30,
-                  child: Row(
-                    children: [Text('$Grade학년 $Class반')],
-                  ),
-                ),
-                TimeTable(post: TableJsonPost.fromJson(json.decode(response.body))),
-              ],
-            );
+        table = Column(
+          children: [
+            SizedBox(
+              height: 30,
+              child: Row(
+                children: [Text('$Grade학년 $Class반')],
+              ),
+            ),
+            TimeTable(post: TableJsonPost.fromJson(json.decode(response.body))),
+          ],
+        );
       });
     } else {
       throw Exception('Failed to load post');
     }
   }
 
-  Widget table =Column(
+  Widget table = Column(
     children: [
-      SizedBox(height: 30,),
+      SizedBox(
+        height: 30,
+      ),
       Container(
-      height: 450,
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black)
-      ),
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),
-    )],
+        height: 450,
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      )
+    ],
   );
 
   @override
@@ -133,7 +131,6 @@ class _MyHomePageState extends State<MyHomePage> {
         onRefresh: TimeTableFetchPost,
         child: ListView(
           children: [
-
             Padding(padding: EdgeInsets.all(12.0), child: table),
             const SizedBox(height: 30),
             CupertinoButton(
@@ -145,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
             CupertinoButton(
                 child: Text('저장소 확인'),
                 onPressed: () {
-                  saving();
+                  checkKey();
                 }),
             const SizedBox(height: 30),
             const Padding(padding: EdgeInsets.all(12.0), child: Lunch()
@@ -160,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future saving() async {
+  Future checkKey() async {
     SaveKey key = await SaveKey().getInstance();
     key.printAll();
   }
