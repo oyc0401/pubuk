@@ -7,6 +7,7 @@ import 'package:flutterschool/DB/saveKey.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
+import '../../DB/UserData.dart';
 import 'community.dart';
 
 class comment extends StatefulWidget {
@@ -19,15 +20,15 @@ class comment extends StatefulWidget {
 }
 
 class _commentState extends State<comment> {
-  List reply = [];
+  /// 로딩전 초기값
+  List<Widget> reply = [];
   String Writedreply = 'ff';
-  String id = '';
-  String nickname = '';
+  UserData userData=UserData.guestData();
+  /// 로딩전 초기값
 
-  getProfile() async {
+  getUserData() async {
     SaveKey key = await SaveKey().getInstance();
-    id = key.uid();
-    nickname = key.nickname();
+    userData=key.userData();
   }
 
   Future<void> writeReply() async {
@@ -44,8 +45,8 @@ class _commentState extends State<comment> {
         .doc(nowdate)
         .set({
       'ID': nowdate,
-      'userid': id,
-      'nickname': nickname,
+      'userid': userData.uid,
+      'nickname': userData.nickname,
       'text': Writedreply,
       'url': widget.json['ID'],
       'date': nowdate,
@@ -58,7 +59,7 @@ class _commentState extends State<comment> {
   @override
   void initState() {
     super.initState();
-    getProfile();
+    getUserData();
     readReply();
   }
 

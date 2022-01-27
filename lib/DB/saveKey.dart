@@ -1,6 +1,9 @@
+import 'package:flutterschool/DB/UserData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SaveKey {
+  // set 하는것은 getInstance가 필요 없지만
+  // get 은 퓨처값을 주지 말아야 하기 때문에 getInstance가 필요하다.
   late SharedPreferences prefs;
 
   getInstance() async {
@@ -9,22 +12,16 @@ class SaveKey {
     return key;
   }
 
-  int Grade() {
-    return prefs.getInt('Grade') ?? 1;
-  }
+  UserData userData() {
+    int Grade = prefs.getInt('Grade') ?? 1;
+    int Class = prefs.getInt('Class') ?? 1;
+    String uid = prefs.getString('ID') ?? '게스트id';
+    String nickname = prefs.getString('Nickname') ?? '게스트';
+    String auth = prefs.getString('Auth') ?? 'guest';
 
-  int Class() {
-    return prefs.getInt('Class') ?? 1;
+    return UserData(
+        uid: uid, nickname: nickname, auth: auth, Grade: Grade, Class: Class);
   }
-
-  String uid() {
-    return prefs.getString('ID') ?? '게스트id';
-  }
-
-  String nickname() {
-    return prefs.getString('Nickname') ?? '게스트';
-  }
-
 
   SwitchGuest() {
     prefs.setString('ID', '게스트');

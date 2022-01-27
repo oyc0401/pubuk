@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
-
+import '../../DB/UserData.dart';
 import '../../DB/saveKey.dart';
 
 class write extends StatefulWidget {
@@ -18,31 +16,23 @@ class write extends StatefulWidget {
 }
 
 class _writeState extends State<write> {
+  /// 로딩전 초기값
   String text = '';
-  String id='';
-  String nickname='';
+  UserData userData = UserData.guestData();
+  /// 로딩전 초기값
 
-  Future _updateUser() {
-    return FirebaseFirestore.instance
-        .collection('pubuk')
-        .doc('2022-01-14 14:11:23.2334')
-        .update({'content': "이걸로 수정했어"})
-        .then((value) => print("User Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  getProfile()async{
-    SaveKey key= await SaveKey().getInstance();
-    id=key.uid();
-    nickname=key.nickname();
+  getUserData() async {
+    SaveKey key = await SaveKey().getInstance();
+    userData = key.userData();
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getProfile();
+    getUserData();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,20 +42,19 @@ class _writeState extends State<write> {
         actions: [
           IconButton(
             onPressed: () {
-              if(text!='') {
+              if (text != '') {
                 writepubuk(
-                    collection: 'pubuk',
-                    id: id,
-                    nickname: nickname,
-                    text: text,
-                    title: ' ')
+                        collection: 'pubuk',
+                        id: userData.uid,
+                        nickname: userData.nickname,
+                        text: text,
+                        title: ' ')
                     .addText()
                     .then((value) {
                   Navigator.of(context).pop(true);
                 });
-              }else{
+              } else {
                 _showDialog();
-
               }
             },
             icon: const Icon(Icons.save),
@@ -83,19 +72,18 @@ class _writeState extends State<write> {
               keyboardType: TextInputType.multiline,
               minLines: 4,
               maxLines: null,
-              decoration: const InputDecoration(hintText: "내용을 입력하세요.",
-                border: InputBorder.none
-              ),
+              decoration: const InputDecoration(
+                  hintText: "내용을 입력하세요.", border: InputBorder.none),
             ),
             Container(
               height: 500,
-              color: Colors.grey,)
+              color: Colors.grey,
+            )
           ],
         ),
       ),
     );
   }
-
 
   void _showDialog() {
     showDialog(
@@ -140,8 +128,6 @@ class writepubuk {
     required this.title,
     this.auth,
     this.image,
-    this.heart,
-    this.comment,
   });
 
   Future addText() async {
@@ -151,13 +137,13 @@ class writepubuk {
     String date = "${startDate.add(Duration(milliseconds: offset))}";
 
     FirebaseFirestore.instance.collection(collection).doc(date).set({
-      'ID':date,
+      'ID': date,
       'userid': id,
       'nickname': nickname,
       'text': text,
       'title': title,
-      'heart': heart,
-      'commment': comment,
+      'heart': 0,
+      'commment': 0,
       'auth': auth,
       'image': image,
       'date': date,

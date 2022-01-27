@@ -6,6 +6,8 @@ import 'package:flutterschool/DB/saveKey.dart';
 
 import 'package:select_dialog/select_dialog.dart';
 
+import '../../DB/UserData.dart';
+
 class setting extends StatefulWidget {
   const setting({Key? key}) : super(key: key);
 
@@ -14,12 +16,15 @@ class setting extends StatefulWidget {
 }
 
 class _settingState extends State<setting> {
+  /// 로딩전 초기값
   int Grade = 0;
   int Class = 0;
   String nickname = '로딩중...';
-  String id = '';
-
+  String uid = '';
+  UserData userData = UserData.guestData();
   Widget textfield = Container();
+  /// 로딩전 초기값
+
 
   @override
   void initState() {
@@ -85,7 +90,6 @@ class _settingState extends State<setting> {
                 onPressed: () {
                   DeleteUser();
                   Navigator.of(context).pop(true);
-
                 })
           ],
         ),
@@ -94,14 +98,16 @@ class _settingState extends State<setting> {
   }
 
   Future _loadProfile() async {
-    id = FirebaseAuth.instance.currentUser?.uid ?? '게스트 모드';
-    print("ID: $id");
+    uid = FirebaseAuth.instance.currentUser?.uid ?? '게스트 모드';
+    print("ID: $uid");
 
     SaveKey key = await SaveKey().getInstance();
+    userData = key.userData();
+
     setState(() {
-      nickname = key.nickname();
-      Grade = key.Grade();
-      Class = key.Class();
+      nickname = userData.nickname;
+      Grade = userData.Grade;
+      Class = userData.Class;
       print("$Grade학년");
       print("$Class반");
 
@@ -126,7 +132,7 @@ class _settingState extends State<setting> {
 
     FirebaseFirestore.instance
         .collection('user')
-        .doc(id)
+        .doc(uid)
         .update({'grade': Grade, 'class': Class, 'nickname': nickname}).then(
             (value) async {
       print('Class Update');
@@ -153,7 +159,7 @@ class _settingState extends State<setting> {
 
     FirebaseFirestore.instance
         .collection('user')
-        .doc(id)
+        .doc(uid)
         .delete()
         .then((value) => print("User Deleted"))
         .catchError((error) => print("Failed to delete user: $error"));

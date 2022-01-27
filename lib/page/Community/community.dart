@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-
 class community extends StatefulWidget {
   community({Key? key}) : super(key: key);
 
@@ -19,12 +18,15 @@ class community extends StatefulWidget {
 }
 
 class _communityState extends State<community> {
-  List docNameList = []; //이거 지금은 필요 없는데 나중에 지워도 괜찮을듯
+
+  /// 로딩전 초기값
   String finalDate = '2022-01-15 00:09:27.614909';
   String firstDate = '';
   List<Widget> widgetList = [
-    const SizedBox(height: 400, child: Center(child: CircularProgressIndicator()))
+    const SizedBox(
+        height: 400, child: Center(child: CircularProgressIndicator()))
   ];
+  /// 로딩전 초기값
 
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -32,7 +34,6 @@ class _communityState extends State<community> {
   Future readFirst() async {
     print('readFirst');
     //reset All DATA
-    docNameList = [];
 
     await FirebaseFirestore.instance
         .collection('pubuk')
@@ -45,7 +46,6 @@ class _communityState extends State<community> {
       print("처음 날짜: $firstvalue");
       firstDate = firstvalue;
 
-      docNameList.add(firstvalue);
       widgetList = [];
       widgetList.add(textWidget(
           jsonConversion(json: querySnapshot.docs[0].data() as Map)
@@ -66,7 +66,6 @@ class _communityState extends State<community> {
         .get()
         .then((QuerySnapshot querySnapshot) {
           querySnapshot.docs.forEach((doc) {
-            docNameList.add(doc['date']);
             finalDate = doc['date'];
             widgetList.add(textWidget(
                 jsonConversion(json: doc.data() as Map).changedJson()));
@@ -99,8 +98,8 @@ class _communityState extends State<community> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                  context, CupertinoPageRoute(builder: (context) => const write()));
+              Navigator.push(context,
+                  CupertinoPageRoute(builder: (context) => const write()));
             },
             icon: const Icon(Icons.edit),
           ),
@@ -118,7 +117,10 @@ class _communityState extends State<community> {
             } else if (mode == LoadStatus.loading) {
               body = Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [const CupertinoActivityIndicator(), const Text("로딩중...")],
+                children: [
+                  const CupertinoActivityIndicator(),
+                  const Text("로딩중...")
+                ],
               );
             } else if (mode == LoadStatus.failed) {
               body = const Text("로딩에 실패했습니다.");
@@ -282,7 +284,7 @@ class jsonConversion {
 
   Map changedJson() {
     // 인수 9개
-    String ID=json['ID']?? 'oo';
+    String ID = json['ID'] ?? 'oo';
     String text = json['text'] ?? '내용이 없습니다.';
     String userid = json['userid'] ?? '알수없는 사용자43242';
     String nickname = json['nickname'] ?? '닉네임이 없습니다32131321';
@@ -295,7 +297,7 @@ class jsonConversion {
     String auth = json['auth'] ?? 'student';
 
     final Json = {
-      "ID":ID,
+      "ID": ID,
       "userid": userid,
       "nickname": nickname,
       "date": date,

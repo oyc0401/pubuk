@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/UserData.dart';
 import 'package:flutterschool/DB/saveKey.dart';
 import 'package:flutterschool/page/Community/write.dart';
 import 'package:intl/intl.dart';
@@ -21,41 +23,39 @@ class view extends StatefulWidget {
 }
 
 class _viewState extends State<view> {
-  String writedComment = '241';
+  /// 로딩전 초기값
+  String writedComment = '';
   Widget Context = Container();
   Widget Comment = Container();
-  String uid = '';
-  String nickname = '';
+  IconButton editButton =
+      IconButton(onPressed: () {}, icon: Icon(Icons.ice_skating));
+  IconButton deleteButton =
+      IconButton(onPressed: () {}, icon: Icon(Icons.ice_skating));
+  UserData userData = UserData.guestData();
+  /// 로딩전 초기값
 
-  IconButton editButton = IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
-
-  IconButton deleteButton = IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
-
-  getProfile() async {
+  getUserData() async {
     SaveKey key = await SaveKey().getInstance();
-    uid = key.uid();
-    nickname = key.nickname();
+    userData = key.userData();
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getProfile();
+    getUserData();
     readView();
     readComment();
   }
-Widget dd=IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
 
+  Widget dd = IconButton(onPressed: () {}, icon: Icon(Icons.ice_skating));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: const Text('게시물')),
-        actions: [
-          deleteButton,editButton
-        ],
+        actions: [deleteButton, editButton],
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
@@ -105,7 +105,7 @@ Widget dd=IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
     );
   }
 
-  Future deleteUser()async {
+  Future deleteUser() async {
     FirebaseFirestore.instance
         .collection('pubuk')
         .doc(widget.url)
@@ -121,7 +121,7 @@ Widget dd=IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
         .get()
         .then((doc) {
       setState(() {
-        if (uid == doc['userid']) {
+        if (userData.uid == doc['userid']) {
           editButton = IconButton(
             onPressed: () {
               print('넘어갑니다.');
@@ -189,8 +189,8 @@ Widget dd=IconButton(onPressed: (){}, icon: Icon(Icons.ice_skating));
         .doc(date)
         .set({
       'ID': date,
-      'userid': uid,
-      'nickname': nickname,
+      'userid': userData.uid,
+      'nickname': userData.nickname,
       'text': writedComment,
       'url': widget.url,
       'date': date,

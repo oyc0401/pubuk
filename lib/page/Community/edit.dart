@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
+import '../../DB/UserData.dart';
+
 class edit extends StatefulWidget {
   edit({Key? key, required this.url}) : super(key: key);
   String url = 'cc'; //  부모의 ID
@@ -16,27 +18,31 @@ class edit extends StatefulWidget {
 }
 
 class _editState extends State<edit> {
-  String text = '';
-  String id = '';
-  String nickname = '';
 
-  getProfile() async {
+  String changedText = '';
+  Widget textField = TextFormField(
+    onChanged: (text) {},
+    keyboardType: TextInputType.multiline,
+    minLines: 4,
+    maxLines: null,
+    decoration:
+        const InputDecoration(hintText: "로딩중...", border: InputBorder.none),
+  );
+  UserData userData = UserData.guestData();
+  /// 로딩전 초기값
+
+  getUserData() async {
     SaveKey key = await SaveKey().getInstance();
-    id = key.uid();
-    nickname = key.nickname();
+    userData = key.userData();
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getProfile();
+    getUserData();
     loadText();
   }
-
-
-
-  Widget fil = Container();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +53,7 @@ class _editState extends State<edit> {
         actions: [
           IconButton(
             onPressed: () {
-              if (text != '') {
+              if (changedText != '') {
                 updateText().then((value) {
                   Navigator.of(context).pop(true);
                 });
@@ -63,7 +69,7 @@ class _editState extends State<edit> {
         padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
-            fil,
+            textField,
             Container(
               height: 500,
               color: Colors.grey,
@@ -81,9 +87,9 @@ class _editState extends State<edit> {
         .get()
         .then((doc) {
       setState(() {
-        fil = TextFormField(
+        textField = TextFormField(
           onChanged: (text) {
-            this.text = text;
+            this.changedText = text;
           },
           keyboardType: TextInputType.multiline,
           initialValue: doc['text'],
@@ -103,7 +109,7 @@ class _editState extends State<edit> {
     String date = "${startDate.add(Duration(milliseconds: offset))}";
 
     FirebaseFirestore.instance.collection('pubuk').doc(widget.url).update({
-      'text': text,
+      'text': changedText,
       'title': '',
     }).then((value) {
       print("User Added");

@@ -14,16 +14,14 @@ class community33 extends StatefulWidget {
   _community33State createState() => _community33State();
 }
 
-//
-
 class _community33State extends State<community33> {
   @override
   void initState() {
     super.initState();
     read();
   }
-
-  var text = '오류발생';
+  /// 이것은 실험용 문서입니다.
+  String text = '오류발생';
 
   CollectionReference pubuk = FirebaseFirestore.instance.collection('pubuk');
 

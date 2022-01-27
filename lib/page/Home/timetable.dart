@@ -1,51 +1,48 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
 class TimeTable extends StatefulWidget {
-  TimeTable({Key? key,required this.post}) : super(key: key);
-TableJsonPost post;
+  TimeTable({Key? key, required this.post}) : super(key: key);
+  TableJsonPost post;
 
   @override
   _TimeTableState createState() => _TimeTableState();
 }
+
 class _TimeTableState extends State<TimeTable> {
-  String text = 'ddd';
 
   @override
   Widget build(BuildContext context) {
-          return Table(
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            border: TableBorder.all(),
-            columnWidths: const {
-              0: FlexColumnWidth(1),
-              1: FlexColumnWidth(2),
-              2: FlexColumnWidth(2),
-              3: FlexColumnWidth(2),
-              4: FlexColumnWidth(2),
-              5: FlexColumnWidth(2),
-            },
-            children: [...tableRows()],
-          );
+    return Table(
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      border: TableBorder.all(),
+      columnWidths: const {
+        0: FlexColumnWidth(1),
+        1: FlexColumnWidth(2),
+        2: FlexColumnWidth(2),
+        3: FlexColumnWidth(2),
+        4: FlexColumnWidth(2),
+        5: FlexColumnWidth(2),
+      },
+      children: [...tableRows()],
+    );
   }
 
   //테이블 총 세로길이 450
   final double height = 60;
   final double halfheight = 30;
-  final TextStyle textStyle= const TextStyle(fontSize: 12);
+  final TextStyle textStyle = const TextStyle(fontSize: 12);
 
   List<TableRow> tableRows() {
-
     List<Widget> weekends() {
       List<Widget> list = [];
       list.add(Container(
           height: halfheight,
           child: Center(
               child: Text(
-                " ",
-                style: textStyle,
-              ))));
+            " ",
+            style: textStyle,
+          ))));
       list.add(Text(
         "월요일",
         textAlign: TextAlign.center,
@@ -81,40 +78,40 @@ class _TimeTableState extends State<TimeTable> {
           height: height,
           child: Center(
               child: Text(
-                "$kosy",
-                textAlign: TextAlign.center,
-                style: textStyle,
-              ))));
-      list.add(Center(
-          child: Text(
-            widget.post.Mon[num],
+            "$kosy",
             textAlign: TextAlign.center,
             style: textStyle,
-          )));
+          ))));
       list.add(Center(
           child: Text(
-            widget.post.Tue[num],
-            textAlign: TextAlign.center,
-            style: textStyle,
-          )));
+        widget.post.Mon[num],
+        textAlign: TextAlign.center,
+        style: textStyle,
+      )));
       list.add(Center(
           child: Text(
-            widget.post.Wed[num],
-            textAlign: TextAlign.center,
-            style: textStyle,
-          )));
+        widget.post.Tue[num],
+        textAlign: TextAlign.center,
+        style: textStyle,
+      )));
       list.add(Center(
           child: Text(
-            widget.post.Thu[num],
-            textAlign: TextAlign.center,
-            style: textStyle,
-          )));
+        widget.post.Wed[num],
+        textAlign: TextAlign.center,
+        style: textStyle,
+      )));
       list.add(Center(
           child: Text(
-            widget.post.Fri[num],
-            textAlign: TextAlign.center,
-            style: textStyle,
-          )));
+        widget.post.Thu[num],
+        textAlign: TextAlign.center,
+        style: textStyle,
+      )));
+      list.add(Center(
+          child: Text(
+        widget.post.Fri[num],
+        textAlign: TextAlign.center,
+        style: textStyle,
+      )));
       return list;
     }
 
@@ -125,7 +122,6 @@ class _TimeTableState extends State<TimeTable> {
     }
     return list;
   }
-
 }
 
 class TableJsonPost {

@@ -11,6 +11,7 @@ import 'package:flutterschool/page/Profile/myinfo.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
+import '../../DB/UserData.dart';
 import '../../DB/Userboxorigin.dart';
 
 import 'lunch.dart';
@@ -26,6 +27,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  /// 로딩전 초기값
+  Widget table = Column(
+    children: [
+      SizedBox(
+        height: 30,
+      ),
+      Container(
+        height: 450,
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      )
+    ],
+  );
+  /// 로딩전 초기값
+
   getInstance() {
     //정보 얻어오기
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -50,8 +68,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future TimeTableFetchPost() async {
     SaveKey key = await SaveKey().getInstance();
-    int Grade = key.Grade();
-    int Class = key.Class();
+    UserData userData = key.userData();
+    int Grade = userData.Grade;
+    int Class = userData.Class;
 
     var now = DateTime.now();
     var mon = DateFormat('yyyyMMdd')
@@ -87,21 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
       throw Exception('Failed to load post');
     }
   }
-
-  Widget table = Column(
-    children: [
-      SizedBox(
-        height: 30,
-      ),
-      Container(
-        height: 450,
-        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      )
-    ],
-  );
 
   @override
   void initState() {

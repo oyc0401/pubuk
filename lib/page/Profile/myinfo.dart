@@ -6,7 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
-
 import 'login.dart';
 import 'setting.dart';
 
@@ -18,17 +17,17 @@ class myinfo extends StatefulWidget {
 }
 
 class _myinfoState extends State<myinfo> {
+  /// 로딩전 초기값
   int Grade = 1;
   int Class = 1;
   String nickname = '';
+  /// 로딩전 초기값
 
   @override
   void initState() {
     super.initState();
     _getProfile();
   }
-
-
 
   Future _getProfile() async {
     FirebaseAuth auth = FirebaseAuth.instance;

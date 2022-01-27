@@ -22,7 +22,7 @@ class _LunchState extends State<Lunch> {
   String lunchImageTitle = "뭔가 오류가 있다.";
   List? touchedDateList = ['20211122'];
 
-  ///수 나중에 설정하는 변
+  ///나중에 설정하는 변수
   late Map allMenuMap;
   late Future<Postserver> post;
 

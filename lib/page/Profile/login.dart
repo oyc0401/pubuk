@@ -6,7 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
-
 import '../../DB/saveKey.dart';
 import 'setting.dart';
 
@@ -18,7 +17,9 @@ class login extends StatefulWidget {
 }
 
 class _loginState extends State<login> {
+  /// 로딩전 초기값
   Widget loadingCircle = Container();
+  /// 로딩전 초기값
 
   Future _GoogleLogin(BuildContext context) async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -76,7 +77,7 @@ class _loginState extends State<login> {
           'class': 1,
           'auth': 'user'
         }).then((value) {
-          key.SetUser(id,displayName,'user',1,1);
+          key.SetUser(id, displayName, 'user', 1, 1);
           print("User Sign up");
         }).catchError((error) {
           print("Failed to Sign up: $error");
