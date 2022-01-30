@@ -1,9 +1,7 @@
 import 'dart:core';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/fireDB.dart';
 import 'package:flutterschool/page/Community/write.dart';
 import 'package:flutterschool/page/Community/view.dart';
 import 'package:intl/intl.dart';
@@ -18,14 +16,13 @@ class community extends StatefulWidget {
 }
 
 class _communityState extends State<community> {
-
   /// 로딩전 초기값
   String finalDate = '2022-01-15 00:09:27.614909';
-  String firstDate = '';
   List<Widget> widgetList = [
     const SizedBox(
         height: 400, child: Center(child: CircularProgressIndicator()))
   ];
+
   /// 로딩전 초기값
 
   final RefreshController _refreshController =
@@ -34,45 +31,23 @@ class _communityState extends State<community> {
   Future readFirst() async {
     print('readFirst');
     //reset All DATA
-
-    await FirebaseFirestore.instance
-        .collection('pubuk')
-        .orderBy('date', descending: true)
-        .limit(1)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      //print('처음값은');
-      String firstvalue = querySnapshot.docs[0]['date'];
+    await fireDB.readFirstMap().then((map) {
+      String firstvalue = map['date'];
       print("처음 날짜: $firstvalue");
-      firstDate = firstvalue;
-
       widgetList = [];
-      widgetList.add(textWidget(
-          jsonConversion(json: querySnapshot.docs[0].data() as Map)
-              .changedJson()));
-
-      finalDate = firstDate;
+      widgetList.add(textWidget(map));
+      finalDate = firstvalue;
     });
   }
 
   Future readPage() async {
     print('readPage');
-
-    await FirebaseFirestore.instance
-        .collection('pubuk')
-        .orderBy('date', descending: true)
-        .startAfter([finalDate])
-        .limit(10)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
-            finalDate = doc['date'];
-            widgetList.add(textWidget(
-                jsonConversion(json: doc.data() as Map).changedJson()));
-          });
-        });
-    //print(docNameList);
-
+    await fireDB.readTexts(finalDate).then((value) {
+      value.forEach((map) {
+        finalDate = map['date'];
+        widgetList.add(textWidget(map));
+      });
+    });
     setState(() {});
     _refreshController.loadComplete();
   }
@@ -275,40 +250,3 @@ class _communityState extends State<community> {
   }
 }
 
-class jsonConversion {
-  /// 나중에 db에 새로운 필드가 추가될 것을 대비해서 만든 클래스
-
-  Map json = {};
-
-  jsonConversion({required this.json});
-
-  Map changedJson() {
-    // 인수 9개
-    String ID = json['ID'] ?? 'oo';
-    String text = json['text'] ?? '내용이 없습니다.';
-    String userid = json['userid'] ?? '알수없는 사용자43242';
-    String nickname = json['nickname'] ?? '닉네임이 없습니다32131321';
-    String date = json['date'] ?? '';
-    String image = json['image'] ?? '';
-
-    String title = json['title'] ?? '제목';
-    int heart = json['heart'] ?? 0;
-    int comment = json['comment'] ?? 0;
-    String auth = json['auth'] ?? 'student';
-
-    final Json = {
-      "ID": ID,
-      "userid": userid,
-      "nickname": nickname,
-      "date": date,
-      "text": text,
-      "image": image,
-      'title': title,
-      'heart': heart,
-      'comment': comment,
-      'auth': auth,
-    };
-
-    return Json;
-  }
-}

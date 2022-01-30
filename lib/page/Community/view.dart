@@ -1,15 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/UserData.dart';
 import 'package:flutterschool/DB/saveKey.dart';
-import 'package:flutterschool/page/Community/write.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
-import 'package:select_dialog/select_dialog.dart';
 
+import '../../DB/fireDB.dart';
 import 'comment.dart';
 import 'community.dart';
 import 'edit.dart';
@@ -27,11 +24,12 @@ class _viewState extends State<view> {
   String writedComment = '';
   Widget Context = Container();
   Widget Comment = Container();
-  IconButton editButton =
-      IconButton(onPressed: () {}, icon: Icon(Icons.ice_skating));
-  IconButton deleteButton =
-      IconButton(onPressed: () {}, icon: Icon(Icons.ice_skating));
+  Widget editButton = Container();
+  Widget deleteButton = Container();
   UserData userData = UserData.guestData();
+  Widget commentField = Container();
+  bool isCommentFieldOpen = false;
+
   /// 로딩전 초기값
 
   getUserData() async {
@@ -41,7 +39,6 @@ class _viewState extends State<view> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getUserData();
     readView();
@@ -54,53 +51,11 @@ class _viewState extends State<view> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: const Text('게시물')),
+        title: Text('게시물'),
         actions: [deleteButton, editButton],
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {},
-            ),
-            Spacer(),
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: () {},
-            )
-          ],
-        ),
-      ),
       body: ListView(
-        children: [
-          Context,
-          Row(
-            children: [
-              Container(
-                width: 200,
-                child: TextField(
-                  onChanged: (text) {
-                    writedComment = text;
-                  },
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration: const InputDecoration(hintText: '댓글을 적어주세요'),
-                ),
-              ),
-              CupertinoButton(
-                  child: Text('댓글쓰기'),
-                  onPressed: () {
-                    writeComment();
-                  })
-            ],
-          ),
-          Comment
-        ],
+        children: [Context, commentField, Comment],
       ),
     );
   }
@@ -143,8 +98,7 @@ class _viewState extends State<view> {
               icon: const Icon(Icons.delete));
         }
 
-        Context = ContextWidget(
-            jsonConversion(json: doc.data() as Map).changedJson());
+        Context = ContextWidget(jsonConversion.text(doc.data() as Map));
       });
     });
   }
@@ -154,16 +108,11 @@ class _viewState extends State<view> {
     List<Widget> listcomment = [];
 
 //댓글 10개 읽기
-    await FirebaseFirestore.instance
-        .collection('pubuk')
-        .doc(widget.url)
-        .collection('comment')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
+    await fireDB.readComments(widget.url).then((value) {
+      value.forEach((map) {
         listcomment.add(
           comment(
-            json: jsonConversion(json: doc.data() as Map).changedJson(),
+            json: map,
             url: widget.url,
           ),
         );
@@ -270,6 +219,42 @@ class _viewState extends State<view> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                CupertinoButton(
+                    child: Text('댓글 적기'),
+                    onPressed: () {
+                      setState(() {
+                        if (isCommentFieldOpen == false) {
+                          isCommentFieldOpen = true;
+                          commentField = Row(
+                            children: [
+                              Container(
+                                width: 200,
+                                child: TextField(
+                                  onChanged: (text) {
+                                    writedComment = text;
+                                  },
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  decoration: const InputDecoration(
+                                      hintText: '댓글을 적어주세요'),
+                                ),
+                              ),
+                              CupertinoButton(
+                                  child: Text('댓글쓰기'),
+                                  onPressed: () {
+                                    writeComment();
+                                  })
+                            ],
+                          );
+                        } else {
+                          isCommentFieldOpen = false;
+                          commentField = Container();
+                        }
+
+                        print('댓글 열림');
+                      });
+                    }),
+                Spacer(),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 0, horizontal: 5),

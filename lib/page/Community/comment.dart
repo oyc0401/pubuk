@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
 import '../../DB/UserData.dart';
+import '../../DB/fireDB.dart';
 import 'community.dart';
 
 class comment extends StatefulWidget {
@@ -153,19 +154,13 @@ class _commentState extends State<comment> {
 
   Future readReply() async {
     reply = [];
-    await FirebaseFirestore.instance
-        .collection('pubuk')
-        .doc(widget.url)
-        .collection('comment')
-        .doc(widget.json['ID'])
-        .collection('reply')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
+    await fireDB.readReplies(widget.url, widget.json['ID']).then((list) {
+      list.forEach((map) {
         reply.add(
-            ReplyWidget(jsonConversion(json: doc.data() as Map).changedJson()));
+            ReplyWidget(map));
       });
     });
+
     setState(() {});
   }
 
