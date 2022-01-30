@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/fireDB.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
@@ -19,6 +20,7 @@ class login extends StatefulWidget {
 class _loginState extends State<login> {
   /// 로딩전 초기값
   Widget loadingCircle = Container();
+
   /// 로딩전 초기값
 
   Future _GoogleLogin(BuildContext context) async {
@@ -46,52 +48,38 @@ class _loginState extends State<login> {
   Future _addUser() async {
     //파이어베이스에 유저정보 저장
     //기존 정보가 없으면 초기화 시켜줌
-    String date = await LocalTime();
     FirebaseAuth auth = FirebaseAuth.instance;
 
     //정보 얻어오기
-    String? id = auth.currentUser?.uid ?? '로그인 해주세요';
+    String? uid = auth.currentUser?.uid ?? '로그인 해주세요';
     String? email = auth.currentUser?.email ?? '이메일이 없습니다.';
     String? displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
     String? photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
 
     SaveKey key = await SaveKey.Instance();
     // id가 저장되어있는지 체크
-    await FirebaseFirestore.instance
-        .collection('user')
-        .doc(id)
-        .get()
-        .then((value) {
-      //신규 가입일 때
-      if (value.data() == null) {
-        print('신규 가입');
-        FirebaseFirestore.instance.collection('user').doc(id).set({
-          'ID': id,
-          'userid': id,
-          'email': email,
-          'nickname': displayName,
-          'displayName': displayName,
-          'photoURL': photoURL,
-          'signupDate': date,
-          'grade': 1,
-          'class': 1,
-          'auth': 'user'
-        }).then((value) {
-          key.SetUser(id, displayName, 'user', 1, 1);
-          print("User Sign up");
-        }).catchError((error) {
-          print("Failed to Sign up: $error");
+
+    fireDB.isUserExist(uid).then((isUserExist) async {
+      print(isUserExist);
+      if (isUserExist) {
+        await fireDB.getUser(uid).then((map) {
+          print('기존 로그인');
+          key.SetUser(map['ID'], map['nickname'], map['auth'], map['grade'],
+              map['class']);
+          Navigator.of(context).pop(true);
         });
+      } else {
+        print('신규 가입');
+        await fireDB(
+                uid: uid,
+                email: email,
+                displayName: displayName,
+                photoURL: photoURL)
+            .newSignIn();
+        //key.SetUser(uid, displayName, "student", 1, 1);
         Navigator.of(context).pop(true);
         Navigator.push(
             context, CupertinoPageRoute(builder: (context) => setting()));
-
-        //기존 로그인
-      } else {
-        print('기존 로그인');
-        key.SetUser(value['ID'], value['nickname'], value['auth'],
-            value['grade'], value['class']);
-        Navigator.of(context).pop(true);
       }
     });
   }

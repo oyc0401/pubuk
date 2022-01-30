@@ -1,7 +1,72 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutterschool/DB/saveKey.dart';
+import 'package:ntp/ntp.dart';
 
 class fireDB {
+  String uid = '';
+  String email = '';
+  String displayName = '';
+  String photoURL = '';
 
+  fireDB({
+    required this.uid,
+    required this.email,
+    required this.displayName,
+    required this.photoURL,
+  });
+
+  Future<String> LocalTime() async {
+    DateTime startDate = DateTime.now().toLocal();
+    int offset = await NTP.getNtpOffset(localTime: startDate);
+    print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
+    String date = "${startDate.add(Duration(milliseconds: offset))}";
+    return date;
+  }
+
+  newSignIn() async {
+    String date = await LocalTime();
+    SaveKey key = await SaveKey.Instance();
+    await FirebaseFirestore.instance.collection('user').doc(uid).set({
+      'ID': uid,
+      'userid': uid,
+      'email': email,
+      'nickname': displayName,
+      'displayName': displayName,
+      'photoURL': photoURL,
+      'signupDate': date,
+      'grade': 1,
+      'class': 1,
+      'auth': 'user'
+    }).then((value) {
+      key.SetUser(uid, displayName, 'user', 1, 1);
+      print("User Sign up");
+    }).catchError((error) {
+      print("Failed to Sign up: $error");
+    });
+  }
+
+  static Future<bool> isUserExist(String uid) async {
+    bool isExist = false;
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(uid)
+        .get()
+        .then((value) => isExist = value.data() != null);
+
+    return isExist;
+  }
+
+  static Future<Map> getUser(String uid) async {
+    Map map = {};
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(uid)
+        .get()
+        .then((value) async {
+      map = value.data() as Map;
+    });
+    return map;
+  }
 
   static Future<Map> readFirstMap() async {
     Map map = {};

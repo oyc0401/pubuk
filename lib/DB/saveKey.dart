@@ -2,8 +2,8 @@ import 'package:flutterschool/DB/UserData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SaveKey {
-  // set 하는것은 getInstance가 필요 없지만
-  // get 은 퓨처값을 주지 말아야 하기 때문에 getInstance가 필요하다.
+  // set 하는것은 Instance가 필요 없지만
+  // get 은 퓨처값을 주지 말아야 하기 때문에 Instance가 필요하다.
   late SharedPreferences prefs;
 
    static Instance() async {
