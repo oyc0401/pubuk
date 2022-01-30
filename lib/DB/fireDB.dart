@@ -3,18 +3,6 @@ import 'package:flutterschool/DB/saveKey.dart';
 import 'package:ntp/ntp.dart';
 
 class fireDB {
-  String uid = '';
-  String email = '';
-  String displayName = '';
-  String photoURL = '';
-
-  fireDB({
-    required this.uid,
-    required this.email,
-    required this.displayName,
-    required this.photoURL,
-  });
-
   Future<String> LocalTime() async {
     DateTime startDate = DateTime.now().toLocal();
     int offset = await NTP.getNtpOffset(localTime: startDate);
@@ -23,9 +11,20 @@ class fireDB {
     return date;
   }
 
-  newSignIn() async {
+  static newSignIn(
+    String uid,
+    String email,
+    String displayName,
+    String photoURL,
+  ) async {
+    Future<String> LocalTime() async {
+      DateTime startDate = DateTime.now().toLocal();
+      int offset = await NTP.getNtpOffset(localTime: startDate);
+      print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
+      String date = "${startDate.add(Duration(milliseconds: offset))}";
+      return date;
+    }
     String date = await LocalTime();
-    SaveKey key = await SaveKey.Instance();
     await FirebaseFirestore.instance.collection('user').doc(uid).set({
       'ID': uid,
       'userid': uid,
@@ -38,7 +37,6 @@ class fireDB {
       'class': 1,
       'auth': 'user'
     }).then((value) {
-      key.SetUser(uid, displayName, 'user', 1, 1);
       print("User Sign up");
     }).catchError((error) {
       print("Failed to Sign up: $error");

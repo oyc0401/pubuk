@@ -62,21 +62,16 @@ class _loginState extends State<login> {
     fireDB.isUserExist(uid).then((isUserExist) async {
       print(isUserExist);
       if (isUserExist) {
+        print('기존 로그인');
         await fireDB.getUser(uid).then((map) {
-          print('기존 로그인');
           key.SetUser(map['ID'], map['nickname'], map['auth'], map['grade'],
               map['class']);
           Navigator.of(context).pop(true);
         });
       } else {
         print('신규 가입');
-        await fireDB(
-                uid: uid,
-                email: email,
-                displayName: displayName,
-                photoURL: photoURL)
-            .newSignIn();
-        //key.SetUser(uid, displayName, "student", 1, 1);
+        await fireDB.newSignIn(uid, email, displayName, photoURL);
+        key.SetUser(uid, displayName, 'user', 1, 1);
         Navigator.of(context).pop(true);
         Navigator.push(
             context, CupertinoPageRoute(builder: (context) => setting()));
