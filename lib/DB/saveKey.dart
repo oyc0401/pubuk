@@ -6,11 +6,12 @@ class SaveKey {
   // get 은 퓨처값을 주지 말아야 하기 때문에 getInstance가 필요하다.
   late SharedPreferences prefs;
 
-   getInstance() async {
+   static Instance() async {
     SaveKey key = SaveKey();
     key.prefs = await SharedPreferences.getInstance();
     return key;
   }
+
 
   UserData userData() {
     int Grade = prefs.getInt('Grade') ?? 1;

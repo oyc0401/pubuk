@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
         .doc(id)
         .get()
         .then((value) async {
-      SaveKey key = await SaveKey().getInstance();
+      SaveKey key = await SaveKey.Instance();
       key.SetUser(value['ID'], value['nickname'], value['auth'], value['grade'],
           value['class']);
     }).catchError((error) {
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future TimeTableFetchPost() async {
-    SaveKey key = await SaveKey().getInstance();
+    SaveKey key = await SaveKey.Instance();
     UserData userData = key.userData();
     int Grade = userData.Grade;
     int Class = userData.Class;
@@ -162,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future checkKey() async {
-    SaveKey key = await SaveKey().getInstance();
+    SaveKey key = await SaveKey.Instance();
     key.printAll();
   }
 }

@@ -55,7 +55,7 @@ class _loginState extends State<login> {
     String? displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
     String? photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
 
-    SaveKey key = await SaveKey().getInstance();
+    SaveKey key = await SaveKey.Instance();
     // id가 저장되어있는지 체크
     await FirebaseFirestore.instance
         .collection('user')

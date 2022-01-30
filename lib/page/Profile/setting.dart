@@ -101,7 +101,7 @@ class _settingState extends State<setting> {
     uid = FirebaseAuth.instance.currentUser?.uid ?? '게스트 모드';
     print("ID: $uid");
 
-    SaveKey key = await SaveKey().getInstance();
+    SaveKey key = await SaveKey.Instance();
     userData = key.userData();
 
     setState(() {
@@ -127,7 +127,7 @@ class _settingState extends State<setting> {
   }
 
   Future Save() async {
-    SaveKey key = await SaveKey().getInstance();
+    SaveKey key = await SaveKey.Instance();
     key.Changeinfo(nickname, Grade, Class);
 
     FirebaseFirestore.instance
@@ -142,7 +142,7 @@ class _settingState extends State<setting> {
 
   Future Logout() async {
     await FirebaseAuth.instance.signOut();
-    SaveKey key = await SaveKey().getInstance();
+    SaveKey key = await SaveKey.Instance();
     key.SwitchGuest();
     Navigator.of(context).pop(true);
   }

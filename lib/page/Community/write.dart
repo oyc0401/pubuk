@@ -22,7 +22,7 @@ class _writeState extends State<write> {
   /// 로딩전 초기값
 
   getUserData() async {
-    SaveKey key = await SaveKey().getInstance();
+    SaveKey key = await SaveKey.Instance();
     userData = key.userData();
   }
 
