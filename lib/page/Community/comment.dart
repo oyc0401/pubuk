@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
 import '../../DB/UserData.dart';
-import '../../DB/fireDB.dart';
+import '../../Server/GetFirebase.dart';
 import 'community.dart';
 
 class comment extends StatefulWidget {
@@ -24,12 +24,14 @@ class _commentState extends State<comment> {
   /// 로딩전 초기값
   List<Widget> reply = [];
   String Writedreply = 'ff';
-  UserData userData=UserData.guestData();
+  UserData userData = UserData.guestData();
+  bool isReplyFieldOpen = false;
+
   /// 로딩전 초기값
 
   getUserData() async {
     SaveKey key = await SaveKey.Instance();
-    userData=key.userData();
+    userData = key.userData();
   }
 
   Future<void> writeReply() async {
@@ -37,6 +39,7 @@ class _commentState extends State<comment> {
     int offset = await NTP.getNtpOffset(localTime: startDate);
     print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
     String nowdate = "${startDate.add(Duration(milliseconds: offset))}";
+
     FirebaseFirestore.instance
         .collection('pubuk')
         .doc(widget.url)
@@ -54,8 +57,11 @@ class _commentState extends State<comment> {
     }).then((value) {
       print("Reply Added");
     }).catchError((error) => print("Failed to add user: $error"));
+
     readReply();
   }
+
+  Widget please = Container();
 
   @override
   void initState() {
@@ -100,6 +106,12 @@ class _commentState extends State<comment> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  CupertinoButton(
+                      child: Text('답글 적기'),
+                      onPressed: () {
+                        touch_write_reply();
+                      }),
+                  Spacer(),
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
@@ -125,26 +137,7 @@ class _commentState extends State<comment> {
                 ],
               ),
             ),
-            Row(
-              children: [
-                Container(
-                  width: 200,
-                  child: TextField(
-                    onChanged: (text) {
-                      Writedreply = text;
-                    },
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: const InputDecoration(hintText: '답글을 적어주세요'),
-                  ),
-                ),
-                CupertinoButton(
-                    child: Text('dsa'),
-                    onPressed: () {
-                      writeReply();
-                    }),
-              ],
-            ),
+            please,
           ],
         ),
       ),
@@ -152,12 +145,43 @@ class _commentState extends State<comment> {
     ]);
   }
 
+  void touch_write_reply() {
+    if (isReplyFieldOpen == false) {
+      isReplyFieldOpen = true;
+      please = Row(
+        children: [
+          Expanded(
+            child: TextField(
+              onChanged: (text) {
+                Writedreply = text;
+              },
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              decoration: const InputDecoration(
+                  hintText: '답글을 적어주세요'),
+            ),
+          ),
+          CupertinoButton(
+              child: Text('확인'),
+              onPressed: () {
+                isReplyFieldOpen = false;
+                please=Container();
+                writeReply();
+              }),
+        ],
+      );
+    } else {
+      isReplyFieldOpen = false;
+      please=Container();
+    }
+    setState(() {});
+  }
+
   Future readReply() async {
     reply = [];
-    await fireDB.readReplies(widget.url, widget.json['ID']).then((list) {
+    await GetFirebase.readReplies(widget.url, widget.json['ID']).then((list) {
       list.forEach((map) {
-        reply.add(
-            ReplyWidget(map));
+        reply.add(ReplyWidget(map));
       });
     });
 

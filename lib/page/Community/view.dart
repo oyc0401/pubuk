@@ -6,7 +6,7 @@ import 'package:flutterschool/DB/saveKey.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
-import '../../DB/fireDB.dart';
+import '../../Server/GetFirebase.dart';
 import 'comment.dart';
 import 'community.dart';
 import 'edit.dart';
@@ -55,7 +55,9 @@ class _viewState extends State<view> {
         actions: [deleteButton, editButton],
       ),
       body: ListView(
-        children: [Context, commentField, Comment],
+        children: [Context,
+          Container(height: 20,),
+          commentField, Comment],
       ),
     );
   }
@@ -108,7 +110,7 @@ class _viewState extends State<view> {
     List<Widget> listcomment = [];
 
 //댓글 10개 읽기
-    await fireDB.readComments(widget.url).then((value) {
+    await GetFirebase.readComments(widget.url).then((value) {
       value.forEach((map) {
         listcomment.add(
           comment(
@@ -146,6 +148,7 @@ class _viewState extends State<view> {
     }).then((value) {
       print("Comment Added");
     }).catchError((error) => print("Failed to add user: $error"));
+
     readComment();
   }
 
@@ -222,37 +225,7 @@ class _viewState extends State<view> {
                 CupertinoButton(
                     child: Text('댓글 적기'),
                     onPressed: () {
-                      setState(() {
-                        if (isCommentFieldOpen == false) {
-                          isCommentFieldOpen = true;
-                          commentField = Row(
-                            children: [
-                              Container(
-                                width: 200,
-                                child: TextField(
-                                  onChanged: (text) {
-                                    writedComment = text;
-                                  },
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  decoration: const InputDecoration(
-                                      hintText: '댓글을 적어주세요'),
-                                ),
-                              ),
-                              CupertinoButton(
-                                  child: Text('댓글쓰기'),
-                                  onPressed: () {
-                                    writeComment();
-                                  })
-                            ],
-                          );
-                        } else {
-                          isCommentFieldOpen = false;
-                          commentField = Container();
-                        }
-
-                        print('댓글 열림');
-                      });
+                      touchWriteComment();
                     }),
                 Spacer(),
                 Padding(
@@ -285,6 +258,41 @@ class _viewState extends State<view> {
     );
 
     return baby;
+  }
+
+  void touchWriteComment() {
+    if (isCommentFieldOpen == false) {
+      isCommentFieldOpen = true;
+      commentField = Row(
+        children: [
+          Expanded(
+            child: TextField(
+              onChanged: (text) {
+                writedComment = text;
+              },
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              decoration: const InputDecoration(
+                  hintText: '댓글을 적어주세요'),
+            ),
+          ),
+          CupertinoButton(
+              child: Text('댓글쓰기'),
+              onPressed: () {
+                isCommentFieldOpen = false;
+                commentField = Container();
+                writeComment();
+
+              })
+        ],
+      );
+    } else {
+      isCommentFieldOpen = false;
+      commentField = Container();
+    }
+
+    print('댓글 열림');
+    setState(() {});
   }
 
   String dateClean(String Date) {

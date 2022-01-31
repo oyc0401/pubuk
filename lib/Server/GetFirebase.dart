@@ -2,20 +2,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutterschool/DB/saveKey.dart';
 import 'package:ntp/ntp.dart';
 
-class fireDB {
-  Future<String> LocalTime() async {
-    DateTime startDate = DateTime.now().toLocal();
-    int offset = await NTP.getNtpOffset(localTime: startDate);
-    print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
-    String date = "${startDate.add(Duration(milliseconds: offset))}";
-    return date;
+class GetFirebase {
+
+String collectionName='';
+String docName='';
+
+GetFirebase({
+  required this.docName,
+});
+
+
+  late DocumentSnapshot<Map<String, dynamic>> snapshot;
+
+   getinstance() async {
+    GetFirebase db=GetFirebase(docName: 'dd');
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc('uid')
+        .get().then((value) => db.snapshot=value);
+
+    return db;
   }
 
+
+
+
+
+
+
+
+
   static newSignIn(
-    String uid,
-    String email,
-    String displayName,
-    String photoURL,
+      String uid,
+      String email,
+      String displayName,
+      String photoURL,
   ) async {
     Future<String> LocalTime() async {
       DateTime startDate = DateTime.now().toLocal();
@@ -24,25 +45,30 @@ class fireDB {
       String date = "${startDate.add(Duration(milliseconds: offset))}";
       return date;
     }
+
     String date = await LocalTime();
-    await FirebaseFirestore.instance.collection('user').doc(uid).set({
-      'ID': uid,
-      'userid': uid,
-      'email': email,
-      'nickname': displayName,
-      'displayName': displayName,
-      'photoURL': photoURL,
-      'signupDate': date,
-      'grade': 1,
-      'class': 1,
-      'auth': 'user'
-    }).then((value) {
+    await FirebaseFirestore.instance.collection('user').doc(uid).set(
+        {
+          'ID': uid,
+          'userid': uid,
+          'email': email,
+          'nickname': displayName,
+          'displayName': displayName,
+          'photoURL': photoURL,
+          'signupDate': date,
+          'grade': 1,
+          'class': 1,
+          'auth': 'user'
+        }
+    ).then((value) {
       print("User Sign up");
     }).catchError((error) {
       print("Failed to Sign up: $error");
     });
   }
 
+
+  // 읽기
   static Future<bool> isUserExist(String uid) async {
     bool isExist = false;
     await FirebaseFirestore.instance
@@ -126,6 +152,16 @@ class fireDB {
     });
     return list;
   }
+
+  Future<String> LocalTime() async {
+    DateTime startDate = DateTime.now().toLocal();
+    int offset = await NTP.getNtpOffset(localTime: startDate);
+    print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
+    String date = "${startDate.add(Duration(milliseconds: offset))}";
+    return date;
+  }
+
+
 }
 
 class jsonConversion {

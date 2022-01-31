@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/DB/fireDB.dart';
+import 'package:flutterschool/Server/GetFirebase.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
@@ -59,18 +59,19 @@ class _loginState extends State<login> {
     SaveKey key = await SaveKey.Instance();
     // id가 저장되어있는지 체크
 
-    fireDB.isUserExist(uid).then((isUserExist) async {
+    ///TODO: 서버호출의 중복이 일어나서 나중에 고쳐야한다.
+    GetFirebase.isUserExist(uid).then((isUserExist) async {
       print(isUserExist);
       if (isUserExist) {
         print('기존 로그인');
-        await fireDB.getUser(uid).then((map) {
+        await GetFirebase.getUser(uid).then((map) {
           key.SetUser(map['ID'], map['nickname'], map['auth'], map['grade'],
               map['class']);
           Navigator.of(context).pop(true);
         });
       } else {
         print('신규 가입');
-        await fireDB.newSignIn(uid, email, displayName, photoURL);
+        await GetFirebase.newSignIn(uid, email, displayName, photoURL);
         key.SetUser(uid, displayName, 'user', 1, 1);
         Navigator.of(context).pop(true);
         Navigator.push(

@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/DB/fireDB.dart';
+import 'package:flutterschool/Server/GetFirebase.dart';
 import 'package:flutterschool/page/Community/write.dart';
 import 'package:flutterschool/page/Community/view.dart';
 import 'package:intl/intl.dart';
@@ -31,7 +31,7 @@ class _communityState extends State<community> {
   Future readFirst() async {
     print('readFirst');
     //reset All DATA
-    await fireDB.readFirstMap().then((map) {
+    await GetFirebase.readFirstMap().then((map) {
       String firstvalue = map['date'];
       print("처음 날짜: $firstvalue");
       widgetList = [];
@@ -42,7 +42,7 @@ class _communityState extends State<community> {
 
   Future readPage() async {
     print('readPage');
-    await fireDB.readTexts(finalDate).then((value) {
+    await GetFirebase.readTexts(finalDate).then((value) {
       value.forEach((map) {
         finalDate = map['date'];
         widgetList.add(textWidget(map));
