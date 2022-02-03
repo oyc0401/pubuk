@@ -62,12 +62,22 @@ class _commentState extends State<comment> {
   }
 
   Widget please = Container();
+  Widget deleteButton=Container();
 
   @override
   void initState() {
     super.initState();
     getUserData();
     readReply();
+  }
+
+  Future deleteUser() async {
+    FirebaseFirestore.instance
+        .collection('pubuk')
+        .doc(widget.url)
+        .delete()
+        .then((value) => print("Deleted"))
+        .catchError((error) => print("Failed to delete: $error"));
   }
 
   @override
@@ -79,28 +89,53 @@ class _commentState extends State<comment> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Column(
           children: [
-            Container(
-              child: Row(
-                children: [
-                  Text(widget.json['nickname'],
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                          color: Colors.black)),
-                  Text(dateClean(widget.json['date']),
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.black)),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-              alignment: Alignment.centerLeft,
-              child: Text(widget.json['text'],
-                  maxLines: null,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.black)),
+            Row(
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      child: Row(
+                        children: [
+                          Text(widget.json['nickname'],
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Colors.black)),
+                          Text(dateClean(widget.json['date']),
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: Colors.black)),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 0),
+                      alignment: Alignment.centerLeft,
+                      child: Text(widget.json['text'],
+                          maxLines: null,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.black)),
+                    ),
+                  ],
+                ),
+                Spacer(),
+                PopupMenuButton(
+                  onSelected: (value){
+                    if(value==1){
+
+                    }
+                  },
+                  icon: Icon(Icons.more_vert),
+                    itemBuilder:(context) => [
+                      PopupMenuItem(
+                        child: Text("삭제"),
+                        value: 1,
+                      ),
+                    ]
+                ),
+                deleteButton
+              ],
             ),
             Container(
               child: Row(
@@ -157,22 +192,21 @@ class _commentState extends State<comment> {
               },
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              decoration: const InputDecoration(
-                  hintText: '답글을 적어주세요'),
+              decoration: const InputDecoration(hintText: '답글을 적어주세요'),
             ),
           ),
           CupertinoButton(
               child: Text('확인'),
               onPressed: () {
                 isReplyFieldOpen = false;
-                please=Container();
+                please = Container();
                 writeReply();
               }),
         ],
       );
     } else {
       isReplyFieldOpen = false;
-      please=Container();
+      please = Container();
     }
     setState(() {});
   }
@@ -232,28 +266,39 @@ class _commentState extends State<comment> {
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
       child: Column(
         children: [
-          Container(
-            child: Row(
-              children: [
-                Text(json['nickname'],
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.black)),
-                Text(date,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.black)),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-            alignment: Alignment.centerLeft,
-            child: Text(json['text'],
-                maxLines: null,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: Colors.black)),
+          Row(
+            children: [
+              Column(
+                children: [
+                  Container(
+                    child: Row(
+                      children: [
+                        Text(json['nickname'],
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Colors.black)),
+                        Text(date,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                    alignment: Alignment.centerLeft,
+                    child: Text(json['text'],
+                        maxLines: null,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.black)),
+                  ),
+                ],
+              ),
+              Spacer(),
+              IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+            ],
           ),
           Container(
             child: Row(

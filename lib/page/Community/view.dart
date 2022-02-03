@@ -55,9 +55,14 @@ class _viewState extends State<view> {
         actions: [deleteButton, editButton],
       ),
       body: ListView(
-        children: [Context,
-          Container(height: 20,),
-          commentField, Comment],
+        children: [
+          Context,
+          Container(
+            height: 20,
+          ),
+          commentField,
+          Comment
+        ],
       ),
     );
   }
@@ -211,7 +216,8 @@ class _viewState extends State<view> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+            padding:
+            const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
             alignment: Alignment.centerLeft,
             child: Text(json['text'],
                 maxLines: null,
@@ -272,8 +278,7 @@ class _viewState extends State<view> {
               },
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              decoration: const InputDecoration(
-                  hintText: '댓글을 적어주세요'),
+              decoration: const InputDecoration(hintText: '댓글을 적어주세요'),
             ),
           ),
           CupertinoButton(
@@ -282,7 +287,6 @@ class _viewState extends State<view> {
                 isCommentFieldOpen = false;
                 commentField = Container();
                 writeComment();
-
               })
         ],
       );

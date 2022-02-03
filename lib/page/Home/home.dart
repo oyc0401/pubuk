@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
       )
     ],
   );
+
   /// 로딩전 초기값
 
   getInstance() {
