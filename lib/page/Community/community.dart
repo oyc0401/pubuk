@@ -127,7 +127,7 @@ class _communityState extends State<community> {
     );
   }
 
-  // 이거 나중에 밑에 있는 클래스로 이전해도 괜찮을듯
+
   Widget textWidget(Map json) {
     print("json2Widget");
     //print(json);
