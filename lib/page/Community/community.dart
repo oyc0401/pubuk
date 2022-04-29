@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterschool/Server/GetFirebase.dart';
 import 'package:flutterschool/page/Community/write.dart';
 import 'package:flutterschool/page/Community/view.dart';
+import 'package:flutterschool/tools/Time.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -132,38 +133,7 @@ class _communityState extends State<community> {
     print("json2Widget");
     //print(json);
 
-    // 시간 다루기
-    DateTime dt = DateTime.parse(json['date']);
-    //print("위젯 빌드 date: $dt");
-
-    DateTime _toDay = DateTime.now();
-    Duration duration = _toDay.difference(DateTime.parse(json['date']));
-
-    int difsec = int.parse(duration.inSeconds.toString());
-    int difmin = int.parse(duration.inMinutes.toString());
-    int difhour = int.parse(duration.inHours.toString());
-    int difday = int.parse(duration.inDays.toString());
-    String yyyy = DateFormat('yyyy').format(dt);
-    String MMdd = DateFormat('M/dd').format(dt);
-    String yyyyMMdd = DateFormat('yyyy.MM.dd').format(dt);
-
-    String date = 'error: 변수 설정할 때 나오는 텍스트';
-    if (difsec < 60) {
-      date = '$difsec초 전';
-    } else if (difmin < 60) {
-      date = '$difmin분 전';
-    } else if (difhour < 24) {
-      date = '$difhour시간 전';
-    } else if (difday < 30) {
-      date = '$difday일 전';
-    } else if (difday < 365) {
-      date = MMdd;
-      if (yyyy != DateFormat('yyyy').format(_toDay)) {
-        date = yyyyMMdd;
-      }
-    } else {
-      date = yyyyMMdd;
-    }
+    String date=Time.timeDifferent(json['date']);
 
     //make widget
     Widget baby = Column(

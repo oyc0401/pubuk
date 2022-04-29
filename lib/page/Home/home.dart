@@ -136,25 +136,30 @@ class _MyHomePageState extends State<MyHomePage> {
         onRefresh: TimeTableFetchPost,
         child: ListView(
           children: [
+
+
             Padding(padding: EdgeInsets.all(12.0), child: table),
-            const SizedBox(height: 30),
+
             CupertinoButton(
                 child: Text('게시판 이동'),
                 onPressed: () {
                   Navigator.push(context,
                       CupertinoPageRoute(builder: (context) => community()));
                 }),
+
+            const Padding(padding: EdgeInsets.all(12.0), child: Lunch()
+            ),
+
             CupertinoButton(
                 child: Text('저장소 확인'),
                 onPressed: () {
                   checkKey();
                 }),
             const SizedBox(height: 30),
-            const Padding(padding: EdgeInsets.all(12.0), child: Lunch()
-                //Text('ggg')
-                ),
+
             Container(
               height: 400,
+              color: Colors.grey,
             )
           ],
         ),
