@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: '학교'),
+      //home: const homef(title: '학교'),
     );
   }
 

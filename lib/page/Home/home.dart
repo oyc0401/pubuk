@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/saveKey.dart';
 import 'package:flutterschool/page/Community/community.dart';
+import 'package:flutterschool/page/Home/timet.dart';
 import 'package:flutterschool/page/Profile/myinfo.dart';
 import 'package:intl/intl.dart';
 
@@ -45,76 +46,50 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// 로딩전 초기값
 
-  getInstance() {
-    //정보 얻어오기
-    FirebaseAuth auth = FirebaseAuth.instance;
-    String id = auth.currentUser?.uid ?? '로그인 해주세요';
-    String email = auth.currentUser?.email ?? '이메일이 없습니다.';
-    String displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
-    String photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
-    print(id);
 
-    FirebaseFirestore.instance
-        .collection('user')
-        .doc(id)
-        .get()
-        .then((value) async {
-      SaveKey key = await SaveKey.Instance();
-      key.SetUser(value['ID'], value['nickname'], value['auth'], value['grade'],
-          value['class']);
-    }).catchError((error) {
-      print("Failed to Sign in: $error");
-    });
-  }
 
-  Future TimeTableFetchPost() async {
-    SaveKey key = await SaveKey.Instance();
-    UserData userData = key.userData();
-    int Grade = userData.Grade;
-    int Class = userData.Class;
 
-    var now = DateTime.now();
-    var mon = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 1)));
-    var fri = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 5))); // weekday 금요일=5
-
-    const SchoolCode = 7530072;
-
-    Uri uri = Uri.parse(
-        "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&"
-        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=J10&"
-        "SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
-
-    final response = await http.get(uri);
-
-    if (response.statusCode == 200) {
-      print("home: 시간표 json 파싱 완료 $uri");
-      setState(() {
-        table = Column(
-          children: [
-            SizedBox(
-              height: 30,
-              child: Row(
-                children: [Text('$Grade학년 $Class반')],
-              ),
-            ),
-            TimeTable(post: TableJsonPost.fromJson(json.decode(response.body))),
-          ],
-        );
-      });
-    } else {
-      throw Exception('Failed to load post');
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    TimeTableFetchPost();
+    init();
+  }
+
+
+
+  init() async{
+    //TimeTableFetchPost();
     Firebase.initializeApp().then((value) {
-      getInstance();
+      //getInstance();
     });
+
+
+    SaveKey key = await SaveKey.Instance();
+    UserData userData = key.userData();
+    int Grade = userData.Grade;
+    int Class = userData.Class;
+    int SchoolCode = 7530072;
+    timet tim=timet(Grade: Grade, Class: Class, SchoolCode: SchoolCode);
+    Map<String, dynamic> map=await  tim.getJson();
+    print(map);
+
+
+    setState(() {
+      table = Column(
+        children: [
+          SizedBox(
+            height: 30,
+            child: Row(
+              children: [Text('$Grade학년 $Class반')],
+            ),
+          ),
+          TimeTable(MMMap: tim.timeMap(map)),
+        ],
+      );
+    });
+
+
   }
 
   @override
@@ -124,47 +99,39 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         actions: [
           IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context, CupertinoPageRoute(builder: (context) => myinfo()));
-            },
+            onPressed: NavigateInfo,
             icon: const Icon(Icons.edit),
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: TimeTableFetchPost,
-        child: ListView(
+      body: ListView(
           children: [
-
-
             Padding(padding: EdgeInsets.all(12.0), child: table),
-
             CupertinoButton(
-                child: Text('게시판 이동'),
-                onPressed: () {
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder: (context) => community()));
-                }),
-
-            const Padding(padding: EdgeInsets.all(12.0), child: Lunch()
-            ),
-
+                child: Text('게시판 이동'), onPressed: NavigateCommunity),
+            const Padding(padding: EdgeInsets.all(12.0), child: Lunch()),
             CupertinoButton(
                 child: Text('저장소 확인'),
                 onPressed: () {
                   checkKey();
                 }),
             const SizedBox(height: 30),
-
             Container(
               height: 400,
               color: Colors.grey,
             )
           ],
         ),
-      ),
-    );
+      );
+  }
+
+  NavigateInfo() {
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => myinfo()));
+  }
+
+  NavigateCommunity() {
+    Navigator.push(
+        context, CupertinoPageRoute(builder: (context) => community()));
   }
 
   Future checkKey() async {

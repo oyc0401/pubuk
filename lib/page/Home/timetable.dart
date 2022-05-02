@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'timet.dart';
+
 class TimeTable extends StatefulWidget {
-  TimeTable({Key? key, required this.post}) : super(key: key);
-  TableJsonPost post;
+  TimeTable({Key? key, required this.MMMap}) : super(key: key);
+  Map MMMap;
 
   @override
   _TimeTableState createState() => _TimeTableState();
@@ -71,6 +73,12 @@ class _TimeTableState extends State<TimeTable> {
       return list;
     }
 
+
+    //"Monday":arrMon,
+    //       "Tuesday":arrTue,
+    //       "Wednesday":arrWed,
+    //       "Thursday":arrThu,
+    //       "Friday"
     List<Widget> subjects(int num) {
       List<Widget> list = [];
       int kosy = num + 1;
@@ -84,31 +92,31 @@ class _TimeTableState extends State<TimeTable> {
           ))));
       list.add(Center(
           child: Text(
-        widget.post.Mon[num],
+        widget.MMMap["Monday"][num],
         textAlign: TextAlign.center,
         style: textStyle,
       )));
       list.add(Center(
           child: Text(
-        widget.post.Tue[num],
+        widget.MMMap["Tuesday"][num],
         textAlign: TextAlign.center,
         style: textStyle,
       )));
       list.add(Center(
           child: Text(
-        widget.post.Wed[num],
+        widget.MMMap["Wednesday"][num],
         textAlign: TextAlign.center,
         style: textStyle,
       )));
       list.add(Center(
           child: Text(
-        widget.post.Thu[num],
+        widget.MMMap["Thursday"][num],
         textAlign: TextAlign.center,
         style: textStyle,
       )));
       list.add(Center(
           child: Text(
-        widget.post.Fri[num],
+        widget.MMMap["Friday"][num],
         textAlign: TextAlign.center,
         style: textStyle,
       )));
@@ -124,76 +132,4 @@ class _TimeTableState extends State<TimeTable> {
   }
 }
 
-class TableJsonPost {
-  final List<String> Mon, Tue, Wed, Thu, Fri;
 
-  TableJsonPost({
-    required this.Mon,
-    required this.Tue,
-    required this.Wed,
-    required this.Thu,
-    required this.Fri,
-  });
-
-  factory TableJsonPost.fromJson(Map<String, dynamic> json) {
-    // 요일의 날짜 구하기
-    var mon, tue, wed, thu, fri;
-    var now = new DateTime.now();
-    mon = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 1)));
-    tue = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 2)));
-    wed = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 3)));
-    thu = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 4)));
-    fri = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 5))); // weekday 금요일=5
-    print("TimeTable: 월요일: $mon 화요일: $tue 수요일: $wed 목요일: $thu 금요일: $fri");
-
-    List<String> arrMon = [],
-        arrTue = [],
-        arrWed = [],
-        arrThu = [],
-        arrFri = [];
-
-    if (json['hisTimetable'] == null) {
-    } else if (json['hisTimetable'][0]['head'][1]['RESULT']['MESSAGE'] ==
-        "정상 처리되었습니다.") {
-      // List에 요일별로 저장하기
-      List jsonfull = json['hisTimetable'][1]['row'];
-      int listLength = jsonfull.length;
-      print("TimeTable: 시간표 배열 길이: $listLength");
-      for (int i = 0; i <= jsonfull.length - 1; i++) {
-        var date = jsonfull[i]['ALL_TI_YMD'];
-        var subject = jsonfull[i]['ITRT_CNTNT'];
-        if (date == mon)
-          arrMon.add(subject);
-        else if (date == tue)
-          arrTue.add(subject);
-        else if (date == wed)
-          arrWed.add(subject);
-        else if (date == thu)
-          arrThu.add(subject);
-        else if (date == fri) arrFri.add(subject);
-      }
-    }
-
-    // 빈칸 채워주기
-    while (arrMon.length <= 6) arrMon.add('');
-    while (arrTue.length <= 6) arrTue.add('');
-    while (arrWed.length <= 6) arrWed.add('');
-    while (arrThu.length <= 6) arrThu.add('');
-    while (arrFri.length <= 6) arrFri.add('');
-
-    print("TimeTable: $arrMon\n$arrTue\n$arrWed\n$arrThu\n$arrFri");
-
-    return TableJsonPost(
-      Mon: arrMon,
-      Tue: arrTue,
-      Wed: arrWed,
-      Thu: arrTue,
-      Fri: arrFri,
-    );
-  }
-}
