@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/Server/GetFirebase.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
@@ -23,27 +22,7 @@ class _loginState extends State<login> {
 
   /// 로딩전 초기값
 
-  Future _GoogleLogin(BuildContext context) async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-    if (googleAuth?.accessToken != null || googleAuth?.idToken != null) {
-      //로딩 표시
-      setState(() {
-        loadingCircle = const SizedBox(
-            height: 200, child: Center(child: CircularProgressIndicator()));
-      });
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      await _addUser();
-    } else {
-      print('로그인 취소');
-    }
-  }
 
   Future _addUser() async {
     //파이어베이스에 유저정보 저장
@@ -93,7 +72,6 @@ class _loginState extends State<login> {
             children: [
               CupertinoButton(
                   onPressed: () {
-                    _GoogleLogin(context);
                   },
                   color: Colors.grey,
                   child: const Text(

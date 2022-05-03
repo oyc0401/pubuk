@@ -48,7 +48,7 @@ dependencies:
 
   ntp: ^2.0.0  #네트워크 시간
   pull_to_refresh: ^2.0.0
-  google_sign_in: ^5.3.0
+  #google_sign_in: ^5.3.0
 
   #실행이 안되면 구글로그인 해제하고 실행하고 다시 넣고 실행
 
