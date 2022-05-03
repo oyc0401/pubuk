@@ -16,7 +16,6 @@ import '../../DB/UserData.dart';
 import '../../DB/Userboxorigin.dart';
 
 import 'lunch.dart';
-import 'timetable.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -84,12 +83,129 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [Text('$Grade학년 $Class반')],
             ),
           ),
-          TimeTable(MMMap: tim.timeMap(map)),
+          tab(tim.timeMap(map)),
         ],
       );
     });
 
 
+  }
+
+  Widget tab(Map MMMap){
+    List<TableRow> tableRows() {
+      //테이블 총 세로길이 450
+      final double height = 60;
+      final double halfheight = 30;
+      final TextStyle textStyle = const TextStyle(fontSize: 12);
+
+      List<Widget> weekends() {
+        List<Widget> list = [];
+        list.add(Container(
+            height: halfheight,
+            child: Center(
+                child: Text(
+                  " ",
+                  style: textStyle,
+                ))));
+        list.add(Text(
+          "월요일",
+          textAlign: TextAlign.center,
+          style: textStyle,
+        ));
+        list.add(Text(
+          "화요일",
+          textAlign: TextAlign.center,
+          style: textStyle,
+        ));
+        list.add(Text(
+          "수요일",
+          textAlign: TextAlign.center,
+          style: textStyle,
+        ));
+        list.add(Text(
+          "목요일",
+          textAlign: TextAlign.center,
+          style: textStyle,
+        ));
+        list.add(Text(
+          "금요일",
+          textAlign: TextAlign.center,
+          style: textStyle,
+        ));
+        return list;
+      }
+
+
+      //"Monday":arrMon,
+      //       "Tuesday":arrTue,
+      //       "Wednesday":arrWed,
+      //       "Thursday":arrThu,
+      //       "Friday"
+      List<Widget> subjects(int num) {
+        List<Widget> list = [];
+        int kosy = num + 1;
+        list.add(Container(
+            height: height,
+            child: Center(
+                child: Text(
+                  "$kosy",
+                  textAlign: TextAlign.center,
+                  style: textStyle,
+                ))));
+        list.add(Center(
+            child: Text(
+              MMMap["Monday"][num],
+              textAlign: TextAlign.center,
+              style: textStyle,
+            )));
+        list.add(Center(
+            child: Text(
+              MMMap["Tuesday"][num],
+              textAlign: TextAlign.center,
+              style: textStyle,
+            )));
+        list.add(Center(
+            child: Text(
+              MMMap["Wednesday"][num],
+              textAlign: TextAlign.center,
+              style: textStyle,
+            )));
+        list.add(Center(
+            child: Text(
+              MMMap["Thursday"][num],
+              textAlign: TextAlign.center,
+              style: textStyle,
+            )));
+        list.add(Center(
+            child: Text(
+              MMMap["Friday"][num],
+              textAlign: TextAlign.center,
+              style: textStyle,
+            )));
+        return list;
+      }
+
+      List<TableRow> list = [];
+      list.add(TableRow(children: [...weekends()]));
+      for (int i = 0; i <= 6; i++) {
+        list.add(TableRow(children: [...subjects(i)]));
+      }
+      return list;
+    }
+
+    return Table(
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      border: TableBorder.all(),
+      columnWidths: const {
+        0: FlexColumnWidth(1),
+        1: FlexColumnWidth(2),
+        2: FlexColumnWidth(2),
+        3: FlexColumnWidth(2),
+        4: FlexColumnWidth(2),
+        5: FlexColumnWidth(2),
+      },
+      children: [...tableRows()],
+    );
   }
 
   @override
@@ -106,10 +222,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
           children: [
-            Padding(padding: EdgeInsets.all(12.0), child: table),
-            CupertinoButton(
-                child: Text('게시판 이동'), onPressed: NavigateCommunity),
-            const Padding(padding: EdgeInsets.all(12.0), child: Lunch()),
+            TimeTableSection(),
+            CommunitySection(),
+            LunchSection(),
+
             CupertinoButton(
                 child: Text('저장소 확인'),
                 onPressed: () {
@@ -124,6 +240,19 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
   }
+  Widget TimeTableSection(){
+    return Padding(padding: EdgeInsets.all(12.0), child: table);
+  }
+  Widget CommunitySection(){
+
+    return CupertinoButton(
+        child: Text('게시판 이동'), onPressed: NavigateCommunity);
+  }
+
+  Widget LunchSection(){
+    return const Padding(padding: EdgeInsets.all(12.0), child: Lunch());
+  }
+
 
   NavigateInfo() {
     Navigator.push(context, CupertinoPageRoute(builder: (context) => myinfo()));

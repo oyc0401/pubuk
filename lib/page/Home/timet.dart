@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutterschool/page/Home/timetable.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
