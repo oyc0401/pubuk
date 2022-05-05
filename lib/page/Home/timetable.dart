@@ -19,7 +19,7 @@ class timetable extends StatefulWidget {
 class _timetableState extends State<timetable> {
   /// 이 화면은 [getInfo]에서 [UserData]를 얻어온다.
   /// 여기서 유저의 학년, 반, 학교코드를 얻어낸다.
-  /// 이 값을 사용해 나이스 오픈 데이터 포털에서 급식정보를 json 형식으로 가져와 화면을 만들게 된다.
+  /// 이 값을 사용해 나이스 오픈 데이터 포털에서 시간표 정보를 json 형식으로 가져와 화면을 만들게 된다.
   /// [timetableSection]에 매개변수로 [TableDownloader]에서 가져온 정리된 데이터를 매개변수로 넣게 되면 시간표 위젯을 반환한다.
 
   int _grade = 0;
