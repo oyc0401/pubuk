@@ -102,12 +102,12 @@ class _settingState extends State<setting> {
     print("ID: $uid");
 
     SaveKey key = await SaveKey.Instance();
-    userData = key.userData();
+    userData = key.getUserData();
 
     setState(() {
-      nickname = userData.nickname;
-      Grade = userData.Grade;
-      Class = userData.Class;
+      nickname = userData.getNickName();
+      Grade = userData.getGrade();
+      Class = userData.getClass();
       print("$Grade학년");
       print("$Class반");
 

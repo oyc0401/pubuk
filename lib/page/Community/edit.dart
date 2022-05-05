@@ -33,7 +33,7 @@ class _editState extends State<edit> {
 
   getUserData() async {
     SaveKey key = await SaveKey.Instance();
-    userData = key.userData();
+    userData = key.getUserData();
   }
 
   @override

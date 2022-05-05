@@ -44,14 +44,14 @@ class _loginState extends State<login> {
       if (isUserExist) {
         print('기존 로그인');
         await GetFirebase.getUser(uid).then((map) {
-          key.SetUser(map['ID'], map['nickname'], map['auth'], map['grade'],
-              map['class']);
+          key.setUser(map['ID'], map['nickname'], map['auth'], map['grade'],
+              map['class'],7530072);
           Navigator.of(context).pop(true);
         });
       } else {
         print('신규 가입');
         await GetFirebase.newSignIn(uid, email, displayName, photoURL);
-        key.SetUser(uid, displayName, 'user', 1, 1);
+        key.setUser(uid, displayName, 'user', 1, 1,7530072);
         Navigator.of(context).pop(true);
         Navigator.push(
             context, CupertinoPageRoute(builder: (context) => setting()));

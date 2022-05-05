@@ -31,7 +31,7 @@ class _commentState extends State<comment> {
 
   getUserData() async {
     SaveKey key = await SaveKey.Instance();
-    userData = key.userData();
+    userData = key.getUserData();
   }
 
   Future<void> writeReply() async {
@@ -49,8 +49,8 @@ class _commentState extends State<comment> {
         .doc(nowdate)
         .set({
       'ID': nowdate,
-      'userid': userData.uid,
-      'nickname': userData.nickname,
+      'userid': userData.getUid(),
+      'nickname': userData.getNickName(),
       'text': Writedreply,
       'url': widget.json['ID'],
       'date': nowdate,

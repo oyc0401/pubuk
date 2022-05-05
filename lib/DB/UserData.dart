@@ -1,40 +1,57 @@
 import 'package:flutter/foundation.dart';
 
 class UserData {
-  final String uid;
-  final String nickname;
-  final String auth;
-  final int Grade;
-  final int Class;
+  String _uid = "";
+  String _nickname = "";
+  String _auth = "";
+  int _Grade = 1;
+  int _Class = 1;
+  int _SchoolCode = 13;
 
   UserData({
-    required this.uid,
-    required this.nickname,
-    required this.auth,
-    required this.Grade,
-    required this.Class,
-  });
-
-  factory UserData.guestData(){
-    return UserData(uid: 'guest', nickname: 'guest', auth: 'guest', Grade: 1, Class: 1);
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'nickname': nickname,
-      'auth': auth,
-      'Grade': Grade,
-      'Class': Class
-    };
+    required String uid,
+    required String nickname,
+    required String auth,
+    required int Grade,
+    required int Class,
+    required int SchoolCode,
+  }) {
+    _uid = uid;
+    _nickname = nickname;
+    _auth = auth;
+    _Grade = Grade;
+    _Class = Class;
+    _SchoolCode = SchoolCode;
   }
 
 
 
-  // 각 User 정보를 보기 쉽도록 print 문을 사용하여 toString을 구현하세요
- 
-  @override
-  String toString() {
-    return 'User{uid: $uid, nickname: $nickname}';
+  int getGrade() => _Grade;
+
+  int getClass() => _Class;
+
+  int getSchoolCode() => _SchoolCode;
+
+  String getUid() => _uid;
+
+  String getNickName() => _nickname;
+
+  String getAuth() => _auth;
+
+  // setGrade(int Grade) => this.Grade=Grade;
+  // setClass(int Class) => this.Class=Class;
+  // setSchoolCode(int SchoolCode) => this.SchoolCode=SchoolCode;
+  // setUid(String uid) => this.uid=uid;
+  // setNickName(String nickname) => this.nickname=nickname;
+  // setAuth(String auth) => this.auth=auth;
+
+  factory UserData.guestData() {
+    return UserData(
+        uid: 'guest',
+        nickname: 'guest',
+        auth: 'guest',
+        Grade: 1,
+        Class: 1,
+        SchoolCode: 7530072);
   }
 }
