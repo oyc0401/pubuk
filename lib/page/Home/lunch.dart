@@ -16,37 +16,23 @@ class Lunch extends StatefulWidget {
 }
 
 class _LunchState extends State<Lunch> {
-  /// 이 화면은 [getInfo]에서 [UserData]를 얻어온다.
+  /// 이 화면은 [getSchoolCode]에서 [UserData]를 얻어온다.
   /// 여기서 유저의 학교코드를 얻어낸다.
   /// 이 값을 사용해 나이스 오픈 데이터 포털에서 급식 정보를 json 형식으로 가져와 화면을 만들게 된다.
   /// [lunchSection]에 매개변수로 [LunchDownloader]에서 가져온 정리된 데이터를 매개변수로 넣게 되면 급식 위젯을 반환한다.
-  int _schoolCode = 0;
 
-  Future? GettingDataOnlyOne;
 
-  @override
-  void initState() {
-    super.initState();
-    GettingDataOnlyOne = getList();
-  }
+  Future<List<List<String>>> getList() async {
+    int schoolCode=await getSchoolCode();
 
-  getInfo() async {
-    SaveKey key = await SaveKey.Instance();
-    UserData userData = key.getUserData();
-    _schoolCode = userData.getSchoolCode();
-  }
-
-  getList() async {
-    await getInfo();
-
-    LunchDownloader lunchDownloader = LunchDownloader(SchoolCode: _schoolCode);
+    LunchDownloader lunchDownloader = LunchDownloader(SchoolCode: schoolCode);
     return await lunchDownloader.getCleanedList();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: GettingDataOnlyOne,
+      future: getList(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData == false) {
           return waiting();
@@ -131,6 +117,13 @@ class _LunchState extends State<Lunch> {
       ),
     );
   }
+
+  Future<int> getSchoolCode() async {
+    SaveKey key = await SaveKey.Instance();
+    UserData userData = key.getUserData();
+    return userData.getSchoolCode();
+
+  }
 }
 
 class LunchDownloader {
@@ -210,7 +203,7 @@ class LunchDownloader {
   List<List<String>> _cleanList(Map<String, List<String>> cleanedMap) {
     //맵을 받으면 급식 2차원 배열을 리턴한다. [index][11월 22일 월요일, 오므라이스, 쑥갓어묵국, 치즈떡볶이, 수제야채튀김, 배추김치, 사과]
 
-    print(cleanedMap);
+    //print(cleanedMap);
     List<List<String>> Menu = [];
 
     List foodList(String date) {
@@ -255,10 +248,10 @@ class LunchDownloader {
     DateTime plusDateTime = now.add(Duration(days: FROM_TERM));
     String plusYMD = DateFormat('yyyyMMdd').format(plusDateTime);
 
-    print(fromYMD);
-    print(toYMD);
-    print("YMD: $plusYMD");
-    print("date: $plusDateTime");
+    //print(fromYMD);
+    //print(toYMD);
+    //print("YMD: $plusYMD");
+    //print("date: $plusDateTime");
 
     // 더한 날짜가 마지막 날짜가 될 때 까지
     while (plusYMD != toYMD) {

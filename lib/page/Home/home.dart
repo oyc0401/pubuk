@@ -28,16 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  init() async {}
-
-  @override
   Widget build(BuildContext context) {
-    print("스테이트");
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -50,17 +41,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: [
-          CupertinoButton(
-            child: Text("새로고침"),
-            onPressed: () {
-              setState(() {});
-            },
-          ),
           TimeTableSection(),
           CommunitySection(),
           LunchSection(),
           CupertinoButton(
-              child: Text('저장소 확인'),
+              child: const Text('저장소 확인'),
               onPressed: () {
                 checkKey();
               }),
@@ -75,20 +60,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget TimeTableSection() {
-    return const Padding(padding: EdgeInsets.all(12.0), child: timetable());
+    return   Padding(padding: const EdgeInsets.all(12.0), child:  timetable());
   }
 
   Widget CommunitySection() {
-    return CupertinoButton(child: Text('게시판 이동'), onPressed: NavigateCommunity);
+    return CupertinoButton(child: const Text('게시판 이동'), onPressed: NavigateCommunity);
   }
 
   Widget LunchSection() {
+    print("런치");
     return const Padding(padding: EdgeInsets.all(12.0), child: Lunch());
   }
 
   NavigateInfo() async {
     await Navigator.push(
-        context, CupertinoPageRoute(builder: (context) => myinfo()));
+        context, CupertinoPageRoute(builder: (context) => const myinfo()));
 
     setState(() {});
   }

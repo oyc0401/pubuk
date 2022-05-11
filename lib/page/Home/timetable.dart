@@ -10,7 +10,7 @@ import '../../DB/UserData.dart';
 import '../../DB/saveKey.dart';
 
 class timetable extends StatefulWidget {
-  const timetable({Key? key}) : super(key: key);
+   timetable({Key? key}) : super(key: key);
 
   @override
   State<timetable> createState() => _timetableState();
@@ -26,12 +26,12 @@ class _timetableState extends State<timetable> {
   int _class = 0;
   int _schoolCode = 0;
 
-  Future? GettingDataOnlyOne;
+  //Future? GettingDataOnlyOne;
 
   @override
   void initState() {
     super.initState();
-    GettingDataOnlyOne = getMap();
+    //GettingDataOnlyOne = getMap();
   }
 
   getInfo() async {
@@ -55,7 +55,7 @@ class _timetableState extends State<timetable> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: GettingDataOnlyOne,
+        future: getMap(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData == false) {
             return waiting();
