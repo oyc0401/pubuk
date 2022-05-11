@@ -30,61 +30,86 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            onPressed: NavigateInfo,
-            icon: const Icon(Icons.edit),
-          ),
-        ],
-      ),
-      body: ListView(
-        children: [
-          TimeTableSection(),
-          CommunitySection(),
-          LunchSection(),
-          CupertinoButton(
-              child: const Text('저장소 확인'),
-              onPressed: () {
-                checkKey();
-              }),
-          const SizedBox(height: 30),
-          Container(
-            height: 400,
-            color: Colors.grey,
-          )
-        ],
-      ),
+      appBar: appBar(),
+      body: body(),
+    );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      title: Text(widget.title),
+      actions: [
+        IconButton(
+          onPressed: NavigateInfo,
+          icon: const Icon(Icons.edit),
+        ),
+      ],
+    );
+  }
+
+  ListView body() {
+    return ListView(
+      children: [
+        TimeTableSection(),
+        CommunitySection(),
+        LunchSection(),
+        CupertinoButton(
+            child: const Text('저장소 확인'),
+            onPressed: () {
+              checkKey();
+            }),
+        const SizedBox(height: 30),
+        Container(
+          height: 400,
+          color: Colors.grey,
+        )
+      ],
     );
   }
 
   Widget TimeTableSection() {
-    return   Padding(padding: const EdgeInsets.all(12.0), child:  timetable());
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: timetable(),
+    );
   }
 
   Widget CommunitySection() {
-    return CupertinoButton(child: const Text('게시판 이동'), onPressed: NavigateCommunity);
+    return CupertinoButton(
+      child: const Text('게시판 이동'),
+      onPressed: NavigateCommunity,
+    );
   }
 
   Widget LunchSection() {
     print("런치");
-    return const Padding(padding: EdgeInsets.all(12.0), child: Lunch());
+    return const Padding(
+      padding: EdgeInsets.all(12.0),
+      child: Lunch(),
+    );
   }
 
-  NavigateInfo() async {
+  void NavigateInfo() async {
     await Navigator.push(
-        context, CupertinoPageRoute(builder: (context) => const myinfo()));
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const myinfo(),
+      ),
+    );
 
     setState(() {});
   }
 
-  NavigateCommunity() {
+  void NavigateCommunity() {
     Navigator.push(
-        context, CupertinoPageRoute(builder: (context) => community()));
+      context,
+      CupertinoPageRoute(
+        builder: (context) => community(),
+      ),
+    );
   }
 
-  Future checkKey() async {
+  Future<void> checkKey() async {
     SaveKey key = await SaveKey.Instance();
     key.printAll();
   }

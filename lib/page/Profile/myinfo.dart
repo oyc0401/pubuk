@@ -32,77 +32,81 @@ class _myinfoState extends State<myinfo> {
   Future _getProfile() async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    FirebaseAuth.instance.idTokenChanges().listen((User? user) async {
-      // 비로그인 시
-      if (user == null) {
-        print('User is currently signed out!');
-        //로그인 안되어있을시 로그인 위젯으로 변환
-        setState(() {
-          profile = Center(
-            child: CupertinoButton(
-                color: Colors.grey,
-                child: Text('로그인'),
-                onPressed: () {
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder: (context) => login()));
-                }),
-          );
-        });
-      } else {
-        // 로그인 돼있을 시
-        print('User is signed in!');
+    FirebaseAuth.instance.idTokenChanges().listen(
+      (User? user) async {
+        // 비로그인 시
+        if (user == null) {
+          print('User is currently signed out!');
+          //로그인 안되어있을시 로그인 위젯으로 변환
+          setState(() {
+            profile = Center(
+              child: CupertinoButton(
+                  color: Colors.grey,
+                  child: Text('로그인'),
+                  onPressed: () {
+                    Navigator.push(context,
+                        CupertinoPageRoute(builder: (context) => login()));
+                  }),
+            );
+          });
+        } else {
+          // 로그인 돼있을 시
+          print('User is signed in!');
 
-        String id = auth.currentUser?.uid ?? '게스트';
-        String email = auth.currentUser?.email ?? '이메일이 없습니다.';
-        String displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
-        String photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
-        String nickname = '';
+          String id = auth.currentUser?.uid ?? '게스트';
+          String email = auth.currentUser?.email ?? '이메일이 없습니다.';
+          String displayName = auth.currentUser?.displayName ?? '이름이 없습니다.';
+          String photoURL = auth.currentUser?.photoURL ?? '사진이 없습니다.';
+          String nickname = '';
 
-        await FirebaseFirestore.instance
-            .collection('user')
-            .doc(id)
-            .get()
-            .then((value) {
-          nickname = value['nickname'];
-        }).catchError((error) {
-          print("Failed to get nickname: $error");
-        });
-        //로그인 되어있을시 내정보 위젯으로 변환
-        setState(() {
-          profile = Container(
-            height: 120,
-            child: CupertinoButton(
-              color: Colors.grey,
-              onPressed: () {
-                Navigator.push(context,
-                    CupertinoPageRoute(builder: (context) => setting()));
-              },
-              child: Column(
-                children: [
-                  Row(
+          await FirebaseFirestore.instance
+              .collection('user')
+              .doc(id)
+              .get()
+              .then((value) {
+            nickname = value['nickname'];
+          }).catchError((error) {
+            print("Failed to get nickname: $error");
+          });
+          //로그인 되어있을시 내정보 위젯으로 변환
+          setState(
+            () {
+              profile = Container(
+                height: 120,
+                child: CupertinoButton(
+                  color: Colors.grey,
+                  onPressed: () {
+                    Navigator.push(context,
+                        CupertinoPageRoute(builder: (context) => setting()));
+                  },
+                  child: Column(
                     children: [
-                      Text(
-                        email,
-                        style: TextStyle(color: Colors.black),
+                      Row(
+                        children: [
+                          Text(
+                            email,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              photoURL,
+                              width: 50,
+                              height: 50,
+                            ),
+                          )
+                        ],
                       ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          photoURL,
-                          width: 50,
-                          height: 50,
-                        ),
-                      )
+                      Text(nickname),
                     ],
                   ),
-                  Text(nickname),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
-        });
-      }
-    });
+        }
+      },
+    );
   }
 
   Widget profile = Container(
@@ -146,7 +150,7 @@ class _myinfoState extends State<myinfo> {
     );
     if (result == "complete") {
       showSnackBarComplete();
-    }else if(result=='Logout'){
+    } else if (result == 'Logout') {
       showSnackBarLogout();
     }
   }
@@ -164,7 +168,4 @@ class _myinfoState extends State<myinfo> {
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
-
-
-
 }

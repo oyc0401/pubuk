@@ -16,15 +16,20 @@ class setting extends StatefulWidget {
 }
 
 class _settingState extends State<setting> {
+  /// [getUserData]에서 [UserData]를 불러온다.
+  /// [isfirst]가 true면 [userData]에 집어넣고 [isfirst]를 false로 바꾼다.
+  /// [userData]는 중요한 역할을 하고있다.
+  /// 닉네임, 학년, 반을 바꾸면 이 내부 값을 변화시킨다.
+  /// 저장 버튼을 누르면 [userData]에 있는 값을 [saveKey]에 저장하고 화면을 종료한다.
+  /// 나중에 로그인을 구현한다면 저장을 할 때 파이어베이스의 유저정보도 함께 바꿔야 한다.
+
   UserData userData = UserData.guestData();
   bool isfirst = true;
-
   Future? GettingDataOnlyOne;
 
   @override
   void initState() {
     super.initState();
-
     GettingDataOnlyOne = getUserData();
   }
 
@@ -38,33 +43,41 @@ class _settingState extends State<setting> {
   Widget build(BuildContext context) {
     print("setstate!");
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('정보 수정'),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Save(userData);
-              },
-              child: const Text(
-                '저장',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              )),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: FutureBuilder(
-            future: GettingDataOnlyOne,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData == false) {
-                return waiting();
-              } else if (snapshot.hasError) {
-                return error(snapshot);
-              } else {
-                return succeed(snapshot);
-              }
-            }),
-      ),
+      appBar: appBar(),
+      body: body(),
+    );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      title: const Text('정보 수정'),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Save(userData);
+            },
+            child: const Text(
+              '저장',
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            )),
+      ],
+    );
+  }
+
+  Padding body() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: FutureBuilder(
+          future: GettingDataOnlyOne,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData == false) {
+              return waiting();
+            } else if (snapshot.hasError) {
+              return error(snapshot);
+            } else {
+              return succeed(snapshot);
+            }
+          }),
     );
   }
 
@@ -82,11 +95,38 @@ class _settingState extends State<setting> {
     );
   }
 
+  Widget error(AsyncSnapshot<dynamic> snapshot) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        'Error: ${snapshot.error}',
+        style: const TextStyle(fontSize: 15),
+      ),
+    );
+  }
+
+  Widget waiting() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 30,
+        ),
+        Container(
+          height: 450,
+          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        )
+      ],
+    );
+  }
+
   Widget nicknameSection() {
     return Row(
       children: [
         const Text("닉네임:"),
-        Container(
+        SizedBox(
           width: 200,
           child: TextFormField(
             onChanged: (text) {
@@ -120,33 +160,6 @@ class _settingState extends State<setting> {
       children: [
         const Text("반:"),
         TextButton(onPressed: changeClass, child: Text("$myClass반"))
-      ],
-    );
-  }
-
-  Widget error(AsyncSnapshot<dynamic> snapshot) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        'Error: ${snapshot.error}',
-        style: const TextStyle(fontSize: 15),
-      ),
-    );
-  }
-
-  Widget waiting() {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 30,
-        ),
-        Container(
-          height: 450,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: const Center(
-            child: CircularProgressIndicator(),
-          ),
-        )
       ],
     );
   }
@@ -219,7 +232,6 @@ class _settingState extends State<setting> {
     );
     return initClass;
   }
-
 
   // 이 밑은 로그인 구축 했을때 다시 제작
   Future _loadProfile() async {
