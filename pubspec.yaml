@@ -33,18 +33,18 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.4
   http: ^0.13.4
   intl: ^0.17.0
-  shared_preferences: ^2.0.12
+  shared_preferences: ^2.0.15
   select_dialog: ^2.0.0
   # Add the dependency for the Firebase Core Flutter SDK
-  firebase_core: ^1.15.0
+  firebase_core: ^1.16.0
 
-  firebase_analytics: ^9.1.6
-  firebase_auth: ^3.3.16
-  cloud_firestore: ^3.1.13
-  firebase_core_web: ^1.6.2
+  firebase_analytics: ^9.1.7
+  firebase_auth: ^3.3.17
+  cloud_firestore: ^3.1.14
+  firebase_core_web: ^1.6.3
 
   ntp: ^2.0.0  #네트워크 시간
   pull_to_refresh: ^2.0.0
@@ -52,6 +52,7 @@ dependencies:
 
   #실행이 안되면 구글로그인 해제하고 실행하고 다시 넣고 실행
 
+  #sqflite: ^2.0.2
   #sqflite: ^2.0.2
   #path: ^1.8.0
 

@@ -20,6 +20,7 @@ class _myinfoState extends State<myinfo> {
   int Grade = 1;
   int Class = 1;
   String nickname = '';
+
   /// 로딩전 초기값
 
   @override
@@ -120,9 +121,50 @@ class _myinfoState extends State<myinfo> {
         child: Column(
           children: [
             profile,
+            CupertinoButton(
+                onPressed: () {
+                  NavigateSetting();
+                },
+                color: Colors.grey,
+                child: const Text(
+                  '정보 수정하기',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                )),
           ],
         ),
       ),
     );
   }
+
+  NavigateSetting() async {
+    final result = await Navigator.push(
+      context,
+      CupertinoPageRoute(builder: (context) => setting()),
+    );
+    if (result == "complete") {
+      showSnackBarComplete();
+    }else if(result=='Logout'){
+      showSnackBarLogout();
+    }
+  }
+
+  void showSnackBarComplete() {
+    const snackBar = SnackBar(
+      content: Text('정보가 수정 되었습니다.'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showSnackBarLogout() {
+    const snackBar = SnackBar(
+      content: Text('로그아웃 되었습니다.'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+
+
 }

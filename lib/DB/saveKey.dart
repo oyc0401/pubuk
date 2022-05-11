@@ -1,5 +1,7 @@
-import 'package:flutterschool/DB/UserData.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'UserData.dart';
 
 class SaveKey {
   // set 하는것은 Instance가 필요 없지만
@@ -40,6 +42,16 @@ class SaveKey {
     print('saveKey: 유저 값 저장');
   }
 
+  setUserData(UserData userData){
+    setUid(userData.getUid());
+    setNickName(userData.getNickName());
+    setAuth(userData.getAuth());
+    setGrade(userData.getGrade());
+    setClass(userData.getClass());
+    setSchoolCode(userData.getSchoolCode());
+    print('saveKey: 유저 값 저장');
+  }
+
   void SwitchGuest() {
     setUid('게스트');
     setNickName('게스트');
@@ -47,12 +59,6 @@ class SaveKey {
     print('saveKey: 게스트가 되었습니다.');
   }
 
-  void Changeinfo(String nickname, int Grade, int Class) {
-    setNickName(nickname);
-    setGrade(Grade);
-    setClass(Class);
-    print('saveKey: 정보 변경');
-  }
 
 
 

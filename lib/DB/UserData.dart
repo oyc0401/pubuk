@@ -38,12 +38,12 @@ class UserData {
 
   String getAuth() => _auth;
 
-  // setGrade(int Grade) => this.Grade=Grade;
-  // setClass(int Class) => this.Class=Class;
-  // setSchoolCode(int SchoolCode) => this.SchoolCode=SchoolCode;
-  // setUid(String uid) => this.uid=uid;
-  // setNickName(String nickname) => this.nickname=nickname;
-  // setAuth(String auth) => this.auth=auth;
+  setGrade(int Grade) => _Grade=Grade;
+  setClass(int Class) => _Class=Class;
+  setSchoolCode(int SchoolCode) => _SchoolCode=SchoolCode;
+  setUid(String uid) => _uid=uid;
+  setNickName(String nickname) => _nickname=nickname;
+  setAuth(String auth) => _auth=auth;
 
   factory UserData.guestData() {
     return UserData(

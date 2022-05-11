@@ -1,13 +1,15 @@
 import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/Server/GetFirebase.dart';
-import 'package:flutterschool/page/Community/write.dart';
-import 'package:flutterschool/page/Community/view.dart';
-import 'package:flutterschool/tools/Time.dart';
+
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import '../../Server/GetFirebase.dart';
+import '../../tools/Time.dart';
+import 'view.dart';
+import 'write.dart';
 
 class community extends StatefulWidget {
   community({Key? key}) : super(key: key);

@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/Server/GetFirebase.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/saveKey.dart';
+import '../../Server/GetFirebase.dart';
+import 'myinfo.dart';
 import 'setting.dart';
 
 class login extends StatefulWidget {
@@ -17,11 +18,6 @@ class login extends StatefulWidget {
 }
 
 class _loginState extends State<login> {
-  /// 로딩전 초기값
-  Widget loadingCircle = Container();
-
-  /// 로딩전 초기값
-
 
 
   Future _addUser() async {
@@ -84,13 +80,15 @@ class _loginState extends State<login> {
               const SizedBox(
                 height: 50,
               ),
-              loadingCircle
+
             ],
           ),
         ),
       ),
     );
   }
+
+
 
   Future<String> LocalTime() async {
     DateTime startDate = DateTime.now().toLocal();
