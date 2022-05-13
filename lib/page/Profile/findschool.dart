@@ -19,8 +19,8 @@ class _findSchoolState extends State<findSchool> {
   String cityCode = "J10";
   String cityName = "교육청을 선택해주세요";
 
-  List allSchoolList = [];
-  List foundList = [];
+  List<School> allSchoolList = [];
+  List<School> foundList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -30,62 +30,65 @@ class _findSchoolState extends State<findSchool> {
       ),
       body: Column(
         children: [
-          CupertinoButton(
-              child: Text(cityName),
-              onPressed: () {
-                getSchoolsInfo(cityCode);
-              }),
-          TextFormField(
-            onChanged: showSchools,
-            keyboardType: TextInputType.multiline,
-            maxLines: 1,
-            //decoration: const InputDecoration(border: InputBorder.none),
-          ),
+          citySection(),
+          writeSection(),
           namesSection(foundList),
         ],
       ),
     );
   }
 
-  Widget namesSection(List typedSchools) {
+  Widget citySection() {
+    return CupertinoButton(
+        child: Text(cityName),
+        onPressed: () {
+          getSchoolsInfo(cityCode);
+        });
+  }
+
+  Widget writeSection() {
+    return TextFormField(
+      onChanged: showSchools,
+      keyboardType: TextInputType.multiline,
+      maxLines: 1,
+      //decoration: const InputDecoration(border: InputBorder.none),
+    );
+  }
+
+  Widget namesSection(List<School> foundSchools) {
     List<Widget> buttons = [];
 
-    typedSchools.forEach((element) {
-      buttons.add(schoolButton(element));
+    foundSchools.forEach((school) {
+      buttons.add(schoolButton(school));
     });
 
     return Expanded(
         child: ListView(
-          children: buttons,
-        ));
+      children: buttons,
+    ));
   }
 
-  Widget schoolButton(String schoolName) {
+  Widget schoolButton(School school) {
+    String schoolName = school.name;
+    int schoolCode = int.parse(school.code);
     return CupertinoButton(
       child: Text(schoolName),
       onPressed: () {
-        print("나의 학교는 $schoolName 이예요");
-        //saveSchoolCode(SchoolCode);
+        saveSchoolCode(schoolCode);
       },
     );
   }
 
-  void saveSchoolCode(int SchoolCode){
-    SaveKey saveKey=SaveKey();
-    saveKey.setSchoolCode(SchoolCode);
-    Navigator.of(context).pop('complete');
-  }
-
+  /// city
   Future<void> getSchoolsInfo(String name) async {
     await openSelectDialog(context);
     setState(() {});
     allSchoolList = await downloadSchoolInfo(cityCode);
   }
 
-  void showSchools(String text) {
-    setState(() {
-      foundList = findSchools(text, allSchoolList);
-    });
+  Future<List<School>> downloadSchoolInfo(String code) async {
+    SchoolDownloader schoolDownloader = SchoolDownloader(cityCode: code);
+    return await schoolDownloader.getSchoolList();
   }
 
   Future<void> openSelectDialog(BuildContext context) async {
@@ -101,24 +104,17 @@ class _findSchoolState extends State<findSchool> {
     );
   }
 
-  Future<List> downloadSchoolInfo(String code) async {
-    SchoolDownloader schoolDownloader = SchoolDownloader(cityCode: code);
-    return await schoolDownloader.getNameList();
+  /// write
+  void showSchools(String text) {
+    setState(() {
+      foundList = School.findSchools(text, allSchoolList);
+    });
   }
 
-  List findSchools(String name, List Schools) {
-    List<String> list = [];
-    Timer timer = Timer.start();
-
-    for (int i = 0; i < Schools.length; i++) {
-      String element = Schools[i][0];
-      if (element.contains(name)) {
-        list.add(element);
-      }
-    }
-
-    timer.finish();
-    return list;
+  void saveSchoolCode(int SchoolCode) async{
+    SaveKey saveKey =await SaveKey.Instance();
+    saveKey.setSchoolCode(SchoolCode);
+    Navigator.of(context).pop('complete');
   }
 }
 
@@ -130,7 +126,7 @@ class SchoolDownloader {
   Uri _getUri(String locateText) {
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/schulAflcoinfo?Key=59b8af7c4312435989470cba41e5c7a6&"
-            "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$locateText");
+        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$locateText");
 
     return uri;
   }
@@ -151,11 +147,12 @@ class SchoolDownloader {
     }
   }
 
-  List _cleanedList(Map<String, dynamic> json) {
-    List CleanedList = [];
+  List<School> _schools(Map<String, dynamic> json) {
+    List<School> schools = [];
     print(json);
-    if (json['schulAflcoinfo'] == null) {} else
-    if (json['schulAflcoinfo'][0]['head'][1]['RESULT']['MESSAGE'] ==
+
+    if (json['schulAflcoinfo'] == null) {
+    } else if (json['schulAflcoinfo'][0]['head'][1]['RESULT']['MESSAGE'] ==
         "정상 처리되었습니다.") {
       // 이 리스트는 맵이 모두 들어있는 리스트
       List MapList = json['schulAflcoinfo'][1]['row'];
@@ -168,19 +165,43 @@ class SchoolDownloader {
         final String schoolCode = element['SD_SCHUL_CODE'];
 
         if (lastCode != schoolCode) {
-          CleanedList.add([schoolName, schoolCode]);
+          schools.add(School(name: schoolName, code: schoolCode));
           lastCode = schoolCode;
         }
       }
     }
-    print(CleanedList);
-    return CleanedList;
+
+    print(schools);
+    return schools;
   }
 
-  Future<List> getNameList() async {
+  Future<List<School>> getSchoolList() async {
     Map<String, dynamic> json = await _getJson();
-    List cleanedList = _cleanedList(json);
-    return cleanedList;
+    return _schools(json);
+  }
+}
+
+class School {
+  String name;
+  String code;
+
+  School({required this.name, required this.code});
+
+  static List<School> findSchools(String text, List<School> schools) {
+    /// [School]으로 이루어진 배열중에서 text와 같은 문자가 있는 학교 찾기
+    List<School> list = [];
+    print(text);
+    if (text == "") {
+      return list;
+    }
+    for (int i = 0; i < schools.length; i++) {
+      String schoolName = schools[i].name;
+
+      if (schoolName.contains(text)) {
+        list.add(schools[i]);
+      }
+    }
+    return list;
   }
 }
 
