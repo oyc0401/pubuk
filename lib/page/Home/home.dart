@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> checkKey() async {
-    SaveKey key = await SaveKey.Instance();
+    SaveKeyHandler key = await SaveKeyHandler.Instance();
     key.printAll();
   }
 }

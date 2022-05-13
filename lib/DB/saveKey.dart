@@ -13,63 +13,7 @@ class SaveKey {
     return key;
   }
 
-  UserData getUserData() {
-    int Grade = prefs.getInt('Grade') ?? 1;
-    int Class = prefs.getInt('Class') ?? 1;
-    String CityCode = prefs.getString('CityCode') ?? "J10";
-    int SchoolCode = prefs.getInt('SchoolCode') ?? 7530072;
-    String uid = prefs.getString('ID') ?? '게스트id';
-    String nickname = prefs.getString('Nickname') ?? '게스트';
-    String auth = prefs.getString('Auth') ?? 'guest';
-
-    return UserData(
-        uid: uid,
-        nickname: nickname,
-        auth: auth,
-        Grade: Grade,
-        Class: Class,
-        CityCode: CityCode,
-        SchoolCode: SchoolCode);
-  }
-
-  setUser(String uid, String nickname, String auth, int Grade, int Class,
-      int SchoolCode) {
-    setUid(uid);
-    setNickName(nickname);
-    setAuth(auth);
-    setGrade(Grade);
-    setClass(Class);
-    setSchoolCode(SchoolCode);
-    print('saveKey: 유저 값 저장');
-  }
-
-  setUserData(UserData userData) {
-    setUid(userData.getUid());
-    setNickName(userData.getNickName());
-    setAuth(userData.getAuth());
-    setGrade(userData.getGrade());
-    setClass(userData.getClass());
-    setSchoolCode(userData.getSchoolCode());
-    print('saveKey: 유저 값 저장');
-  }
-
-  void SwitchGuest() {
-    setUid('게스트');
-    setNickName('게스트');
-    setAuth('게스트');
-    print('saveKey: 게스트가 되었습니다.');
-  }
-
-  printAll() {
-    print(prefs.getKeys());
-    print(prefs.get('ID'));
-    print(prefs.get('SchoolCode'));
-    print(prefs.get('Grade'));
-    print(prefs.get('Class'));
-    print(prefs.get('Nickname'));
-    print(prefs.get('Auth'));
-  }
-
+  /// set
   setGrade(int Grade) => prefs.setInt('Grade', Grade);
 
   setClass(int Class) => prefs.setInt('Class', Class);
@@ -83,4 +27,67 @@ class SaveKey {
   setNickName(String nickname) => prefs.setString('Nickname', nickname);
 
   setAuth(String auth) => prefs.setString('Auth', auth);
+
+  /// get
+  getGrade() => prefs.getInt('Grade') ?? 1;
+
+  getClass() => prefs.getInt('Class') ?? 1;
+
+  getCityCode()=>prefs.getString('CityCode') ?? "J10";
+
+  getSchoolCode() => prefs.getInt('SchoolCode') ?? 7530072;
+
+  getUid() => prefs.getString('ID') ?? '게스트id';
+
+  getNickName() => prefs.getString('Nickname') ?? '게스트';
+
+  getAuth() => prefs.getString('Auth') ?? 'guest';
+
+  UserData getUserData() {
+    return UserData(
+        uid: getUid(),
+        nickname: getNickName(),
+        auth: getAuth(),
+        Grade: getGrade(),
+        Class: getClass(),
+        CityCode: getCityCode(),
+        SchoolCode: getSchoolCode());
+  }
+
+  setUserData(UserData userData) {
+    setUid(userData.getUid());
+    setNickName(userData.getNickName());
+    setAuth(userData.getAuth());
+    setGrade(userData.getGrade());
+    setClass(userData.getClass());
+    setSchoolCode(userData.getSchoolCode());
+    print('saveKey: 유저 값 저장');
+  }
+}
+
+
+class SaveKeyHandler extends SaveKey{
+
+  static Instance() async {
+    SaveKeyHandler key = SaveKeyHandler();
+    key.prefs = await SharedPreferences.getInstance();
+    return key;
+  }
+
+  printAll() {
+    print(prefs.getKeys());
+    print(prefs.get('ID'));
+    print(prefs.get('SchoolCode'));
+    print(prefs.get('Grade'));
+    print(prefs.get('Class'));
+    print(prefs.get('Nickname'));
+    print(prefs.get('Auth'));
+  }
+
+  void SwitchGuest() {
+    setUid('게스트');
+    setNickName('게스트');
+    setAuth('게스트');
+    print('saveKey: 게스트가 되었습니다.');
+  }
 }

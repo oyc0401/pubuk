@@ -3,12 +3,16 @@ class UserData {
   String _uid = "";
   String _nickname = "";
   String _auth = "";
+
+  // need to make school
   int _Grade = 1;
   int _Class = 1;
   String _CityCode="J10";
   String _schoolName="고등학교";
   String _schoolLevel="고";
   int _SchoolCode = 13;
+
+
 
   UserData({
     required String uid,
@@ -26,6 +30,7 @@ class UserData {
     _Class = Class;
     _CityCode=CityCode;
     _SchoolCode = SchoolCode;
+
   }
 
 

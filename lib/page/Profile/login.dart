@@ -34,25 +34,25 @@ class _loginState extends State<login> {
     SaveKey key = await SaveKey.Instance();
     // id가 저장되어있는지 체크
 
-    ///TODO: 서버호출의 중복이 일어나서 나중에 고쳐야한다.
-    GetFirebase.isUserExist(uid).then((isUserExist) async {
-      print(isUserExist);
-      if (isUserExist) {
-        print('기존 로그인');
-        await GetFirebase.getUser(uid).then((map) {
-          key.setUser(map['ID'], map['nickname'], map['auth'], map['grade'],
-              map['class'],7530072);
-          Navigator.of(context).pop(true);
-        });
-      } else {
-        print('신규 가입');
-        await GetFirebase.newSignIn(uid, email, displayName, photoURL);
-        key.setUser(uid, displayName, 'user', 1, 1,7530072);
-        Navigator.of(context).pop(true);
-        Navigator.push(
-            context, CupertinoPageRoute(builder: (context) => setting()));
-      }
-    });
+    // ///TODO: 서버호출의 중복이 일어나서 나중에 고쳐야한다.
+    // GetFirebase.isUserExist(uid).then((isUserExist) async {
+    //   print(isUserExist);
+    //   if (isUserExist) {
+    //     print('기존 로그인');
+    //     await GetFirebase.getUser(uid).then((map) {
+    //       key.setUser(map['ID'], map['nickname'], map['auth'], map['grade'],
+    //           map['class'],7530072);
+    //       Navigator.of(context).pop(true);
+    //     });
+    //   } else {
+    //     print('신규 가입');
+    //     await GetFirebase.newSignIn(uid, email, displayName, photoURL);
+    //     key.setUser(uid, displayName, 'user', 1, 1,7530072);
+    //     Navigator.of(context).pop(true);
+    //     Navigator.push(
+    //         context, CupertinoPageRoute(builder: (context) => setting()));
+    //   }
+    // });
   }
 
   @override

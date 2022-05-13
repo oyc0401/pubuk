@@ -42,6 +42,7 @@ class _timetableState extends State<timetable> {
     _class = userData.getClass();
     _schoolCode = userData.getSchoolCode();
     _cityCode=userData.getCityCode();
+
   }
 
   getMap() async {

@@ -261,7 +261,7 @@ class _settingState extends State<setting> {
 
   Future Logout() async {
     await FirebaseAuth.instance.signOut();
-    SaveKey key = await SaveKey.Instance();
+    SaveKeyHandler key = await SaveKeyHandler.Instance();
     key.SwitchGuest();
     Navigator.of(context).pop('Logout');
   }
