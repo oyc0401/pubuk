@@ -23,7 +23,7 @@ class _settingState extends State<setting> {
   /// 저장 버튼을 누르면 [userData]에 있는 값을 [saveKey]에 저장하고 화면을 종료한다.
   /// 나중에 로그인을 구현한다면 저장을 할 때 파이어베이스의 유저정보도 함께 바꿔야 한다.
 
-  UserData userData = UserData.guestData();
+  UserData userData = UserData.noData();
   bool isfirst = true;
   Future? GettingDataOnlyOne;
 

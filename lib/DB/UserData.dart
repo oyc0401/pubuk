@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 
 class UserData {
   String _uid = "";
@@ -50,6 +49,15 @@ class UserData {
         uid: 'guest',
         nickname: 'guest',
         auth: 'guest',
+        Grade: 1,
+        Class: 1,
+        SchoolCode: 7530072);
+  }
+  factory UserData.noData() {
+    return UserData(
+        uid: '',
+        nickname: '',
+        auth: '',
         Grade: 1,
         Class: 1,
         SchoolCode: 7530072);
