@@ -23,9 +23,13 @@ class _LunchState extends State<Lunch> {
 
 
   Future<List<List<String>>> getList() async {
-    int schoolCode=await getSchoolCode();
+    SaveKey key = await SaveKey.Instance();
+    UserData userData = key.getUserData();
 
-    LunchDownloader lunchDownloader = LunchDownloader(SchoolCode: schoolCode);
+    int schoolCode= userData.getSchoolCode();
+    String cityCode=await userData.getCityCode();
+
+    LunchDownloader lunchDownloader = LunchDownloader(SchoolCode: schoolCode,CityCode: cityCode);
     return await lunchDownloader.getCleanedList();
   }
 
@@ -118,22 +122,18 @@ class _LunchState extends State<Lunch> {
     );
   }
 
-  Future<int> getSchoolCode() async {
-    SaveKey key = await SaveKey.Instance();
-    UserData userData = key.getUserData();
-    return userData.getSchoolCode();
 
-  }
 }
 
 class LunchDownloader {
   int SchoolCode;
+  String CityCode;
   final int FROM_TERM = -30;
   final int TO_TERM = 30;
 
-  LunchDownloader({required this.SchoolCode}) {}
+  LunchDownloader({required this.CityCode, required this.SchoolCode}) {}
 
-  Uri _getUri(int SchoolCode) {
+  Uri _getUri(int SchoolCode,String CityCode) {
     var now = new DateTime.now();
     String firstday =
         DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
@@ -142,14 +142,14 @@ class LunchDownloader {
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
-        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=J10&SD_SCHUL_CODE=$SchoolCode&"
+        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&"
         "MLSV_FROM_YMD=$firstday&MLSV_TO_YMD=$lastday");
     return uri;
   }
 
   Future<Map<String, dynamic>> _getJson() async {
     // uri값 얻고
-    Uri uri = _getUri(SchoolCode);
+    Uri uri = _getUri(SchoolCode,CityCode);
 
     // 요청하기
     final Response response = await http.get(uri);

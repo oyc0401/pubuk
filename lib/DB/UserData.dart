@@ -5,6 +5,9 @@ class UserData {
   String _auth = "";
   int _Grade = 1;
   int _Class = 1;
+  String _CityCode="J10";
+  String _schoolName="고등학교";
+  String _schoolLevel="고";
   int _SchoolCode = 13;
 
   UserData({
@@ -13,6 +16,7 @@ class UserData {
     required String auth,
     required int Grade,
     required int Class,
+    required String CityCode,
     required int SchoolCode,
   }) {
     _uid = uid;
@@ -20,6 +24,7 @@ class UserData {
     _auth = auth;
     _Grade = Grade;
     _Class = Class;
+    _CityCode=CityCode;
     _SchoolCode = SchoolCode;
   }
 
@@ -37,6 +42,8 @@ class UserData {
 
   String getAuth() => _auth;
 
+  String getCityCode()=>_CityCode;
+
   setGrade(int Grade) => _Grade=Grade;
   setClass(int Class) => _Class=Class;
   setSchoolCode(int SchoolCode) => _SchoolCode=SchoolCode;
@@ -51,6 +58,7 @@ class UserData {
         auth: 'guest',
         Grade: 1,
         Class: 1,
+        CityCode: "J10",
         SchoolCode: 7530072);
   }
   factory UserData.noData() {
@@ -60,6 +68,7 @@ class UserData {
         auth: '',
         Grade: 1,
         Class: 1,
+        CityCode: "J10",
         SchoolCode: 7530072);
   }
 }

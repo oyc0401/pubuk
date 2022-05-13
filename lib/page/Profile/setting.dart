@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/Profile/findschool.dart';
 
 import 'package:select_dialog/select_dialog.dart';
 
@@ -88,6 +89,7 @@ class _settingState extends State<setting> {
     }
     return Column(
       children: [
+        schoolSection(),
         nicknameSection(),
         gradeSection(),
         classSection(),
@@ -119,6 +121,14 @@ class _settingState extends State<setting> {
           ),
         )
       ],
+    );
+  }
+
+
+  Widget schoolSection() {
+    return CupertinoButton(
+      child: Text("학교 설정"),
+      onPressed: NavigateFindSchool,
     );
   }
 
@@ -164,6 +174,7 @@ class _settingState extends State<setting> {
     );
   }
 
+
   Future<void> Save(UserData myUserData) async {
     SaveKey key = await SaveKey.Instance();
     key.setUserData(myUserData);
@@ -180,6 +191,15 @@ class _settingState extends State<setting> {
     // }).catchError((error) => print("Failed to change Class: $error"));
 
     Navigator.of(context).pop('complete');
+  }
+
+  void NavigateFindSchool() {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const findSchool(),
+      ),
+    );
   }
 
   Future<void> changeGrade() async {

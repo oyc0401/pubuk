@@ -1,4 +1,3 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'UserData.dart';
@@ -17,6 +16,7 @@ class SaveKey {
   UserData getUserData() {
     int Grade = prefs.getInt('Grade') ?? 1;
     int Class = prefs.getInt('Class') ?? 1;
+    String CityCode = prefs.getString('CityCode') ?? "J10";
     int SchoolCode = prefs.getInt('SchoolCode') ?? 7530072;
     String uid = prefs.getString('ID') ?? '게스트id';
     String nickname = prefs.getString('Nickname') ?? '게스트';
@@ -28,6 +28,7 @@ class SaveKey {
         auth: auth,
         Grade: Grade,
         Class: Class,
+        CityCode: CityCode,
         SchoolCode: SchoolCode);
   }
 
@@ -42,7 +43,7 @@ class SaveKey {
     print('saveKey: 유저 값 저장');
   }
 
-  setUserData(UserData userData){
+  setUserData(UserData userData) {
     setUid(userData.getUid());
     setNickName(userData.getNickName());
     setAuth(userData.getAuth());
@@ -59,12 +60,10 @@ class SaveKey {
     print('saveKey: 게스트가 되었습니다.');
   }
 
-
-
-
   printAll() {
     print(prefs.getKeys());
     print(prefs.get('ID'));
+    print(prefs.get('SchoolCode'));
     print(prefs.get('Grade'));
     print(prefs.get('Class'));
     print(prefs.get('Nickname'));
@@ -74,6 +73,8 @@ class SaveKey {
   setGrade(int Grade) => prefs.setInt('Grade', Grade);
 
   setClass(int Class) => prefs.setInt('Class', Class);
+
+  setCityCode(String CityCode)=>prefs.setString("CityCode", CityCode);
 
   setSchoolCode(int SchoolCode) => prefs.setInt('SchoolCode', SchoolCode);
 

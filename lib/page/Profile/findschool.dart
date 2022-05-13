@@ -74,7 +74,7 @@ class _findSchoolState extends State<findSchool> {
     return CupertinoButton(
       child: Text(schoolName),
       onPressed: () {
-        saveSchoolCode(schoolCode);
+        saveSchoolCode(int.parse(school.code), cityCode);
       },
     );
   }
@@ -111,10 +111,13 @@ class _findSchoolState extends State<findSchool> {
     });
   }
 
-  void saveSchoolCode(int SchoolCode) async{
-    SaveKey saveKey =await SaveKey.Instance();
-    saveKey.setSchoolCode(SchoolCode);
+  void saveSchoolCode(int schoolCode, String cityCode) async {
+    SaveKey saveKey = await SaveKey.Instance();
+    saveKey.setCityCode(cityCode);
+    saveKey.setSchoolCode(schoolCode);
     Navigator.of(context).pop('complete');
+
+    print("저장 $cityCode, $schoolCode");
   }
 }
 

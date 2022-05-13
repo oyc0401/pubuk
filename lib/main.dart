@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      //home: const MyHomePage(title: '학교'),
-      home: const findSchool(),
+      home: const MyHomePage(title: '학교'),
+      //home: const findSchool(),
       //home: const myinfo(),
     );
   }

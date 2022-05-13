@@ -10,7 +10,7 @@ import '../../DB/UserData.dart';
 import '../../DB/saveKey.dart';
 
 class timetable extends StatefulWidget {
-   timetable({Key? key}) : super(key: key);
+  timetable({Key? key}) : super(key: key);
 
   @override
   State<timetable> createState() => _timetableState();
@@ -25,6 +25,7 @@ class _timetableState extends State<timetable> {
   int _grade = 0;
   int _class = 0;
   int _schoolCode = 0;
+  String _cityCode="J10";
 
   //Future? GettingDataOnlyOne;
 
@@ -40,13 +41,14 @@ class _timetableState extends State<timetable> {
     _grade = userData.getGrade();
     _class = userData.getClass();
     _schoolCode = userData.getSchoolCode();
+    _cityCode=userData.getCityCode();
   }
 
   getMap() async {
     await getInfo();
 
     TableDownloader tabledown =
-        TableDownloader(Grade: _grade, Class: _class, SchoolCode: _schoolCode);
+        TableDownloader(Grade: _grade, Class: _class, SchoolCode: _schoolCode,CityCode: _cityCode);
     Map cleanedmap = await tabledown.getCleanedMap();
 
     return cleanedmap;
@@ -113,7 +115,6 @@ class _timetableState extends State<timetable> {
   }
 
   Widget timetableSection(Map cleanedMap) {
-
     List<TableRow> tableRows() {
       //테이블 총 세로길이 450
       const double height = 60;
@@ -231,12 +232,17 @@ class _timetableState extends State<timetable> {
 class TableDownloader {
   int Grade;
   int Class;
+  String CityCode;
   int SchoolCode;
 
-  TableDownloader(
-      {required this.Grade, required this.Class, required this.SchoolCode}) {}
+  TableDownloader({
+    required this.Grade,
+    required this.Class,
+    required this.CityCode,
+    required this.SchoolCode,
+  }) {}
 
-  Uri _getUri(int SchoolCode, int Grade, int Class) {
+  Uri _getUri(int SchoolCode, int Grade, int Class, String CityCode) {
     var now = DateTime.now();
     var mon = DateFormat('yyyyMMdd')
         .format(now.add(Duration(days: -1 * now.weekday + 1)));
@@ -244,15 +250,14 @@ class TableDownloader {
         .format(now.add(Duration(days: -1 * now.weekday + 5))); // weekday 금요일=5
 
     Uri uri = Uri.parse(
-        "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&"
-        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=J10&"
-        "SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
+        "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&Type=json&pIndex=1&pSize=1000&"
+            "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
     return uri;
   }
 
   Future _getJson() async {
     // uri값 얻고
-    Uri uri = _getUri(SchoolCode, Grade, Class);
+    Uri uri = _getUri(SchoolCode, Grade, Class,CityCode);
 
     // 요청하기
     final Response response = await http.get(uri);
