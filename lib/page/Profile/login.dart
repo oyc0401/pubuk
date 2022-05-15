@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/Server/GetFirebase.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/saveKey.dart';
+import '../../Server/GetFirebase.dart';
+import 'myinfo.dart';
 import 'setting.dart';
 
 class login extends StatefulWidget {
@@ -18,32 +18,7 @@ class login extends StatefulWidget {
 }
 
 class _loginState extends State<login> {
-  /// 로딩전 초기값
-  Widget loadingCircle = Container();
 
-  /// 로딩전 초기값
-
-  Future _GoogleLogin(BuildContext context) async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-    if (googleAuth?.accessToken != null || googleAuth?.idToken != null) {
-      //로딩 표시
-      setState(() {
-        loadingCircle = const SizedBox(
-            height: 200, child: Center(child: CircularProgressIndicator()));
-      });
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      await _addUser();
-    } else {
-      print('로그인 취소');
-    }
-  }
 
   Future _addUser() async {
     //파이어베이스에 유저정보 저장
@@ -59,25 +34,25 @@ class _loginState extends State<login> {
     SaveKey key = await SaveKey.Instance();
     // id가 저장되어있는지 체크
 
-    ///TODO: 서버호출의 중복이 일어나서 나중에 고쳐야한다.
-    GetFirebase.isUserExist(uid).then((isUserExist) async {
-      print(isUserExist);
-      if (isUserExist) {
-        print('기존 로그인');
-        await GetFirebase.getUser(uid).then((map) {
-          key.SetUser(map['ID'], map['nickname'], map['auth'], map['grade'],
-              map['class']);
-          Navigator.of(context).pop(true);
-        });
-      } else {
-        print('신규 가입');
-        await GetFirebase.newSignIn(uid, email, displayName, photoURL);
-        key.SetUser(uid, displayName, 'user', 1, 1);
-        Navigator.of(context).pop(true);
-        Navigator.push(
-            context, CupertinoPageRoute(builder: (context) => setting()));
-      }
-    });
+    // ///TODO: 서버호출의 중복이 일어나서 나중에 고쳐야한다.
+    // GetFirebase.isUserExist(uid).then((isUserExist) async {
+    //   print(isUserExist);
+    //   if (isUserExist) {
+    //     print('기존 로그인');
+    //     await GetFirebase.getUser(uid).then((map) {
+    //       key.setUser(map['ID'], map['nickname'], map['auth'], map['grade'],
+    //           map['class'],7530072);
+    //       Navigator.of(context).pop(true);
+    //     });
+    //   } else {
+    //     print('신규 가입');
+    //     await GetFirebase.newSignIn(uid, email, displayName, photoURL);
+    //     key.setUser(uid, displayName, 'user', 1, 1,7530072);
+    //     Navigator.of(context).pop(true);
+    //     Navigator.push(
+    //         context, CupertinoPageRoute(builder: (context) => setting()));
+    //   }
+    // });
   }
 
   @override
@@ -93,7 +68,6 @@ class _loginState extends State<login> {
             children: [
               CupertinoButton(
                   onPressed: () {
-                    _GoogleLogin(context);
                   },
                   color: Colors.grey,
                   child: const Text(
@@ -106,13 +80,15 @@ class _loginState extends State<login> {
               const SizedBox(
                 height: 50,
               ),
-              loadingCircle
+
             ],
           ),
         ),
       ),
     );
   }
+
+
 
   Future<String> LocalTime() async {
     DateTime startDate = DateTime.now().toLocal();

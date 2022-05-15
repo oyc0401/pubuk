@@ -23,7 +23,7 @@ class _writeState extends State<write> {
 
   getUserData() async {
     SaveKey key = SaveKey.Instance();
-    userData = key.userData();
+    userData = key.getUserData();
   }
 
   @override
@@ -45,8 +45,8 @@ class _writeState extends State<write> {
               if (text != '') {
                 writepubuk(
                         collection: 'pubuk',
-                        id: userData.uid,
-                        nickname: userData.nickname,
+                        id: userData.getUid(),
+                        nickname: userData.getNickName(),
                         text: text,
                         title: ' ')
                     .addText()

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/DB/UserData.dart';
-import 'package:flutterschool/DB/saveKey.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
+import '../../DB/UserData.dart';
+import '../../DB/saveKey.dart';
 import '../../Server/GetFirebase.dart';
 import 'comment.dart';
 import 'community.dart';
@@ -34,7 +34,7 @@ class _viewState extends State<view> {
 
   getUserData() async {
     SaveKey key = await SaveKey.Instance();
-    userData = key.userData();
+    userData = key.getUserData();
   }
 
   @override
@@ -83,7 +83,7 @@ class _viewState extends State<view> {
         .get()
         .then((doc) {
       setState(() {
-        if (userData.uid == doc['userid']) {
+        if (userData.getUid() == doc['userid']) {
           editButton = IconButton(
             onPressed: () {
               print('넘어갑니다.');
@@ -145,8 +145,8 @@ class _viewState extends State<view> {
         .doc(date)
         .set({
       'ID': date,
-      'userid': userData.uid,
-      'nickname': userData.nickname,
+      'userid': userData.getUid(),
+      'nickname': userData.getNickName(),
       'text': writedComment,
       'url': widget.url,
       'date': date,

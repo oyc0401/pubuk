@@ -2,13 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/DB/saveKey.dart';
-import 'package:flutterschool/page/Community/write.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/UserData.dart';
+import '../../DB/saveKey.dart';
 
 class edit extends StatefulWidget {
   edit({Key? key, required this.url}) : super(key: key);
@@ -33,7 +32,7 @@ class _editState extends State<edit> {
 
   getUserData() async {
     SaveKey key = await SaveKey.Instance();
-    userData = key.userData();
+    userData = key.getUserData();
   }
 
   @override

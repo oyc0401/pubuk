@@ -1,13 +1,15 @@
 import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/Server/GetFirebase.dart';
-import 'package:flutterschool/page/Community/write.dart';
-import 'package:flutterschool/page/Community/view.dart';
-import 'package:flutterschool/tools/Time.dart';
+
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import '../../Server/GetFirebase.dart';
+import '../../tools/Time.dart';
+import 'view.dart';
+import 'write.dart';
 
 class community extends StatefulWidget {
   community({Key? key}) : super(key: key);
@@ -74,8 +76,7 @@ class _communityState extends State<community> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => const write()));
+              NavigateWrite();
             },
             icon: const Icon(Icons.edit),
           ),
@@ -93,19 +94,16 @@ class _communityState extends State<community> {
             } else if (mode == LoadStatus.loading) {
               body = Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CupertinoActivityIndicator(),
-                  const Text("로딩중...")
-                ],
+                children: const [CupertinoActivityIndicator(), Text("로딩중...")],
               );
             } else if (mode == LoadStatus.failed) {
               body = const Text("로딩에 실패했습니다.");
             } else if (mode == LoadStatus.canLoading) {
               body = Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.arrow_downward_rounded),
-                  const Text("아래로 당겨주세요")
+                children: const [
+                  Icon(Icons.arrow_downward_rounded),
+                  Text("아래로 당겨주세요")
                 ],
               );
             } else {
@@ -128,23 +126,18 @@ class _communityState extends State<community> {
     );
   }
 
-
   Widget textWidget(Map json) {
     print("json2Widget");
     //print(json);
 
-    String date=Time.timeDifferent(json['date']);
+    String date = Time.timeDifferent(json['date']);
 
-    //make widget
-    Widget baby = Column(
+    return Column(
       children: [
         GestureDetector(
           onTap: () {
             print('눌렀어');
-            Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => view(url: json['date'])));
+            NavigateView(json['date']);
           },
           child: Container(
             color: Colors.white,
@@ -152,59 +145,9 @@ class _communityState extends State<community> {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Column(
               children: [
-                Container(
-                  child: Row(
-                    children: [
-                      Text(json['nickname'],
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Colors.black)),
-                      Text(date,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.black)),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                  alignment: Alignment.centerLeft,
-                  child: Text(json['text'],
-                      maxLines: 5,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.black)),
-                ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 0, horizontal: 5),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.thumb_up,
-                              size: 15,
-                            ),
-                            const Text('0'),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.comment,
-                            size: 15,
-                          ),
-                          const Text('0'),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
+                nickNameSection(json['nickname'], date),
+                contextSection(json['text']),
+                likeSection(json['heart'], json['comment']),
               ],
             ),
           ),
@@ -215,8 +158,85 @@ class _communityState extends State<community> {
         ),
       ],
     );
+  }
 
-    return baby;
+  Widget nickNameSection(String nickname, String date) {
+    return Row(
+      children: [
+        Text(nickname,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: Colors.black)),
+        Text(date,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.black)),
+      ],
+    );
+  }
+
+  Container contextSection(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+      alignment: Alignment.centerLeft,
+      child: Text(
+        text,
+        maxLines: 5,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
+  Widget likeSection(int like, int comment) {
+    String Like = like.toString();
+    String Comment = comment.toString();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.thumb_up,
+                size: 15,
+              ),
+              Text(Like),
+            ],
+          ),
+        ),
+        Row(
+          children: [
+            const Icon(
+              Icons.comment,
+              size: 15,
+            ),
+            Text(Comment),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void NavigateView(String url) async {
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => view(url: url),
+      ),
+    );
+    reset();
+  }
+
+  NavigateWrite() async {
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const write(),
+      ),
+    );
+    reset();
   }
 }
-

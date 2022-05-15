@@ -2,12 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/DB/saveKey.dart';
+
 
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
 import '../../DB/UserData.dart';
+import '../../DB/saveKey.dart';
 import '../../Server/GetFirebase.dart';
 import 'community.dart';
 
@@ -31,7 +32,7 @@ class _commentState extends State<comment> {
 
   getUserData() async {
     SaveKey key = await SaveKey.Instance();
-    userData = key.userData();
+    userData = key.getUserData();
   }
 
   Future<void> writeReply() async {
@@ -49,8 +50,8 @@ class _commentState extends State<comment> {
         .doc(nowdate)
         .set({
       'ID': nowdate,
-      'userid': userData.uid,
-      'nickname': userData.nickname,
+      'userid': userData.getUid(),
+      'nickname': userData.getNickName(),
       'text': Writedreply,
       'url': widget.json['ID'],
       'date': nowdate,
