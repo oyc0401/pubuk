@@ -55,7 +55,7 @@ dependencies:
   #sqflite: ^2.0.2
   #sqflite: ^2.0.2
   #path: ^1.8.0
-
+  flutter_signin_button: ^2.0.0
 
 dev_dependencies:
   flutter_test:

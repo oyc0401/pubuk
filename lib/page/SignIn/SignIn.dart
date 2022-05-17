@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -32,19 +33,20 @@ class _SignInState extends State<SignIn> {
   GoogleSignInAccount? _currentUser;
   String _contactText = '';
 
-
   @override
   void initState() {
     super.initState();
+
     /// 테스트기간에만 주석 해놓는것이다. 이 페이지에 들어오면 무조건 로그인 해제 상태여야 한다.
     //_handleSignOut();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-        _currentUser = account;
-        if(account!=null){
-          print(account.toString());
-        }
-          print("로그인?");
-          navigate(account);
+      _currentUser = account;
+
+      if (account != null) {
+        print(account.toString());
+      }
+      print("로그인?");
+      navigate(account);
     });
     _googleSignIn.signInSilently();
   }
@@ -126,15 +128,33 @@ class _SignInState extends State<SignIn> {
 
   Future<void> GoogleLogin() async {
     try {
-      await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser!.authentication;
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await FirebaseAuth.instance.signInWithCredential(credential);
     } catch (error) {
       print(error);
     }
   }
+
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
+  Future<UserCredential> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
-  void navigate(GoogleSignInAccount? user){
+  void navigate(GoogleSignInAccount? user) {
     if (user != null) {
       print("유저 정보가 있습니다.");
       Navigator.pushReplacement(
@@ -143,15 +163,15 @@ class _SignInState extends State<SignIn> {
           builder: (context) => const register(),
         ),
       );
-    }else{
+    } else {
       print("유저는 현재 비 로그인 상태이다.");
     }
 
     //       Navigator.pushReplacement(
-        //     context,
-        //     CupertinoPageRoute(
-        //       builder: (context) => const MyHomePage(title: "학교"),
-        //     ),
-        //   );
+    //     context,
+    //     CupertinoPageRoute(
+    //       builder: (context) => const MyHomePage(title: "학교"),
+    //     ),
+    //   );
   }
 }
