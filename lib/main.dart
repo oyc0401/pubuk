@@ -4,6 +4,7 @@ import 'package:flutterschool/twice.dart';
 import 'firebase_options.dart';
 import 'page/Home/home.dart';
 import 'page/Profile/findschool.dart';
+import 'page/SignIn/SignIn.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +31,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: '학교'),
-      //home: const findSchool(),
+      //home: const MyHomePage(title: '학교'),
+      home: const SignIn(),
       //home: const myinfo(),
     );
   }

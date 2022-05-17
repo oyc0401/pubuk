@@ -15,8 +15,8 @@ import '../../DB/Userboxorigin.dart';
 import '../../DB/saveKey.dart';
 import '../Community/community.dart';
 import '../Profile/myinfo.dart';
-import 'lunch.dart';
-import 'timetable.dart';
+import '../SignIn/SignIn.dart';
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -51,14 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
   ListView body() {
     return ListView(
       children: [
-        TimeTableSection(),
         CommunitySection(),
-        LunchSection(),
         CupertinoButton(
             child: const Text('저장소 확인'),
             onPressed: () {
               checkKey();
             }),
+        CupertinoButton(child: Text("로그인 페이지 이동"), onPressed: NavigateSignup),
         const SizedBox(height: 30),
         Container(
           height: 400,
@@ -68,13 +67,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget TimeTableSection() {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: timetable(),
+  void NavigateSignup() async {
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const SignIn(),
+      ),
     );
-  }
 
+    setState(() {});
+  }
   Widget CommunitySection() {
     return CupertinoButton(
       child: const Text('게시판 이동'),
@@ -82,13 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget LunchSection() {
-    print("런치");
-    return const Padding(
-      padding: EdgeInsets.all(12.0),
-      child: Lunch(),
-    );
-  }
 
   void NavigateInfo() async {
     await Navigator.push(
