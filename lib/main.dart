@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/SignIn/searchSchool.dart';
 
 import 'firebase_options.dart';
 import 'page/Home/home.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
       ),
       //home: const MyHomePage(title: '학교'),
       home: const SignIn(),
-      //home: const myinfo(),
+      //home: const SearchSchool(),
     );
   }
 }
