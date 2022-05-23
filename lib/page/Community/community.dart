@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../Server/GetFirebase.dart';
 import '../../tools/Time.dart';
@@ -28,8 +27,7 @@ class _communityState extends State<community> {
 
   /// 로딩전 초기값
 
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+
 
   Future readFirst() async {
     print('readFirst');
@@ -52,14 +50,14 @@ class _communityState extends State<community> {
       });
     });
     setState(() {});
-    _refreshController.loadComplete();
+
   }
 
   Future reset() async {
     print('reset');
     await readFirst();
     await readPage();
-    _refreshController.refreshCompleted();
+
   }
 
   @override
@@ -82,46 +80,9 @@ class _communityState extends State<community> {
           ),
         ],
       ),
-      body: SmartRefresher(
-        enablePullDown: true,
-        enablePullUp: true,
-        header: const MaterialClassicHeader(),
-        footer: CustomFooter(
-          builder: (BuildContext context, LoadStatus? mode) {
-            Widget body;
-            if (mode == LoadStatus.idle) {
-              body = const Text("마지막 글입니다."); //
-            } else if (mode == LoadStatus.loading) {
-              body = Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [CupertinoActivityIndicator(), Text("로딩중...")],
-              );
-            } else if (mode == LoadStatus.failed) {
-              body = const Text("로딩에 실패했습니다.");
-            } else if (mode == LoadStatus.canLoading) {
-              body = Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.arrow_downward_rounded),
-                  Text("아래로 당겨주세요")
-                ],
-              );
-            } else {
-              body = const Text("글이 없습니다.");
-            }
-            return Container(
-              height: 50.0,
-              child: Center(child: body),
-            );
-          },
-        ),
-        controller: _refreshController,
-        onRefresh: reset,
-        onLoading: readPage,
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          children: [...widgetList],
-        ),
+      body: ListView(
+        physics: const BouncingScrollPhysics(),
+        children: [...widgetList],
       ),
     );
   }

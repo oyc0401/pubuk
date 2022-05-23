@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/page/SignIn/searchSchool.dart';
 
 import 'firebase_options.dart';
@@ -8,11 +11,17 @@ import 'page/Profile/findschool.dart';
 import 'page/SignIn/SignIn.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  print("1");
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  print("실행");
   runApp(const MyApp());
+print("끄기");
+  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {
@@ -21,6 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("build");
+
     return MaterialApp(
       builder: (context, child) {
         return MediaQuery(
@@ -32,8 +42,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      //home: const MyHomePage(title: '학교'),
-      home: const SignIn(),
+      home: const MyHomePage(title: '학교'),
+      //home: const SignIn(),
       //home: const SearchSchool(),
     );
   }
