@@ -30,7 +30,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("build");
-
     return MaterialApp(
       builder: (context, child) {
         return MediaQuery(
