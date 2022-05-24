@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/page/SignIn/searchSchool.dart';
+import 'package:flutterschool/page/mainPage.dart';
 
 import 'firebase_options.dart';
 import 'page/Home/home.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: '학교'),
+      home: const MainPage(),
       //home: const SignIn(),
       //home: const SearchSchool(),
     );
