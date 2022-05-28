@@ -37,36 +37,7 @@ class UserProfile {
     return  savePro.getUserProfile();
   }
 
-  // get
 
-  int getGrade() => grade;
-
-  int getClass() => Class;
-
-  int getSchoolCode() => schoolCode;
-
-  String getUid() => uid;
-
-  String getNickName() => nickname;
-
-  int getAuth() => authLevel;
-
-  String getCityCode() => schoolLocalCode;
-
-  // set
-
-  setGrade(int Grade) => this.grade = Grade;
-
-  setClass(int Class) => this.Class = Class;
-
-  setSchoolCode(int SchoolCode) => this.schoolCode = SchoolCode;
-
-  setUid(String uid) => this.uid = uid;
-
-  setNickName(String nickname) => this.nickname = nickname;
-
-  setAuth(int auth) => this.authLevel = auth;
-  setSchoolLocalCode(String code)=> schoolLocalCode=code;
 
   factory UserProfile.guestData() {
     return UserProfile(
@@ -155,12 +126,12 @@ class SavePro {
   }
 
   setUserProfile(UserProfile UserProfile) {
-    _setUid(UserProfile.getUid());
-    _setNickName(UserProfile.getNickName());
-    _setAuthLevel(UserProfile.getAuth());
-    _setGrade(UserProfile.getGrade());
-    _setClass(UserProfile.getClass());
-    _setSchoolCode(UserProfile.getSchoolCode());
+    _setUid(UserProfile.uid);
+    _setNickName(UserProfile.nickname);
+    _setAuthLevel(UserProfile.authLevel);
+    _setGrade(UserProfile.grade);
+    _setClass(UserProfile.Class);
+    _setSchoolCode(UserProfile.schoolCode);
     print('saveKey: 유저 값 저장');
   }
 }

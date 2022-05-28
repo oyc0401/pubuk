@@ -139,9 +139,9 @@ class _settingState extends State<setting> {
           width: 200,
           child: TextFormField(
             onChanged: (text) {
-              userData.setNickName(text);
+              userData.nickname=text;
             },
-            initialValue: userData.getNickName(),
+            initialValue: userData.nickname,
             keyboardType: TextInputType.multiline,
             maxLines: 1,
             decoration: const InputDecoration(border: InputBorder.none),
@@ -152,7 +152,7 @@ class _settingState extends State<setting> {
   }
 
   Widget gradeSection() {
-    int myGrade = userData.getGrade();
+    int myGrade = userData.grade;
 
     return Row(
       children: [
@@ -163,7 +163,7 @@ class _settingState extends State<setting> {
   }
 
   Widget classSection() {
-    int myClass = userData.getClass();
+    int myClass = userData.Class;
 
     return Row(
       children: [
@@ -201,14 +201,14 @@ class _settingState extends State<setting> {
   }
 
   Future<void> changeGrade() async {
-    int Grade = await getGradeDialog(context, userData.getGrade());
-    userData.setGrade(Grade);
+    int Grade = await getGradeDialog(context, userData.grade);
+    userData.grade=(Grade);
     setState(() {});
   }
 
   Future<void> changeClass() async {
-    int Class = await getClassDialog(context, userData.getClass());
-    userData.setClass(Class);
+    int Class = await getClassDialog(context, userData.Class);
+    userData.Class=(Class);
     setState(() {});
   }
 

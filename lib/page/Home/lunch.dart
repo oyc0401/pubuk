@@ -23,8 +23,8 @@ class _LunchState extends State<Lunch> {
 
   Future<List<List<String>>> getList() async {
     UserProfile userData =await UserProfile.Get();
-    int schoolCode= userData.getSchoolCode();
-    String cityCode= userData.getCityCode();
+    int schoolCode= userData.schoolCode;
+    String cityCode= userData.schoolLocalCode;
 
     LunchDownloader lunchDownloader = LunchDownloader(SchoolCode: schoolCode,CityCode: cityCode);
     return await lunchDownloader.getCleanedList();

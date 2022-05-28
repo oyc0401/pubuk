@@ -43,8 +43,8 @@ class _writeState extends State<write> {
               if (text != '') {
                 writepubuk(
                         collection: 'pubuk',
-                        id: userData.getUid(),
-                        nickname: userData.getNickName(),
+                        id: userData.uid,
+                        nickname: userData.nickname,
                         text: text,
                         title: ' ')
                     .addText()

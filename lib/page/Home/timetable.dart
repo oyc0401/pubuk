@@ -24,7 +24,7 @@ class _timetableState extends State<timetable> {
   int _grade = 0;
   int _class = 0;
   int _schoolCode = 0;
-  String _cityCode="J10";
+  String _schoolLocalCode="J10";
 
   //Future? GettingDataOnlyOne;
 
@@ -36,10 +36,10 @@ class _timetableState extends State<timetable> {
 
   getInfo() async {
     UserProfile userData = await UserProfile.Get();
-    _grade = userData.getGrade();
-    _class = userData.getClass();
-    _schoolCode = userData.getSchoolCode();
-    _cityCode=userData.getCityCode();
+    _grade = userData.grade;
+    _class = userData.Class;
+    _schoolCode = userData.schoolCode;
+    _schoolLocalCode=userData.schoolLocalCode;
 
   }
 
@@ -47,7 +47,7 @@ class _timetableState extends State<timetable> {
     await getInfo();
 
     TableDownloader tabledown =
-        TableDownloader(Grade: _grade, Class: _class, SchoolCode: _schoolCode,CityCode: _cityCode);
+        TableDownloader(Grade: _grade, Class: _class, SchoolCode: _schoolCode,CityCode: _schoolLocalCode);
     Map cleanedmap = await tabledown.getCleanedMap();
 
     return cleanedmap;

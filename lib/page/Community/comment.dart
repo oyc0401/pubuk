@@ -49,8 +49,8 @@ class _commentState extends State<comment> {
         .doc(nowdate)
         .set({
       'ID': nowdate,
-      'userid': userData.getUid(),
-      'nickname': userData.getNickName(),
+      'userid': userData.uid,
+      'nickname': userData.nickname,
       'text': Writedreply,
       'url': widget.json['ID'],
       'date': nowdate,
