@@ -1,23 +1,19 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 class UserProfile {
-  String uid;
-
-  String nickname;
-
-  int authLevel;
+  String uid; // 유저 id
+  String nickname; // 닉네임
+  int authLevel; // 자신의 권한 1 = user, 2= teacher, 3 = parents, 10 = master
 
   // need to make school
-  int grade;
 
-  int Class;
-
-  String schoolLocalCode;
-
-  String schoolName;
-
-  int schoolLevel;
-
-  int schoolCode;
-  String certifiedSchoolCode;
+  String schoolLocalCode; // 학교 교육청 코드
+  int schoolCode; // 학교 코드
+  String schoolName; // 학교 이름
+  int schoolLevel; // 1 = 초등학교, 2 = 중학교, 3 = 고등학교
+  int grade; // 학년
+  int Class; // 반
+  String certifiedSchoolCode; // 인증 받은 학교 코드
 
   UserProfile(
       {this.uid = '',
@@ -30,6 +26,18 @@ class UserProfile {
       this.schoolLevel = 3,
       this.schoolCode = 7530072,
       this.certifiedSchoolCode = "null"});
+
+  static Future<void> Save(UserProfile userProfile) async {
+    SavePro savePro = await SavePro.Instance();
+    await savePro.setUserProfile(userProfile);
+  }
+
+  static Future<UserProfile> Get() async {
+    SavePro savePro = await SavePro.Instance();
+    return  savePro.getUserProfile();
+  }
+
+  // get
 
   int getGrade() => grade;
 
@@ -45,6 +53,8 @@ class UserProfile {
 
   String getCityCode() => schoolLocalCode;
 
+  // set
+
   setGrade(int Grade) => this.grade = Grade;
 
   setClass(int Class) => this.Class = Class;
@@ -56,6 +66,7 @@ class UserProfile {
   setNickName(String nickname) => this.nickname = nickname;
 
   setAuth(int auth) => this.authLevel = auth;
+  setSchoolLocalCode(String code)=> schoolLocalCode=code;
 
   factory UserProfile.guestData() {
     return UserProfile(
@@ -78,5 +89,103 @@ class UserProfile {
       schoolLevel: map['schoolLevel'],
       certifiedSchoolCode: map['certifiedSchoolCode'],
     );
+  }
+}
+
+class SavePro {
+  // _set 하는것은 Instance가 필요 없지만
+  // _get 은 퓨처값을 주지 말아야 하기 때문에 Instance가 필요하다.
+  late SharedPreferences prefs;
+
+  static Instance() async {
+    SavePro key = SavePro();
+    key.prefs = await SharedPreferences.getInstance();
+    return key;
+  }
+
+  /// _set
+  _setGrade(int Grade) => prefs.setInt('Grade', Grade);
+
+  _setClass(int Class) => prefs.setInt('Class', Class);
+
+  _setCityCode(String CityCode) => prefs.setString("CityCode", CityCode);
+
+  _setSchoolCode(int SchoolCode) => prefs.setInt('SchoolCode', SchoolCode);
+
+  _setUid(String uid) => prefs.setString('ID', uid);
+
+  _setNickName(String nickname) => prefs.setString('Nickname', nickname);
+
+  _setAuthLevel(int auth) => prefs.setInt('AuthLevel', auth);
+
+  _setSchoolName(String name) => prefs.setString('schoolName', name);
+
+  _setSchoolLevel(int level) => prefs.setInt('schoolLevel', level);
+
+  /// _get
+  int _getGrade() => prefs.getInt('Grade') ?? 1;
+
+  int _getClass() => prefs.getInt('Class') ?? 1;
+
+  String _getCityCode() => prefs.getString('CityCode') ?? "J10";
+
+  int _getSchoolCode() => prefs.getInt('SchoolCode') ?? 7530072;
+
+  String _getUid() => prefs.getString('ID') ?? '게스트id';
+
+  String _getNickName() => prefs.getString('Nickname') ?? '게스트';
+
+  int _getAuthLevel() => prefs.getInt('AuthLevel') ?? 1;
+
+  String _getSchoolName() => prefs.getString('schoolName') ?? "00고등학교";
+
+  int _getSchoolLevel() => prefs.getInt('schoolLevel') ?? 3;
+
+  UserProfile getUserProfile() {
+    return UserProfile(
+        uid: _getUid(),
+        nickname: _getNickName(),
+        authLevel: _getAuthLevel(),
+        grade: _getGrade(),
+        Class: _getClass(),
+        schoolLocalCode: _getCityCode(),
+        schoolCode: _getSchoolCode(),
+        schoolName: _getSchoolName(),
+        schoolLevel: 3);
+  }
+
+  setUserProfile(UserProfile UserProfile) {
+    _setUid(UserProfile.getUid());
+    _setNickName(UserProfile.getNickName());
+    _setAuthLevel(UserProfile.getAuth());
+    _setGrade(UserProfile.getGrade());
+    _setClass(UserProfile.getClass());
+    _setSchoolCode(UserProfile.getSchoolCode());
+    print('saveKey: 유저 값 저장');
+  }
+}
+
+class SaveKeyHandler extends SavePro {
+  static Instance() async {
+    SaveKeyHandler key = SaveKeyHandler();
+    key.prefs = await SharedPreferences.getInstance();
+    return key;
+  }
+
+  printAll() {
+    print(prefs.getKeys());
+    print(prefs.get('ID'));
+    print(prefs.get('SchoolCode'));
+    print(prefs.get('Grade'));
+    print(prefs.get('Class'));
+    print(prefs.get('Nickname'));
+    print(prefs.get('Auth'));
+  }
+
+  void SwitchGuest() {
+    _setUid('게스트');
+    _setNickName('게스트');
+    _setAuthLevel(1);
+    print('saveKey: 게스트가 되었습니다.');
   }
 }

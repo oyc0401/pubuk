@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
 import '../../DB/userProfile.dart';
-import '../../DB/saveKey.dart';
+
 import '../../Server/GetFirebase.dart';
 import 'comment.dart';
 import 'community.dart';
@@ -33,8 +33,7 @@ class _viewState extends State<view> {
   /// 로딩전 초기값
 
   getUserData() async {
-    SaveKey key = await SaveKey.Instance();
-    userData = key.getUserProfile();
+    userData = await UserProfile.Get();
   }
 
   @override

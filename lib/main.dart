@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutterschool/DB/saveKey.dart';
+
 import 'package:flutterschool/page/Home/home.dart';
 import 'package:flutterschool/page/SignIn/register.dart';
 import 'package:flutterschool/page/SignIn/searchSchool.dart';

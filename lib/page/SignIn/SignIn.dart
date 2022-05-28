@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/DB/saveKey.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -91,8 +90,7 @@ class _SignInState extends State<SignIn> {
         print(map);
 
         UserProfile userProfile = UserProfile.FirebaseUser(map!);
-        SaveKey saveKey = await SaveKey.Instance();
-        await saveKey.setUserProfile(userProfile);
+        await UserProfile.Save(userProfile);
 
         NavigateHome();
 

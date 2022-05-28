@@ -6,7 +6,6 @@ import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/userProfile.dart';
-import '../../DB/saveKey.dart';
 
 class write extends StatefulWidget {
   const write({Key? key}) : super(key: key);
@@ -22,8 +21,7 @@ class _writeState extends State<write> {
   /// 로딩전 초기값
 
   getUserData() async {
-    SaveKey key = SaveKey.Instance();
-    userData = key.getUserProfile();
+    userData =await UserProfile.Get();
   }
 
   @override

@@ -1,12 +1,14 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutterschool/DB/saveKey.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:select_dialog/select_dialog.dart';
+
+import '../../DB/userProfile.dart';
 
 class findSchool extends StatefulWidget {
   const findSchool({Key? key}) : super(key: key);
@@ -112,9 +114,12 @@ class _findSchoolState extends State<findSchool> {
   }
 
   void saveSchoolCode(int schoolCode, String cityCode) async {
-    SaveKey saveKey = await SaveKey.Instance();
-    saveKey.setCityCode(cityCode);
-    saveKey.setSchoolCode(schoolCode);
+    UserProfile myUser=await UserProfile.Get();
+    myUser.setSchoolLocalCode(cityCode);
+    myUser.setSchoolCode(schoolCode);
+    await UserProfile.Save(myUser);
+
+
     Navigator.of(context).pop('complete');
 
     print("저장 $cityCode, $schoolCode");

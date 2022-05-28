@@ -7,7 +7,7 @@ import 'package:flutterschool/page/Profile/findschool.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/userProfile.dart';
-import '../../DB/saveKey.dart';
+
 
 class setting extends StatefulWidget {
   const setting({Key? key}) : super(key: key);
@@ -36,8 +36,7 @@ class _settingState extends State<setting> {
 
   Future<UserProfile> getUserData() async {
     print("정보 불러오기!");
-    SaveKey saveKey = await SaveKey.Instance();
-    return saveKey.getUserProfile();
+    return await UserProfile.Get();
   }
 
   @override
@@ -176,8 +175,7 @@ class _settingState extends State<setting> {
 
 
   Future<void> Save(UserProfile myUserData) async {
-    SaveKey key = await SaveKey.Instance();
-    key.setUserProfile(myUserData);
+    await UserProfile.Save(myUserData);
 
     // FirebaseFirestore.instance
     //     .collection('user')

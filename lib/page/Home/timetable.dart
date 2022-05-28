@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 import '../../DB/userProfile.dart';
-import '../../DB/saveKey.dart';
 
 class timetable extends StatefulWidget {
   timetable({Key? key}) : super(key: key);
@@ -36,8 +35,7 @@ class _timetableState extends State<timetable> {
   }
 
   getInfo() async {
-    SaveKey key = await SaveKey.Instance();
-    UserProfile userData = key.getUserProfile();
+    UserProfile userData = await UserProfile.Get();
     _grade = userData.getGrade();
     _class = userData.getClass();
     _schoolCode = userData.getSchoolCode();

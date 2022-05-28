@@ -6,7 +6,6 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 import '../../DB/userProfile.dart';
-import '../../DB/saveKey.dart';
 
 class Lunch extends StatefulWidget {
   const Lunch({Key? key}) : super(key: key);
@@ -23,14 +22,9 @@ class _LunchState extends State<Lunch> {
 
 
   Future<List<List<String>>> getList() async {
-
-    SaveKey key = await SaveKey.Instance();
-    UserProfile userData = key.getUserProfile();
-
+    UserProfile userData =await UserProfile.Get();
     int schoolCode= userData.getSchoolCode();
-
     String cityCode= userData.getCityCode();
-
 
     LunchDownloader lunchDownloader = LunchDownloader(SchoolCode: schoolCode,CityCode: cityCode);
     return await lunchDownloader.getCleanedList();

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/DB/saveKey.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/page/Home/home.dart';
 import 'package:flutterschool/page/SignIn/searchSchool.dart';
@@ -65,7 +64,7 @@ class _registerState extends State<register> {
           });
     }
 
-    SaveKey savekey =await SaveKey.Instance();
+
     userProfile.uid = user!.uid;
     userProfile.nickname = nickname;
     userProfile.grade = _grade;
@@ -73,7 +72,8 @@ class _registerState extends State<register> {
     userProfile.schoolName = schoolName;
     userProfile.schoolLocalCode = schoolLocalCode;
     userProfile.schoolLevel = schoolLevel;
-    savekey.setUserProfile(userProfile);
+
+    await UserProfile.Save(userProfile);
 
     Navigator.pushAndRemoveUntil(
         context,

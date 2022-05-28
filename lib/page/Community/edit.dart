@@ -7,7 +7,6 @@ import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/userProfile.dart';
-import '../../DB/saveKey.dart';
 
 class edit extends StatefulWidget {
   edit({Key? key, required this.url}) : super(key: key);
@@ -31,8 +30,8 @@ class _editState extends State<edit> {
   /// 로딩전 초기값
 
   getUserData() async {
-    SaveKey key = await SaveKey.Instance();
-    userData = key.getUserProfile();
+
+    userData =await UserProfile.Get();
   }
 
   @override

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/DB/saveKey.dart';
+
 import 'package:flutterschool/page/Profile/accountInfo.dart';
 import 'package:flutterschool/page/Profile/setting.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
@@ -27,9 +27,7 @@ class _profileState extends State<profile> {
   }
 
   Future<UserProfile> getProfile() async {
-    SaveKey saveKey = await SaveKey.Instance();
-    UserProfile userProfile = saveKey.getUserProfile();
-    return userProfile;
+    return await UserProfile.Get();
   }
 
   User? getUser() {

@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
 import '../../DB/userProfile.dart';
-import '../../DB/saveKey.dart';
+
 import '../../Server/GetFirebase.dart';
 import 'community.dart';
 
@@ -31,8 +31,7 @@ class _commentState extends State<comment> {
   /// 로딩전 초기값
 
   getUserData() async {
-    SaveKey key = await SaveKey.Instance();
-    userData = key.getUserProfile();
+    userData=await UserProfile.Get();
   }
 
   Future<void> writeReply() async {
