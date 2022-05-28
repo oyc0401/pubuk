@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'Home/checkPage.dart';
 import 'Home/home.dart';
 
 class MainPage extends StatefulWidget {

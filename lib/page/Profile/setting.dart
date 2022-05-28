@@ -6,7 +6,7 @@ import 'package:flutterschool/page/Profile/findschool.dart';
 
 import 'package:select_dialog/select_dialog.dart';
 
-import '../../DB/UserData.dart';
+import '../../DB/userProfile.dart';
 import '../../DB/saveKey.dart';
 
 class setting extends StatefulWidget {
@@ -17,14 +17,14 @@ class setting extends StatefulWidget {
 }
 
 class _settingState extends State<setting> {
-  /// [getUserData]에서 [UserData]를 불러온다.
+  /// [getUserData]에서 [UserProfile]를 불러온다.
   /// [isfirst]가 true면 [userData]에 집어넣고 [isfirst]를 false로 바꾼다.
   /// [userData]는 중요한 역할을 하고있다.
   /// 닉네임, 학년, 반을 바꾸면 이 내부 값을 변화시킨다.
   /// 저장 버튼을 누르면 [userData]에 있는 값을 [saveKey]에 저장하고 화면을 종료한다.
   /// 나중에 로그인을 구현한다면 저장을 할 때 파이어베이스의 유저정보도 함께 바꿔야 한다.
 
-  UserData userData = UserData.noData();
+  UserProfile userData = UserProfile();
   bool isfirst = true;
   Future? GettingDataOnlyOne;
 
@@ -34,10 +34,10 @@ class _settingState extends State<setting> {
     GettingDataOnlyOne = getUserData();
   }
 
-  Future<UserData> getUserData() async {
+  Future<UserProfile> getUserData() async {
     print("정보 불러오기!");
     SaveKey saveKey = await SaveKey.Instance();
-    return saveKey.getUserData();
+    return saveKey.getUserProfile();
   }
 
   @override
@@ -175,9 +175,9 @@ class _settingState extends State<setting> {
   }
 
 
-  Future<void> Save(UserData myUserData) async {
+  Future<void> Save(UserProfile myUserData) async {
     SaveKey key = await SaveKey.Instance();
-    key.setUserData(myUserData);
+    key.setUserProfile(myUserData);
 
     // FirebaseFirestore.instance
     //     .collection('user')

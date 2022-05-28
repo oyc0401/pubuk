@@ -6,16 +6,6 @@ import 'package:flutterschool/page/SignIn/searchSchool.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:select_dialog/select_dialog.dart';
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  // Optional clientId
-  clientId:
-      '38235317642-4i8ul6m33g6ljpap0bk2b46lv05k1j79.apps.googleusercontent.com',
-  scopes: <String>[
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
-
 class register extends StatefulWidget {
   const register({Key? key}) : super(key: key);
 
@@ -24,21 +14,57 @@ class register extends StatefulWidget {
 }
 
 class _registerState extends State<register> {
-  String univLocalCode = "";
-  String univName = "학교를 선택해주세요";
-  String univCode = "9421";
-  int univLevel = 3;
+  String schoolLocalCode = "";
+  String schoolName = "학교를 선택해주세요";
+  String schoolCode = "9421";
+  int schoolLevel = 3;
   int _grade = 1;
   int _class = 1;
-
   String nickname = "";
+
+  User? user;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //das();
+
+    user = FirebaseAuth.instance.currentUser;
   }
+
+  signUp() async {
+    print(schoolName);
+    print(schoolCode);
+    print(_grade);
+    print(_class);
+    print(nickname);
+
+    if (user != null) {
+      print(user!.uid);
+      FirebaseFirestore.instance
+          .collection('user')
+          .doc(user!.uid)
+          .set({
+            'uid': user!.uid,
+            'authLevel': 1,
+            'class': 1,
+            'grade': 1,
+            'nickname': nickname,
+            'schoolLocalCode': schoolLocalCode,
+            'schoolName': schoolName,
+            'schoolCode': schoolCode,
+            'schoolLevel': schoolLevel,
+            'certifiedSchoolCode': 'null',
+          })
+          .then((value) async {})
+          .catchError((error) {
+            print("Failed to Sign in: $error");
+          });
+    }
+    //print(_class);
+  }
+
+  das() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +108,7 @@ class _registerState extends State<register> {
         ),
         child: Center(
           child: Text(
-            "$univName",
+            "$schoolName",
             style: TextStyle(
               fontSize: 18,
               color: Colors.black,
@@ -100,15 +126,13 @@ class _registerState extends State<register> {
         builder: (context) => const SearchSchool(),
       ),
     );
-    School school=School.listToSchool(list);
+    School school = School.listToSchool(list);
 
-    univLocalCode = school.cityCode;
-    univName = school.name;
-    univCode = school.schoolCode;
-    univLevel = school.level;
-    setState(() {
-
-    });
+    schoolLocalCode = school.cityCode;
+    schoolName = school.name;
+    schoolCode = school.schoolCode;
+    schoolLevel = school.level;
+    setState(() {});
   }
 
   Widget nickNameSection() {
@@ -258,36 +282,20 @@ class _registerState extends State<register> {
     return initClass;
   }
 
-  signUp() async {
-    print(univName);
-    print(univCode);
-    print(_grade);
-    print(_class);
-    print(nickname);
-    //print(_class);
-  }
-
-  das() async {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {});
-
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      print('User is currently signed out!');
-    } else {
-      print('User is signed in!');
-      print(user.uid);
-    }
-
-    // FirebaseFirestore.instance
-    //     .collection('user')
-    //     .doc(id)
-    //     .get()
-    //     .then((value) async {
-    //   SaveKey key = await SaveKey.Instance();
-    //   key.SetUser(value['ID'], value['nickname'], value['auth'], value['grade'],
-    //       value['class']);
-    // }).catchError((error) {
-    //   print("Failed to Sign in: $error");
-    // });
-  }
+// addUser(){
+//   FirebaseFirestore.instance.collection('users').doc(date).set({
+//     'ID': date,
+//     'userid': id,
+//     'nickname': nickname,
+//     'text': text,
+//     'title': title,
+//     'heart': 0,
+//     'commment': 0,
+//     'auth': auth,
+//     'image': image,
+//     'date': date,
+//   }).then((value) {
+//     print("User Added");
+//   }).catchError((error) => print("Failed to add user: $error"));
+// }
 }

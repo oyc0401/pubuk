@@ -9,7 +9,7 @@ import 'dart:convert' show json;
 
 import 'package:http/http.dart' as http;
 
-import '../Home/home.dart';
+import '../Home/checkPage.dart';
 import 'register.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -38,7 +38,7 @@ class _SignInState extends State<SignIn> {
     super.initState();
 
     /// 테스트기간에만 주석 해놓는것이다. 이 페이지에 들어오면 무조건 로그인 해제 상태여야 한다.
-    _handleSignOut();
+    //_handleSignOut();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       _currentUser = account;
 

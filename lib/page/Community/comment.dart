@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
-import '../../DB/UserData.dart';
+import '../../DB/userProfile.dart';
 import '../../DB/saveKey.dart';
 import '../../Server/GetFirebase.dart';
 import 'community.dart';
@@ -25,14 +25,14 @@ class _commentState extends State<comment> {
   /// 로딩전 초기값
   List<Widget> reply = [];
   String Writedreply = 'ff';
-  UserData userData = UserData.guestData();
+  UserProfile userData = UserProfile.guestData();
   bool isReplyFieldOpen = false;
 
   /// 로딩전 초기값
 
   getUserData() async {
     SaveKey key = await SaveKey.Instance();
-    userData = key.getUserData();
+    userData = key.getUserProfile();
   }
 
   Future<void> writeReply() async {

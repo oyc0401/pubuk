@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
-import '../../DB/UserData.dart';
+import '../../DB/userProfile.dart';
 import '../../DB/saveKey.dart';
 
 class write extends StatefulWidget {
@@ -18,12 +18,12 @@ class write extends StatefulWidget {
 class _writeState extends State<write> {
   /// 로딩전 초기값
   String text = '';
-  UserData userData = UserData.guestData();
+  UserProfile userData = UserProfile.guestData();
   /// 로딩전 초기값
 
   getUserData() async {
     SaveKey key = SaveKey.Instance();
-    userData = key.getUserData();
+    userData = key.getUserProfile();
   }
 
   @override

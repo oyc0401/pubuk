@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
-import '../../DB/UserData.dart';
+import '../../DB/userProfile.dart';
 import '../../DB/saveKey.dart';
 
 class edit extends StatefulWidget {
@@ -27,12 +27,12 @@ class _editState extends State<edit> {
     decoration:
         const InputDecoration(hintText: "로딩중...", border: InputBorder.none),
   );
-  UserData userData = UserData.guestData();
+  UserProfile userData = UserProfile.guestData();
   /// 로딩전 초기값
 
   getUserData() async {
     SaveKey key = await SaveKey.Instance();
-    userData = key.getUserData();
+    userData = key.getUserProfile();
   }
 
   @override

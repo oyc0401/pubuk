@@ -1,6 +1,5 @@
+import 'package:flutterschool/DB/userProfile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'UserData.dart';
 
 class SaveKey {
   // set 하는것은 Instance가 필요 없지만
@@ -18,7 +17,7 @@ class SaveKey {
 
   setClass(int Class) => prefs.setInt('Class', Class);
 
-  setCityCode(String CityCode)=>prefs.setString("CityCode", CityCode);
+  setCityCode(String CityCode) => prefs.setString("CityCode", CityCode);
 
   setSchoolCode(int SchoolCode) => prefs.setInt('SchoolCode', SchoolCode);
 
@@ -26,48 +25,54 @@ class SaveKey {
 
   setNickName(String nickname) => prefs.setString('Nickname', nickname);
 
-  setAuth(String auth) => prefs.setString('Auth', auth);
+  setAuthLevel(int auth) => prefs.setInt('AuthLevel', auth);
+
+  setSchoolName(String name)=>prefs.setString('schoolName', name);
+  setSchoolLevel(String level)=>prefs.setString('schoolLevel', level);
 
   /// get
-  getGrade() => prefs.getInt('Grade') ?? 1;
+  int getGrade() => prefs.getInt('Grade') ?? 1;
 
-  getClass() => prefs.getInt('Class') ?? 1;
+  int getClass() => prefs.getInt('Class') ?? 1;
 
-  getCityCode()=>prefs.getString('CityCode') ?? "J10";
+  String getCityCode() => prefs.getString('CityCode') ?? "J10";
 
-  getSchoolCode() => prefs.getInt('SchoolCode') ?? 7530072;
+  int getSchoolCode() => prefs.getInt('SchoolCode') ?? 7530072;
 
-  getUid() => prefs.getString('ID') ?? '게스트id';
+  String getUid() => prefs.getString('ID') ?? '게스트id';
 
-  getNickName() => prefs.getString('Nickname') ?? '게스트';
+  String getNickName() => prefs.getString('Nickname') ?? '게스트';
 
-  getAuth() => prefs.getString('Auth') ?? 'guest';
+  int getAuthLevel() => prefs.getInt('AuthLevel') ?? 1;
 
-  UserData getUserData() {
-    return UserData(
+  String getSchoolName() => prefs.getString('schoolName') ?? "00고등학교";
+  String getSchoolLevel() => prefs.getString('schoolLevel') ?? "고";
+
+  UserProfile getUserProfile() {
+    return UserProfile(
         uid: getUid(),
         nickname: getNickName(),
-        auth: getAuth(),
-        Grade: getGrade(),
+        authLevel: getAuthLevel(),
+        grade: getGrade(),
         Class: getClass(),
-        CityCode: getCityCode(),
-        SchoolCode: getSchoolCode());
+        cityCode: getCityCode(),
+        schoolCode: getSchoolCode(),
+        schoolName: getSchoolName(),
+    schoolLevel: "고");
   }
 
-  setUserData(UserData userData) {
-    setUid(userData.getUid());
-    setNickName(userData.getNickName());
-    setAuth(userData.getAuth());
-    setGrade(userData.getGrade());
-    setClass(userData.getClass());
-    setSchoolCode(userData.getSchoolCode());
+  setUserProfile(UserProfile UserProfile) {
+    setUid(UserProfile.getUid());
+    setNickName(UserProfile.getNickName());
+    setAuthLevel(UserProfile.getAuth());
+    setGrade(UserProfile.getGrade());
+    setClass(UserProfile.getClass());
+    setSchoolCode(UserProfile.getSchoolCode());
     print('saveKey: 유저 값 저장');
   }
 }
 
-
-class SaveKeyHandler extends SaveKey{
-
+class SaveKeyHandler extends SaveKey {
   static Instance() async {
     SaveKeyHandler key = SaveKeyHandler();
     key.prefs = await SharedPreferences.getInstance();
@@ -87,7 +92,7 @@ class SaveKeyHandler extends SaveKey{
   void SwitchGuest() {
     setUid('게스트');
     setNickName('게스트');
-    setAuth('게스트');
+    setAuthLevel(1);
     print('saveKey: 게스트가 되었습니다.');
   }
 }
