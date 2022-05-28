@@ -27,8 +27,9 @@ class SaveKey {
 
   setAuthLevel(int auth) => prefs.setInt('AuthLevel', auth);
 
-  setSchoolName(String name)=>prefs.setString('schoolName', name);
-  setSchoolLevel(String level)=>prefs.setString('schoolLevel', level);
+  setSchoolName(String name) => prefs.setString('schoolName', name);
+
+  setSchoolLevel(int level) => prefs.setInt('schoolLevel', level);
 
   /// get
   int getGrade() => prefs.getInt('Grade') ?? 1;
@@ -46,7 +47,8 @@ class SaveKey {
   int getAuthLevel() => prefs.getInt('AuthLevel') ?? 1;
 
   String getSchoolName() => prefs.getString('schoolName') ?? "00고등학교";
-  String getSchoolLevel() => prefs.getString('schoolLevel') ?? "고";
+
+  int getSchoolLevel() => prefs.getInt('schoolLevel') ?? 3;
 
   UserProfile getUserProfile() {
     return UserProfile(
@@ -55,10 +57,10 @@ class SaveKey {
         authLevel: getAuthLevel(),
         grade: getGrade(),
         Class: getClass(),
-        cityCode: getCityCode(),
+        schoolLocalCode: getCityCode(),
         schoolCode: getSchoolCode(),
         schoolName: getSchoolName(),
-    schoolLevel: "고");
+        schoolLevel: 3);
   }
 
   setUserProfile(UserProfile UserProfile) {

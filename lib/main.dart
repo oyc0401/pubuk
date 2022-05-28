@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      //home: const register(),
+      //home: const SignIn(),
       //home: const SwitchPage(),
       home: MyHomePage(title: '학교'),
     );

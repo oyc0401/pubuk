@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/saveKey.dart';
+import 'package:flutterschool/DB/userProfile.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -10,6 +13,7 @@ import 'dart:convert' show json;
 import 'package:http/http.dart' as http;
 
 import '../Home/checkPage.dart';
+import '../Home/home.dart';
 import 'register.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -38,20 +42,15 @@ class _SignInState extends State<SignIn> {
     super.initState();
 
     /// 테스트기간에만 주석 해놓는것이다. 이 페이지에 들어오면 무조건 로그인 해제 상태여야 한다.
-    //_handleSignOut();
+    _handleSignOut();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       _currentUser = account;
-
-      if (account != null) {
-        print(account.toString());
-      }
-      print("로그인?");
-      navigate(account);
+      print("로그인 정보가 변화하면 이게 울림");
     });
     _googleSignIn.signInSilently();
   }
 
-  Future GoogleLogin() async {
+  Future signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
@@ -63,13 +62,10 @@ class _SignInState extends State<SignIn> {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
-      ///
-      ///
-      print(userCredential.additionalUserInfo);
-      print(userCredential.credential);
-      print(userCredential.user);
-
-
+      // print(userCredential.additionalUserInfo);
+      // print(userCredential.credential);
+      // print(userCredential.user);
+      navigate();
     } catch (error) {
       print(error);
     }
@@ -77,16 +73,41 @@ class _SignInState extends State<SignIn> {
 
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
-  Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
-    final OAuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+  void navigate() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    print("이동중..");
+
+    if (user != null) {
+
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('user')
+          .doc(user.uid)
+          .get();
+      Map? map = snapshot.data();
+
+      if (snapshot.exists) {
+        print("유저 정보가 있습니다.");
+        print(map);
+
+        UserProfile userProfile = UserProfile.FirebaseUser(map!);
+        SaveKey saveKey = await SaveKey.Instance();
+        await saveKey.setUserProfile(userProfile);
+
+        NavigateHome();
+
+      } else {
+        print("유저 정보가 없습니다.");
+        NavigeteRegister();
+      }
+
+
+
+    } else {
+      print("이게 왜?");
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +160,7 @@ class _SignInState extends State<SignIn> {
       ),
       onTap: () {
         print("google Login touch");
-        GoogleLogin();
+        signInWithGoogle();
       },
     );
   }
@@ -163,24 +184,22 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  void navigate(GoogleSignInAccount? user) {
-    if (user != null) {
-      print("유저 정보가 있습니다.");
-      Navigator.pushReplacement(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => const register(),
-        ),
-      );
-    } else {
-      print("유저는 현재 비 로그인 상태이다.");
-    }
-
-    //       Navigator.pushReplacement(
-    //     context,
-    //     CupertinoPageRoute(
-    //       builder: (context) => const MyHomePage(title: "학교"),
-    //     ),
-    //   );
+  void NavigeteRegister(){
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const register(),
+      ),
+    );
   }
+  void NavigateHome(){
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const MyHomePage(title: "학교"),
+      ),
+    );
+  }
+
+
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/Home/home.dart';
-import 'package:flutterschool/page/Profile/login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'SignIn/register.dart';
@@ -69,14 +68,7 @@ class _SwitchPageState extends State<SwitchPage> {
     //   );
   }
 
-  void navigateLogin() {
-    Navigator.pushReplacement(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => const login(),
-      ),
-    );
-  }
+
 
   void navigateRegister() {
     Navigator.pushReplacement(

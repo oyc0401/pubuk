@@ -1,27 +1,35 @@
 class UserProfile {
-  String uid ;
-  String nickname ;
-  int authLevel ;
+  String uid;
+
+  String nickname;
+
+  int authLevel;
 
   // need to make school
-  int grade ;
-  int Class ;
-  String cityCode ;
-  String schoolName ;
-  String schoolLevel ;
-  int schoolCode;
+  int grade;
 
-  UserProfile({
-    this.uid = '',
-    this.nickname = '',
-    this.authLevel = 1,
-    this.grade = 1,
-    this.Class = 1,
-    this.cityCode = "J10",
-    this.schoolName = "부천북고등학교",
-    this.schoolLevel = "고",
-    this.schoolCode = 7530072,
-  });
+  int Class;
+
+  String schoolLocalCode;
+
+  String schoolName;
+
+  int schoolLevel;
+
+  int schoolCode;
+  String certifiedSchoolCode;
+
+  UserProfile(
+      {this.uid = '',
+      this.nickname = '',
+      this.authLevel = 1,
+      this.grade = 1,
+      this.Class = 1,
+      this.schoolLocalCode = "J10",
+      this.schoolName = "부천북고등학교",
+      this.schoolLevel = 3,
+      this.schoolCode = 7530072,
+      this.certifiedSchoolCode = "null"});
 
   int getGrade() => grade;
 
@@ -35,7 +43,7 @@ class UserProfile {
 
   int getAuth() => authLevel;
 
-  String getCityCode() => cityCode;
+  String getCityCode() => schoolLocalCode;
 
   setGrade(int Grade) => this.grade = Grade;
 
@@ -53,7 +61,22 @@ class UserProfile {
     return UserProfile(
       uid: 'guest',
       nickname: 'guest',
-      authLevel: 1,);
+      authLevel: 1,
+    );
   }
 
+  factory UserProfile.FirebaseUser(Map map) {
+    return UserProfile(
+      uid: map['uid'],
+      authLevel: map['authLevel'],
+      Class: map['class'],
+      grade: map['grade'],
+      nickname: map['nickname'],
+      schoolLocalCode: map['schoolLocalCode'],
+      schoolName: map['schoolName'],
+      schoolCode: map['schoolCode'],
+      schoolLevel: map['schoolLevel'],
+      certifiedSchoolCode: map['certifiedSchoolCode'],
+    );
+  }
 }

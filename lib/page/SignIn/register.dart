@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/saveKey.dart';
+import 'package:flutterschool/DB/userProfile.dart';
+import 'package:flutterschool/page/Home/home.dart';
 import 'package:flutterschool/page/SignIn/searchSchool.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:select_dialog/select_dialog.dart';
@@ -14,22 +17,21 @@ class register extends StatefulWidget {
 }
 
 class _registerState extends State<register> {
-  String schoolLocalCode = "";
-  String schoolName = "학교를 선택해주세요";
-  String schoolCode = "9421";
+  String schoolLocalCode = "J10";
+  String schoolName = "부천북고";
+  int schoolCode = 7530072;
   int schoolLevel = 3;
   int _grade = 1;
   int _class = 1;
   String nickname = "";
 
   User? user;
+  UserProfile userProfile = UserProfile();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    user = FirebaseAuth.instance.currentUser;
   }
 
   signUp() async {
@@ -38,6 +40,7 @@ class _registerState extends State<register> {
     print(_grade);
     print(_class);
     print(nickname);
+    user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
       print(user!.uid);
@@ -61,10 +64,25 @@ class _registerState extends State<register> {
             print("Failed to Sign in: $error");
           });
     }
-    //print(_class);
+
+    SaveKey savekey =await SaveKey.Instance();
+    userProfile.uid = user!.uid;
+    userProfile.nickname = nickname;
+    userProfile.grade = _grade;
+    userProfile.Class = _class;
+    userProfile.schoolName = schoolName;
+    userProfile.schoolLocalCode = schoolLocalCode;
+    userProfile.schoolLevel = schoolLevel;
+    savekey.setUserProfile(userProfile);
+
+    Navigator.pushAndRemoveUntil(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => const MyHomePage(title: "학교"),
+        ),
+        (route) => false);
   }
 
-  das() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +148,7 @@ class _registerState extends State<register> {
 
     schoolLocalCode = school.cityCode;
     schoolName = school.name;
-    schoolCode = school.schoolCode;
+    schoolCode = int.parse(school.schoolCode);
     schoolLevel = school.level;
     setState(() {});
   }

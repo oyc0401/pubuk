@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
 import 'package:select_dialog/select_dialog.dart';
 
-import 'login.dart';
 import 'setting.dart';
 
 class myinfo extends StatefulWidget {
@@ -44,8 +43,10 @@ class _myinfoState extends State<myinfo> {
                   color: Colors.grey,
                   child: Text('로그인'),
                   onPressed: () {
-                    Navigator.push(context,
-                        CupertinoPageRoute(builder: (context) => login()));
+
+                    // Navigator.push(context,
+                    //     CupertinoPageRoute(builder: (context) => login()));
+
                   }),
             );
           });
