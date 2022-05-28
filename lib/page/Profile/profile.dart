@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/saveKey.dart';
+import 'package:flutterschool/page/Profile/accountInfo.dart';
 import 'package:flutterschool/page/Profile/setting.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
 
@@ -25,8 +26,8 @@ class _profileState extends State<profile> {
     getProfile();
   }
 
- Future<UserProfile> getProfile() async {
-    SaveKey saveKey =await SaveKey.Instance();
+  Future<UserProfile> getProfile() async {
+    SaveKey saveKey = await SaveKey.Instance();
     UserProfile userProfile = saveKey.getUserProfile();
     return userProfile;
   }
@@ -44,7 +45,6 @@ class _profileState extends State<profile> {
         children: [
           FutureBuilder(
             builder: (BuildContext context, AsyncSnapshot snapshot) {
-
               if (snapshot.hasData == false) {
                 return waiting();
               } else if (snapshot.hasError) {
@@ -52,16 +52,13 @@ class _profileState extends State<profile> {
               } else {
                 return myprofileSection(snapshot);
               }
-
-
             },
             future: getProfile(),
-          )
+          ),
         ],
       ),
     );
   }
-
 
   Widget error(AsyncSnapshot<dynamic> snapshot) {
     return Padding(
@@ -83,9 +80,8 @@ class _profileState extends State<profile> {
   }
 
   Widget myprofileSection(AsyncSnapshot<dynamic> snapshot) {
-    UserProfile userProfile=snapshot.data;
+    UserProfile userProfile = snapshot.data;
     User? user = FirebaseAuth.instance.currentUser;
-
 
     if (user == null) {
       return InkWell(
@@ -102,36 +98,47 @@ class _profileState extends State<profile> {
 
     print(user.toString());
 
-    return InkWell(
-      child: Container(
-        height: 100,
-        color: Colors.grey,
-        child: Column(
-          children: [
-            Text(userProfile.nickname),
-            Text(uid),
-          ],
+    return Column(
+      children: [
+        CupertinoButton(
+          child: Text('로그인 정보'),
+          onPressed: navigateAccountInfo,
         ),
-      ),
-      onTap: navigateSetting,
+        InkWell(
+          child: Container(
+            height: 100,
+            color: Colors.grey,
+            child: Column(
+              children: [
+                Text(userProfile.nickname),
+                Text(uid),
+              ],
+            ),
+          ),
+          onTap: navigateSetting,
+        ),
+      ],
+    );
+  }
+
+  void navigateAccountInfo() {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(builder: (context) => const AccountInfo()),
     );
   }
 
   void navigateSignIn() async {
     await Navigator.push(
       context,
-      CupertinoPageRoute(
-        builder: (context) => const SignIn(),
-      ),
+      CupertinoPageRoute(builder: (context) => const SignIn()),
     );
   }
 
   void navigateSetting() async {
     await Navigator.push(
       context,
-      CupertinoPageRoute(
-        builder: (context) => const setting(),
-      ),
+      CupertinoPageRoute(builder: (context) => const setting()),
     );
   }
 }
