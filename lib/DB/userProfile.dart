@@ -74,6 +74,8 @@ class SavePro {
     return key;
   }
 
+  UserProfile userProfile=UserProfile();
+
   /// _set
   _setGrade(int Grade) => prefs.setInt('Grade', Grade);
 
@@ -94,23 +96,25 @@ class SavePro {
   _setSchoolLevel(int level) => prefs.setInt('schoolLevel', level);
 
   /// _get
-  int _getGrade() => prefs.getInt('Grade') ?? 1;
+  int _getGrade() => prefs.getInt('Grade') ?? userProfile.grade;
 
-  int _getClass() => prefs.getInt('Class') ?? 1;
+  int _getClass() => prefs.getInt('Class') ?? userProfile.Class;
 
-  String _getCityCode() => prefs.getString('CityCode') ?? "J10";
+  String _getSchoolLocalCode() => prefs.getString('schoolLocalCode') ?? userProfile.schoolLocalCode;
 
-  int _getSchoolCode() => prefs.getInt('SchoolCode') ?? 7530072;
+  int _getSchoolCode() => prefs.getInt('SchoolCode') ?? userProfile.schoolCode;
 
-  String _getUid() => prefs.getString('ID') ?? '게스트id';
+  String _getUid() => prefs.getString('ID') ?? userProfile.uid;
 
-  String _getNickName() => prefs.getString('Nickname') ?? '게스트';
+  String _getNickName() => prefs.getString('Nickname') ?? userProfile.nickname;
 
-  int _getAuthLevel() => prefs.getInt('AuthLevel') ?? 1;
+  int _getAuthLevel() => prefs.getInt('AuthLevel') ?? userProfile.authLevel;
 
-  String _getSchoolName() => prefs.getString('schoolName') ?? "00고등학교";
+  String _getSchoolName() => prefs.getString('schoolName') ?? userProfile.schoolName;
 
-  int _getSchoolLevel() => prefs.getInt('schoolLevel') ?? 3;
+  int _getSchoolLevel() => prefs.getInt('schoolLevel') ?? userProfile.schoolLevel;
+
+  String _getCertifiedSchoolCode() => prefs.getString('certifiedSchoolCode') ?? userProfile.certifiedSchoolCode;
 
   UserProfile getUserProfile() {
     return UserProfile(
@@ -119,10 +123,11 @@ class SavePro {
         authLevel: _getAuthLevel(),
         grade: _getGrade(),
         Class: _getClass(),
-        schoolLocalCode: _getCityCode(),
+        schoolLocalCode: _getSchoolLocalCode(),
         schoolCode: _getSchoolCode(),
         schoolName: _getSchoolName(),
-        schoolLevel: 3);
+        schoolLevel: 3,
+        certifiedSchoolCode: "null");
   }
 
   setUserProfile(UserProfile UserProfile) {
