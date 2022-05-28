@@ -8,6 +8,8 @@ import 'package:flutterschool/page/SignIn/searchSchool.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:select_dialog/select_dialog.dart';
 
+import '../mainPage.dart';
+
 class register extends StatefulWidget {
   const register({Key? key}) : super(key: key);
 
@@ -78,7 +80,7 @@ class _registerState extends State<register> {
     Navigator.pushAndRemoveUntil(
         context,
         CupertinoPageRoute(
-          builder: (context) => const MyHomePage(title: "학교"),
+          builder: (context) => const MyHomePage(),
         ),
         (route) => false);
   }

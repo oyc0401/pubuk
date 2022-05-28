@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
+import 'package:flutterschool/page/mainPage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../Home/home.dart';
@@ -72,23 +73,13 @@ class _AccountInfoState extends State<AccountInfo> {
     );
   }
 
-  GoogleSignIn _googleSignIn = GoogleSignIn(
-    // Optional clientId
-    clientId:
-        '38235317642-4i8ul6m33g6ljpap0bk2b46lv05k1j79.apps.googleusercontent.com',
-    scopes: <String>[
-      'email',
-      'https://www.googleapis.com/auth/contacts.readonly',
-    ],
-  );
-
   Logout() async {
     await FirebaseAuth.instance.signOut();
 
     Navigator.pushAndRemoveUntil(
         context,
         CupertinoPageRoute(
-          builder: (context) => const SignIn(),
+          builder: (context) => const MyHomePage(),
         ),
         (route) => false);
   }

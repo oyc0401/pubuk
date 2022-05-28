@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutterschool/page/Profile/accountInfo.dart';
-import 'package:flutterschool/page/Profile/setting.dart';
+import 'package:flutterschool/page/Profile/editProfile.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
 
 import '../../DB/userProfile.dart';

@@ -8,7 +8,6 @@ import 'package:flutterschool/page/Home/home.dart';
 import 'package:flutterschool/page/SignIn/register.dart';
 import 'package:flutterschool/page/SignIn/searchSchool.dart';
 import 'package:flutterschool/page/mainPage.dart';
-import 'package:flutterschool/page/switch.dart';
 
 import 'firebase_options.dart';
 import 'page/Home/checkPage.dart';
@@ -48,7 +47,7 @@ class MyApp extends StatelessWidget {
       ),
       //home: const SignIn(),
       //home: const SwitchPage(),
-      home: MyHomePage(title: '학교'),
+      home: MyHomePage(),
     );
   }
 

@@ -5,14 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/page/Profile/setting.dart';
+import 'package:flutterschool/page/Profile/editProfile.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 import '../../DB/userProfile.dart';
 
 import '../Community/community.dart';
-import '../Profile/myinfo.dart';
+
 import '../SignIn/SignIn.dart';
 
 
@@ -82,17 +82,6 @@ class _checkPageState extends State<checkPage> {
     );
   }
 
-
-  void NavigateInfo() async {
-    await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => const myinfo(),
-      ),
-    );
-
-    setState(() {});
-  }
 
   void NavigateSetting() async {
     await Navigator.push(

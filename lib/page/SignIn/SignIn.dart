@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 
 import '../Home/checkPage.dart';
 import '../Home/home.dart';
+import '../mainPage.dart';
 import 'register.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -194,7 +195,7 @@ class _SignInState extends State<SignIn> {
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
-        builder: (context) => const MyHomePage(title: "학교"),
+        builder: (context) => const MyHomePage(),
       ),
     );
   }

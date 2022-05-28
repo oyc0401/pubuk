@@ -1,7 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/page/Profile/setting.dart';
+import 'package:flutterschool/page/Profile/editProfile.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
@@ -12,16 +12,14 @@ import '../Profile/profile.dart';
 import 'lunch.dart';
 import 'timetable.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Home> createState() => _HomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   AppBar appBar() {
     return AppBar(
-      title: Text(widget.title),
+      title: Text("부천북고등학교"),
       actions: [
         IconButton(
           onPressed: NavigateProfile,

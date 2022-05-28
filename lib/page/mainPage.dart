@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'Home/checkPage.dart';
 import 'Home/home.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
   @override
@@ -62,7 +62,7 @@ class _MainPageState extends State<MainPage> {
 
   List _widgetOptions() {
     return [
-      const MyHomePage(title: "학교"),
+      const Home(),
       const Text(
         'Music',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
