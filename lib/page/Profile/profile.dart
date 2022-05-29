@@ -17,17 +17,12 @@ class profile extends StatefulWidget {
 }
 
 class _profileState extends State<profile> {
-  UserProfile userProfile = UserProfile();
+  UserProfile userProfile = UserProfile.currentUser;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getProfile();
-  }
-
-  Future<UserProfile> getProfile() async {
-    return await UserProfile.Get();
   }
 
   User? getUser() {
@@ -41,45 +36,14 @@ class _profileState extends State<profile> {
       appBar: AppBar(),
       body: Column(
         children: [
-          FutureBuilder(
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData == false) {
-                return waiting();
-              } else if (snapshot.hasError) {
-                return error(snapshot);
-              } else {
-                return success(snapshot);
-              }
-            },
-            future: getProfile(),
-          ),
+          goSetting(),
           Logined(),
         ],
       ),
     );
   }
 
-  Widget error(AsyncSnapshot<dynamic> snapshot) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        'Error: ${snapshot.error}',
-        style: TextStyle(fontSize: 15),
-      ),
-    );
-  }
-
-  Widget waiting() {
-    return const SizedBox(
-      height: 340,
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-
-  Widget success(AsyncSnapshot<dynamic> snapshot) {
-    UserProfile userProfile = snapshot.data;
+  Widget goSetting(){
     return InkWell(
       onTap: navigateSetting,
       child: Card(
@@ -90,7 +54,8 @@ class _profileState extends State<profile> {
           color: Colors.white30,
           child: ListTile(
             title: Text(userProfile.schoolName),
-            subtitle: Text("${userProfile.grade}학년 ${userProfile.Class}반 "),
+            subtitle:
+            Text("${userProfile.grade}학년 ${userProfile.Class}반 "),
           )),
     );
   }

@@ -1,12 +1,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfile {
+  // user
   String uid; // 유저 id
   String nickname; // 닉네임
   int authLevel; // 자신의 권한 1 = user, 2= teacher, 3 = parents, 10 = master
-
-  // need to make school
-
+  // school
   String schoolLocalCode; // 학교 교육청 코드
   int schoolCode; // 학교 코드
   String schoolName; // 학교 이름
@@ -27,17 +26,30 @@ class UserProfile {
       this.schoolCode = 7530072,
       this.certifiedSchoolCode = "null"});
 
+  static UserProfile? _current;
+
+  static initializeUser()async{
+    SavePro savePro = await SavePro.Instance();
+    _current=savePro.getUserProfile();
+  }
+
+  static UserProfile get currentUser{
+    if(_current!=null){
+      return _current!;
+    }else {
+      print("Warning: 유저 초기화가 필요합니다.");
+      return _current!;
+    }
+  }
+
+
+
+
   static Future<void> Save(UserProfile userProfile) async {
     SavePro savePro = await SavePro.Instance();
     await savePro.setUserProfile(userProfile);
+    await UserProfile.initializeUser();
   }
-
-  static Future<UserProfile> Get() async {
-    SavePro savePro = await SavePro.Instance();
-    return  savePro.getUserProfile();
-  }
-
-
 
   factory UserProfile.guestData() {
     return UserProfile(

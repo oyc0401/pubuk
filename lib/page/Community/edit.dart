@@ -26,19 +26,15 @@ class _editState extends State<edit> {
     decoration:
         const InputDecoration(hintText: "로딩중...", border: InputBorder.none),
   );
-  UserProfile userData = UserProfile.guestData();
+
   /// 로딩전 초기값
 
-  getUserData() async {
-
-    userData =await UserProfile.Get();
-  }
+  UserProfile userData = UserProfile.currentUser;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUserData();
     loadText();
   }
 

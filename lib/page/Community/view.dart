@@ -20,26 +20,26 @@ class view extends StatefulWidget {
 }
 
 class _viewState extends State<view> {
+  UserProfile userData = UserProfile.currentUser;
+
   /// 로딩전 초기값
   String writedComment = '';
   Widget Context = Container();
   Widget Comment = Container();
   Widget editButton = Container();
   Widget deleteButton = Container();
-  UserProfile userData = UserProfile.guestData();
+
   Widget commentField = Container();
   bool isCommentFieldOpen = false;
 
   /// 로딩전 초기값
 
-  getUserData() async {
-    userData = await UserProfile.Get();
-  }
+
 
   @override
   void initState() {
     super.initState();
-    getUserData();
+
     readView();
     readComment();
   }

@@ -21,33 +21,15 @@ class _timetableState extends State<timetable> {
   /// 이 값을 사용해 나이스 오픈 데이터 포털에서 시간표 정보를 json 형식으로 가져와 화면을 만들게 된다.
   /// [timetableSection]에 매개변수로 [TableDownloader]에서 가져온 정리된 데이터를 매개변수로 넣게 되면 시간표 위젯을 반환한다.
 
-  int _grade = 0;
-  int _class = 0;
-  int _schoolCode = 0;
-  String _schoolLocalCode="J10";
+  UserProfile userProfile = UserProfile.currentUser;
 
-  //Future? GettingDataOnlyOne;
-
-  @override
-  void initState() {
-    super.initState();
-    //GettingDataOnlyOne = getMap();
-  }
-
-  getInfo() async {
-    UserProfile userData = await UserProfile.Get();
-    _grade = userData.grade;
-    _class = userData.Class;
-    _schoolCode = userData.schoolCode;
-    _schoolLocalCode=userData.schoolLocalCode;
-
-  }
-
-  getMap() async {
-    await getInfo();
-
-    TableDownloader tabledown =
-        TableDownloader(Grade: _grade, Class: _class, SchoolCode: _schoolCode,CityCode: _schoolLocalCode);
+  Future getMap() async {
+    TableDownloader tabledown = TableDownloader(
+      Grade: userProfile.grade,
+      Class: userProfile.Class,
+      SchoolCode: userProfile.schoolCode,
+      CityCode: userProfile.schoolLocalCode,
+    );
     Map cleanedmap = await tabledown.getCleanedMap();
 
     return cleanedmap;
@@ -108,7 +90,7 @@ class _timetableState extends State<timetable> {
     return SizedBox(
       height: 30,
       child: Row(
-        children: [Text('$_grade학년 $_class반')],
+        children: [Text('${userProfile.grade}학년 ${userProfile.Class}반')],
       ),
     );
   }
@@ -250,13 +232,13 @@ class TableDownloader {
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&Type=json&pIndex=1&pSize=1000&"
-            "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
+        "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
     return uri;
   }
 
   Future _getJson() async {
     // uri값 얻고
-    Uri uri = _getUri(SchoolCode, Grade, Class,CityCode);
+    Uri uri = _getUri(SchoolCode, Grade, Class, CityCode);
 
     // 요청하기
     final Response response = await http.get(uri);

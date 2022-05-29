@@ -114,7 +114,7 @@ class _findSchoolState extends State<findSchool> {
   }
 
   void saveSchoolCode(int schoolCode, String cityCode) async {
-    UserProfile myUser = await UserProfile.Get();
+    UserProfile myUser = UserProfile.currentUser;
     myUser.schoolLocalCode = cityCode;
     myUser.schoolCode = schoolCode;
     await UserProfile.Save(myUser);

@@ -25,14 +25,11 @@ class _commentState extends State<comment> {
   /// 로딩전 초기값
   List<Widget> reply = [];
   String Writedreply = 'ff';
-  UserProfile userData = UserProfile.guestData();
+  UserProfile userData = UserProfile.currentUser;
   bool isReplyFieldOpen = false;
 
   /// 로딩전 초기값
 
-  getUserData() async {
-    userData=await UserProfile.Get();
-  }
 
   Future<void> writeReply() async {
     DateTime startDate = DateTime.now().toLocal();
@@ -67,7 +64,6 @@ class _commentState extends State<comment> {
   @override
   void initState() {
     super.initState();
-    getUserData();
     readReply();
   }
 

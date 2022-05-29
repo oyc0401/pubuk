@@ -11,7 +11,6 @@ import 'dart:convert' show json;
 
 import 'package:http/http.dart' as http;
 
-import '../Home/checkPage.dart';
 import '../Home/home.dart';
 import '../mainPage.dart';
 import 'register.dart';

@@ -17,19 +17,12 @@ class write extends StatefulWidget {
 class _writeState extends State<write> {
   /// 로딩전 초기값
   String text = '';
-  UserProfile userData = UserProfile.guestData();
   /// 로딩전 초기값
 
-  getUserData() async {
-    userData =await UserProfile.Get();
-  }
+  UserProfile userData = UserProfile.currentUser;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getUserData();
-  }
+
+
 
   @override
   Widget build(BuildContext context) {

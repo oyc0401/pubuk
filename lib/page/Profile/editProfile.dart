@@ -24,19 +24,12 @@ class _settingState extends State<setting> {
   /// 저장 버튼을 누르면 [userData]에 있는 값을 [saveKey]에 저장하고 화면을 종료한다.
   /// 나중에 로그인을 구현한다면 저장을 할 때 파이어베이스의 유저정보도 함께 바꿔야 한다.
 
-  UserProfile userData = UserProfile();
-  bool isfirst = true;
-  Future? GettingDataOnlyOne;
+  UserProfile userData = UserProfile.currentUser;
 
   @override
   void initState() {
     super.initState();
-    GettingDataOnlyOne = getUserData();
-  }
 
-  Future<UserProfile> getUserData() async {
-    print("정보 불러오기!");
-    return await UserProfile.Get();
   }
 
   @override
@@ -46,17 +39,13 @@ class _settingState extends State<setting> {
       appBar: appBar(),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: FutureBuilder(
-            future: GettingDataOnlyOne,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData == false) {
-                return waiting();
-              } else if (snapshot.hasError) {
-                return error(snapshot);
-              } else {
-                return succeed(snapshot);
-              }
-            }),
+        child: Column(
+          children: [
+            schoolSection(),
+            gradeSection(),
+            classSection(),
+          ],
+        ),
       ),
     );
   }
@@ -76,50 +65,6 @@ class _settingState extends State<setting> {
       ],
     );
   }
-
-
-  Widget succeed(AsyncSnapshot<dynamic> snapshot) {
-    if (isfirst) { // 이걸 안하면 이게 실행될 때마다 학년, 반이 처음값으로 초기화가 된다.
-      userData = snapshot.data;
-      isfirst = false;
-    }
-
-    return Column(
-      children: [
-        schoolSection(),
-        gradeSection(),
-        classSection(),
-      ],
-    );
-  }
-
-  Widget error(AsyncSnapshot<dynamic> snapshot) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        'Error: ${snapshot.error}',
-        style: const TextStyle(fontSize: 15),
-      ),
-    );
-  }
-
-  Widget waiting() {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 30,
-        ),
-        Container(
-          height: 450,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: const Center(
-            child: CircularProgressIndicator(),
-          ),
-        )
-      ],
-    );
-  }
-
 
   Widget schoolSection() {
     return CupertinoButton(

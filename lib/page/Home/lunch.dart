@@ -20,13 +20,13 @@ class _LunchState extends State<Lunch> {
   /// 이 값을 사용해 나이스 오픈 데이터 포털에서 급식 정보를 json 형식으로 가져와 화면을 만들게 된다.
   /// [lunchSection]에 매개변수로 [LunchDownloader]에서 가져온 정리된 데이터를 매개변수로 넣게 되면 급식 위젯을 반환한다.
 
-
   Future<List<List<String>>> getList() async {
-    UserProfile userData =await UserProfile.Get();
-    int schoolCode= userData.schoolCode;
-    String cityCode= userData.schoolLocalCode;
+    UserProfile userData = UserProfile.currentUser;
+    int schoolCode = userData.schoolCode;
+    String cityCode = userData.schoolLocalCode;
 
-    LunchDownloader lunchDownloader = LunchDownloader(SchoolCode: schoolCode,CityCode: cityCode);
+    LunchDownloader lunchDownloader =
+        LunchDownloader(SchoolCode: schoolCode, CityCode: cityCode);
     return await lunchDownloader.getCleanedList();
   }
 
@@ -47,6 +47,7 @@ class _LunchState extends State<Lunch> {
   }
 
   Widget succeed(AsyncSnapshot<dynamic> snapshot) {
+
     return lunchSection(snapshot.data);
   }
 
@@ -118,8 +119,6 @@ class _LunchState extends State<Lunch> {
       ),
     );
   }
-
-
 }
 
 class LunchDownloader {
@@ -128,10 +127,13 @@ class LunchDownloader {
   final int FROM_TERM = -30;
   final int TO_TERM = 30;
 
-  LunchDownloader({required this.CityCode, required this.SchoolCode}) {}
+  LunchDownloader({
+    required this.CityCode,
+    required this.SchoolCode,
+  });
 
-  Uri _getUri(int SchoolCode,String CityCode) {
-    var now = new DateTime.now();
+  Uri _getUri(int SchoolCode, String CityCode) {
+    DateTime now = DateTime.now();
     String firstday =
         DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
     String lastday =
@@ -146,7 +148,7 @@ class LunchDownloader {
 
   Future<Map<String, dynamic>> _getJson() async {
     // uri값 얻고
-    Uri uri = _getUri(SchoolCode,CityCode);
+    Uri uri = _getUri(SchoolCode, CityCode);
 
     // 요청하기
     final Response response = await http.get(uri);
