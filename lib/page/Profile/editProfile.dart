@@ -44,7 +44,20 @@ class _settingState extends State<setting> {
     print("setstate!");
     return Scaffold(
       appBar: appBar(),
-      body: body(),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: FutureBuilder(
+            future: GettingDataOnlyOne,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData == false) {
+                return waiting();
+              } else if (snapshot.hasError) {
+                return error(snapshot);
+              } else {
+                return succeed(snapshot);
+              }
+            }),
+      ),
     );
   }
 
@@ -64,32 +77,16 @@ class _settingState extends State<setting> {
     );
   }
 
-  Padding body() {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: FutureBuilder(
-          future: GettingDataOnlyOne,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData == false) {
-              return waiting();
-            } else if (snapshot.hasError) {
-              return error(snapshot);
-            } else {
-              return succeed(snapshot);
-            }
-          }),
-    );
-  }
 
   Widget succeed(AsyncSnapshot<dynamic> snapshot) {
-    if (isfirst) {
+    if (isfirst) { // 이걸 안하면 이게 실행될 때마다 학년, 반이 처음값으로 초기화가 된다.
       userData = snapshot.data;
       isfirst = false;
     }
+
     return Column(
       children: [
         schoolSection(),
-        nicknameSection(),
         gradeSection(),
         classSection(),
       ],
@@ -126,31 +123,10 @@ class _settingState extends State<setting> {
 
   Widget schoolSection() {
     return CupertinoButton(
-      child: Text("학교 설정"),
+      child: Text("${userData.schoolName}"),
       onPressed: NavigateFindSchool,
     );
   }
-
-  Widget nicknameSection() {
-    return Row(
-      children: [
-        const Text("닉네임:"),
-        SizedBox(
-          width: 200,
-          child: TextFormField(
-            onChanged: (text) {
-              userData.nickname=text;
-            },
-            initialValue: userData.nickname,
-            keyboardType: TextInputType.multiline,
-            maxLines: 1,
-            decoration: const InputDecoration(border: InputBorder.none),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget gradeSection() {
     int myGrade = userData.grade;
 
