@@ -18,71 +18,26 @@ class register extends StatefulWidget {
 }
 
 class _registerState extends State<register> {
-  String schoolLocalCode = "J10";
-  String schoolName = "부천북고";
-  int schoolCode = 7530072;
-  int schoolLevel = 3;
-  int _grade = 1;
-  int _class = 1;
-  String nickname = "";
-
-  User? user;
   UserProfile userProfile = UserProfile();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
   signUp() async {
-    print(schoolName);
-    print(schoolCode);
-    print(_grade);
-    print(_class);
-    print(nickname);
-    user = FirebaseAuth.instance.currentUser;
-
+    User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      print(user!.uid);
+      userProfile.uid = user.uid;
+
       FirebaseFirestore.instance
           .collection('user')
-          .doc(user!.uid)
-          .set({
-            'uid': user!.uid,
-            'authLevel': 1,
-            'class': 1,
-            'grade': 1,
-            'nickname': nickname,
-            'schoolLocalCode': schoolLocalCode,
-            'schoolName': schoolName,
-            'schoolCode': schoolCode,
-            'schoolLevel': schoolLevel,
-            'certifiedSchoolCode': 'null',
-          })
+          .doc(user.uid)
+          .set(userProfile.toMap())
           .then((value) async {})
           .catchError((error) {
             print("Failed to Sign in: $error");
           });
+
+      await UserProfile.Save(userProfile);
+
+      navigateHome();
     }
-
-
-    userProfile.uid = user!.uid;
-    userProfile.nickname = nickname;
-    userProfile.grade = _grade;
-    userProfile.Class = _class;
-    userProfile.schoolName = schoolName;
-    userProfile.schoolLocalCode = schoolLocalCode;
-    userProfile.schoolLevel = schoolLevel;
-
-    await UserProfile.Save(userProfile);
-
-    Navigator.pushAndRemoveUntil(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => const MyHomePage(),
-        ),
-        (route) => false);
   }
 
 
@@ -128,7 +83,7 @@ class _registerState extends State<register> {
         ),
         child: Center(
           child: Text(
-            "$schoolName",
+            userProfile.schoolName,
             style: TextStyle(
               fontSize: 18,
               color: Colors.black,
@@ -148,10 +103,10 @@ class _registerState extends State<register> {
     );
     School school = School.listToSchool(list);
 
-    schoolLocalCode = school.cityCode;
-    schoolName = school.name;
-    schoolCode = int.parse(school.schoolCode);
-    schoolLevel = school.level;
+    userProfile.schoolLocalCode = school.cityCode;
+    userProfile.schoolName = school.name;
+    userProfile.schoolCode = int.parse(school.schoolCode);
+    userProfile.schoolLevel = school.level;
     setState(() {});
   }
 
@@ -171,7 +126,7 @@ class _registerState extends State<register> {
           width: 250,
           child: TextFormField(
             onChanged: (text) {
-              nickname = text;
+              userProfile.nickname = text;
             },
             keyboardType: TextInputType.multiline,
             maxLines: 1,
@@ -205,7 +160,7 @@ class _registerState extends State<register> {
         ),
         child: Center(
           child: Text(
-            "$_grade 학년",
+            "${userProfile.grade} 학년",
             style: TextStyle(fontSize: 18, color: Colors.black),
           ),
         ),
@@ -225,7 +180,7 @@ class _registerState extends State<register> {
         ),
         child: Center(
           child: Text(
-            "$_class 반",
+            "${userProfile.Class} 반",
             style: TextStyle(fontSize: 18, color: Colors.black),
           ),
         ),
@@ -254,12 +209,12 @@ class _registerState extends State<register> {
   }
 
   Future<void> changeGrade() async {
-    _grade = await getGradeDialog(context, _grade);
+    userProfile.grade = await getGradeDialog(context, userProfile.grade);
     setState(() {});
   }
 
   Future<void> changeClass() async {
-    _class = await getClassDialog(context, _class);
+    userProfile.Class = await getClassDialog(context, userProfile.Class);
     setState(() {});
   }
 
@@ -302,20 +257,14 @@ class _registerState extends State<register> {
     return initClass;
   }
 
-// addUser(){
-//   FirebaseFirestore.instance.collection('users').doc(date).set({
-//     'ID': date,
-//     'userid': id,
-//     'nickname': nickname,
-//     'text': text,
-//     'title': title,
-//     'heart': 0,
-//     'commment': 0,
-//     'auth': auth,
-//     'image': image,
-//     'date': date,
-//   }).then((value) {
-//     print("User Added");
-//   }).catchError((error) => print("Failed to add user: $error"));
-// }
+  navigateHome(){
+    Navigator.pushAndRemoveUntil(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => const MyHomePage(),
+        ),
+            (route) => false);
+  }
+
+
 }

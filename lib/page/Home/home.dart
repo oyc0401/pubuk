@@ -90,7 +90,7 @@ class _HomeState extends State<Home> {
 
 
   Future<void> checkKey() async {
-    SaveKeyHandler key = await SaveKeyHandler.Instance();
-    key.printAll();
+    UserProfile userProfile=UserProfile.currentUser;
+    print(userProfile);
   }
 }

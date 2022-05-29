@@ -172,34 +172,4 @@ class _settingState extends State<setting> {
     return initClass;
   }
 
-  // 이 밑은 로그인 구축 했을때 다시 제작
-  Future _loadProfile() async {
-    // uid = FirebaseAuth.instance.currentUser?.uid ?? '게스트 모드';
-    // print("ID: $uid");
-  }
-
-  Future Logout() async {
-    await FirebaseAuth.instance.signOut();
-    SaveKeyHandler key = await SaveKeyHandler.Instance();
-    key.SwitchGuest();
-    Navigator.of(context).pop('Logout');
-  }
-
-  Future DeleteUser(String uid) async {
-    try {
-      await FirebaseAuth.instance.currentUser!.delete();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        print(
-            'The user must reauthenticate before this operation can be executed.');
-      }
-    }
-
-    FirebaseFirestore.instance
-        .collection('user')
-        .doc(uid)
-        .delete()
-        .then((value) => print("User Deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
-  }
 }

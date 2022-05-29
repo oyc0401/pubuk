@@ -20,20 +20,9 @@ class _profileState extends State<profile> {
   UserProfile userProfile = UserProfile.currentUser;
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  User? getUser() {
-    User? user = FirebaseAuth.instance.currentUser;
-    return user;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: Text("Profile"),),
       body: Column(
         children: [
           goSetting(),
@@ -64,12 +53,26 @@ class _profileState extends State<profile> {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return Container();
+      return InkWell(
+        onTap: navigateSignIn,
+        child: Card(
+          margin: EdgeInsets.all(12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          color: Colors.grey,
+          child: Container(
+            height: 50,
+            child: Center(
+              child: Text(
+                '로그인',
+                style: TextStyle(fontSize: 18, color: Colors.black),
+              ),
+            ),
+          ),
+        ),
+      );
     }
-
-    String uid = user.uid;
-
-    print(user.toString());
 
     return Column(
       children: [

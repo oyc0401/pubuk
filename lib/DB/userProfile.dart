@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfile {
@@ -28,22 +29,19 @@ class UserProfile {
 
   static UserProfile? _current;
 
-  static initializeUser()async{
+  static initializeUser() async {
     SavePro savePro = await SavePro.Instance();
-    _current=savePro.getUserProfile();
+    _current = savePro.getUserProfile();
   }
 
-  static UserProfile get currentUser{
-    if(_current!=null){
+  static UserProfile get currentUser {
+    if (_current != null) {
       return _current!;
-    }else {
+    } else {
       print("Warning: 유저 초기화가 필요합니다.");
       return _current!;
     }
   }
-
-
-
 
   static Future<void> Save(UserProfile userProfile) async {
     SavePro savePro = await SavePro.Instance();
@@ -51,7 +49,7 @@ class UserProfile {
     await UserProfile.initializeUser();
   }
 
-  factory UserProfile.guestData() {
+  factory UserProfile.guest() {
     return UserProfile(
       uid: 'guest',
       nickname: 'guest',
@@ -73,7 +71,40 @@ class UserProfile {
       certifiedSchoolCode: map['certifiedSchoolCode'],
     );
   }
+
+  Map <String, dynamic> toMap(){
+    return{
+      'uid': uid,
+      'authLevel': authLevel,
+      'class': Class,
+      'grade': grade,
+      'nickname': nickname,
+      'schoolLocalCode': schoolLocalCode,
+      'schoolName': schoolName,
+      'schoolCode': schoolCode,
+      'schoolLevel': schoolLevel,
+      'certifiedSchoolCode': certifiedSchoolCode,
+    };
+  }
+
+  @override
+  String toString() {
+    return ("schoolName: $schoolName, grade: $grade, Class: $Class, uid: $uid, authLevel: $authLevel");
+  }
 }
+
+
+
+class UserProfileHandler extends UserProfile {
+
+  static SwitchGuest() {
+    UserProfile userProfile=UserProfile.guest();
+    UserProfile.Save(userProfile);
+  }
+
+
+}
+
 
 class SavePro {
   // _set 하는것은 Instance가 필요 없지만
@@ -86,7 +117,7 @@ class SavePro {
     return key;
   }
 
-  UserProfile userProfile=UserProfile();
+  UserProfile userProfile = UserProfile();
 
   /// _set
   _setGrade(int Grade) => prefs.setInt('Grade', Grade);
@@ -107,12 +138,16 @@ class SavePro {
 
   _setSchoolLevel(int level) => prefs.setInt('schoolLevel', level);
 
+  _setCertifiedSchoolCode(String certified) =>
+      prefs.setString('certifiedSchoolCode', certified);
+
   /// _get
   int _getGrade() => prefs.getInt('Grade') ?? userProfile.grade;
 
   int _getClass() => prefs.getInt('Class') ?? userProfile.Class;
 
-  String _getSchoolLocalCode() => prefs.getString('schoolLocalCode') ?? userProfile.schoolLocalCode;
+  String _getSchoolLocalCode() =>
+      prefs.getString('schoolLocalCode') ?? userProfile.schoolLocalCode;
 
   int _getSchoolCode() => prefs.getInt('SchoolCode') ?? userProfile.schoolCode;
 
@@ -122,11 +157,14 @@ class SavePro {
 
   int _getAuthLevel() => prefs.getInt('AuthLevel') ?? userProfile.authLevel;
 
-  String _getSchoolName() => prefs.getString('schoolName') ?? userProfile.schoolName;
+  String _getSchoolName() =>
+      prefs.getString('schoolName') ?? userProfile.schoolName;
 
-  int _getSchoolLevel() => prefs.getInt('schoolLevel') ?? userProfile.schoolLevel;
+  int _getSchoolLevel() =>
+      prefs.getInt('schoolLevel') ?? userProfile.schoolLevel;
 
-  String _getCertifiedSchoolCode() => prefs.getString('certifiedSchoolCode') ?? userProfile.certifiedSchoolCode;
+  String _getCertifiedSchoolCode() =>
+      prefs.getString('certifiedSchoolCode') ?? userProfile.certifiedSchoolCode;
 
   UserProfile getUserProfile() {
     return UserProfile(
@@ -150,30 +188,5 @@ class SavePro {
     _setClass(UserProfile.Class);
     _setSchoolCode(UserProfile.schoolCode);
     print('saveKey: 유저 값 저장');
-  }
-}
-
-class SaveKeyHandler extends SavePro {
-  static Instance() async {
-    SaveKeyHandler key = SaveKeyHandler();
-    key.prefs = await SharedPreferences.getInstance();
-    return key;
-  }
-
-  printAll() {
-    print(prefs.getKeys());
-    print(prefs.get('ID'));
-    print(prefs.get('SchoolCode'));
-    print(prefs.get('Grade'));
-    print(prefs.get('Class'));
-    print(prefs.get('Nickname'));
-    print(prefs.get('Auth'));
-  }
-
-  void SwitchGuest() {
-    _setUid('게스트');
-    _setNickName('게스트');
-    _setAuthLevel(1);
-    print('saveKey: 게스트가 되었습니다.');
   }
 }

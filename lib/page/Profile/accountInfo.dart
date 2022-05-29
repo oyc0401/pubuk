@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutterschool/page/SignIn/SignIn.dart';
 import 'package:flutterschool/page/mainPage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../DB/userProfile.dart';
 import '../Home/home.dart';
 
 class AccountInfo extends StatefulWidget {
@@ -63,15 +65,25 @@ class _AccountInfoState extends State<AccountInfo> {
 
   Logout() async {
     await FirebaseAuth.instance.signOut();
-
+    print("로그아웃");
+    UserProfileHandler.SwitchGuest();
     navigateHome();
   }
 
   deleteUser() async{
     try {
       await FirebaseAuth.instance.currentUser!.delete();
-      print("삭제!");
+
+      UserProfileHandler.SwitchGuest();
       navigateHome();
+
+      UserProfile userProfile=UserProfile.currentUser;
+      FirebaseFirestore.instance
+          .collection('user')
+          .doc(userProfile.uid)
+          .delete()
+          .then((value) => print("User Deleted"))
+          .catchError((error) => print("Failed to delete user: $error"));
 
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
