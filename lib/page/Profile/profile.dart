@@ -48,11 +48,12 @@ class _profileState extends State<profile> {
               } else if (snapshot.hasError) {
                 return error(snapshot);
               } else {
-                return myprofileSection(snapshot);
+                return success(snapshot);
               }
             },
             future: getProfile(),
           ),
+          Logined(),
         ],
       ),
     );
@@ -77,19 +78,28 @@ class _profileState extends State<profile> {
     );
   }
 
-  Widget myprofileSection(AsyncSnapshot<dynamic> snapshot) {
+  Widget success(AsyncSnapshot<dynamic> snapshot) {
     UserProfile userProfile = snapshot.data;
+    return InkWell(
+      onTap: navigateSetting,
+      child: Card(
+          margin: EdgeInsets.all(12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          color: Colors.white30,
+          child: ListTile(
+            title: Text(userProfile.schoolName),
+            subtitle: Text("${userProfile.grade}학년 ${userProfile.Class}반 "),
+          )),
+    );
+  }
+
+  Widget Logined() {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return InkWell(
-        child: Container(
-          child: Text('로그인'),
-          height: 100,
-          color: Colors.grey,
-        ),
-        onTap: navigateSignIn,
-      );
+      return Container();
     }
 
     String uid = user.uid;
@@ -99,21 +109,12 @@ class _profileState extends State<profile> {
     return Column(
       children: [
         CupertinoButton(
-          child: Text('로그인 정보'),
-          onPressed: navigateAccountInfo,
-        ),
-        InkWell(
-          child: Container(
-            height: 100,
-            color: Colors.grey,
-            child: Column(
-              children: [
-                Text(userProfile.nickname),
-                Text(uid),
-              ],
-            ),
+          child: Text(
+            '로그인 정보',
+            style: TextStyle(fontSize: 18, color: Colors.black),
           ),
-          onTap: navigateSetting,
+          color: Colors.grey,
+          onPressed: navigateAccountInfo,
         ),
       ],
     );

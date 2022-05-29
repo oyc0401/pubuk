@@ -22,18 +22,6 @@ class _AccountInfoState extends State<AccountInfo> {
       body: Column(
         children: [
           AccountWidget(),
-          // FutureBuilder(
-          //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-          //     if (snapshot.hasData == false) {
-          //       return waiting();
-          //     } else if (snapshot.hasError) {
-          //       return error(snapshot);
-          //     } else {
-          //       return myprofileSection(snapshot);
-          //     }
-          //   },
-          //   future: getProfile(),
-          // ),
         ],
       ),
     );
@@ -76,13 +64,28 @@ class _AccountInfoState extends State<AccountInfo> {
   Logout() async {
     await FirebaseAuth.instance.signOut();
 
+    navigateHome();
+  }
+
+  deleteUser() async{
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+      print("삭제!");
+      navigateHome();
+
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        print('The user must reauthenticate before this operation can be executed.');
+      }
+    }
+  }
+
+  void navigateHome(){
     Navigator.pushAndRemoveUntil(
         context,
         CupertinoPageRoute(
           builder: (context) => const MyHomePage(),
         ),
-        (route) => false);
+            (route) => false);
   }
-
-  deleteUser() {}
 }
