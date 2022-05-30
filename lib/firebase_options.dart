@@ -48,13 +48,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyBrzqNo8hRzRkCA8t6E1_YWseiRgRqS9FE',
-    appId: '1:38235317642:web:0988e195cc976c0649d473',
+    appId: '1:38235317642:web:0cdaa3b6401be99849d473',
     messagingSenderId: '38235317642',
     projectId: 'flutterschool-70d7a',
     authDomain: 'flutterschool-70d7a.firebaseapp.com',
     databaseURL: 'https://flutterschool-70d7a-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'flutterschool-70d7a.appspot.com',
-    measurementId: 'G-K9M89TT2M6',
+    measurementId: 'G-GC44CD7JT0',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     projectId: 'flutterschool-70d7a',
     databaseURL: 'https://flutterschool-70d7a-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'flutterschool-70d7a.appspot.com',
-    androidClientId: '38235317642-t7o27j5gr8c65ig1maoomnhepdivnl9a.apps.googleusercontent.com',
+    androidClientId: '38235317642-lb8pkhhvjb28nr9adfk9cemjnklnbu15.apps.googleusercontent.com',
     iosClientId: '38235317642-4i8ul6m33g6ljpap0bk2b46lv05k1j79.apps.googleusercontent.com',
     iosBundleId: 'com.oyc0401.flutterschool',
   );
