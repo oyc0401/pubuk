@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "38235317642-fjd07vodunluuko1o7ikihglvo0ii6lh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.oyc0401.flutterschool",
-            "certificate_hash": "d061bc14a60a4e6a6bcb349dbcbde48717ad7e36"
-          }
-        },
-        {
           "client_id": "38235317642-lb8pkhhvjb28nr9adfk9cemjnklnbu15.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
