@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     projectId: 'flutterschool-70d7a',
     databaseURL: 'https://flutterschool-70d7a-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'flutterschool-70d7a.appspot.com',
-    androidClientId: '38235317642-lb8pkhhvjb28nr9adfk9cemjnklnbu15.apps.googleusercontent.com',
+    androidClientId: '38235317642-fjd07vodunluuko1o7ikihglvo0ii6lh.apps.googleusercontent.com',
     iosClientId: '38235317642-4i8ul6m33g6ljpap0bk2b46lv05k1j79.apps.googleusercontent.com',
     iosBundleId: 'com.oyc0401.flutterschool',
   );

@@ -1,14 +1,16 @@
 # flutterschool
 
-학교 앱 version 2
+학교 앱
 
-북고앱 url:
-https://play.google.com/store/apps/details?id=com.oyc0401.pubuk
+## Getting Started
 
-## 사용한 기술
+This project is a starting point for a Flutter application.
 
-firebase
+A few resources to get you started if this is your first Flutter project:
 
-시간표, 급식 정보 출처: https://open.neis.go.kr/portal/mainPage.do 
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-대학교 입시 결과 주소: https://www.adiga.kr/PageLinkAll.do?link=/kcue/ast/eip/eis/inf/stdptselctn/EipStdGenSlcIem.do&p_menu_id=PG-EIP-16101
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
