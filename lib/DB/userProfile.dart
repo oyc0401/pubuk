@@ -44,9 +44,9 @@ class UserProfile {
   }
 
   static Future<void> Save(UserProfile userProfile) async {
+    _current=userProfile;
     SavePro savePro = await SavePro.Instance();
-    await savePro.setUserProfile(userProfile);
-    await UserProfile.initializeUser();
+    savePro.setUserProfile(userProfile);
   }
 
   factory UserProfile.guest() {

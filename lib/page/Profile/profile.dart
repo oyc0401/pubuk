@@ -22,7 +22,9 @@ class _profileState extends State<profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Profile"),),
+      appBar: AppBar(
+        title: Text("Profile"),
+      ),
       body: Column(
         children: [
           goSetting(),
@@ -32,7 +34,7 @@ class _profileState extends State<profile> {
     );
   }
 
-  Widget goSetting(){
+  Widget goSetting() {
     return InkWell(
       onTap: navigateSetting,
       child: Card(
@@ -43,8 +45,7 @@ class _profileState extends State<profile> {
           color: Colors.white30,
           child: ListTile(
             title: Text(userProfile.schoolName),
-            subtitle:
-            Text("${userProfile.grade}학년 ${userProfile.Class}반 "),
+            subtitle: Text("${userProfile.grade}학년 ${userProfile.Class}반 "),
           )),
     );
   }
@@ -107,5 +108,7 @@ class _profileState extends State<profile> {
       context,
       CupertinoPageRoute(builder: (context) => const setting()),
     );
+
+    setState(() {});
   }
 }

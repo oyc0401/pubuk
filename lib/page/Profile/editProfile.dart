@@ -3,11 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/Profile/findschool.dart';
+import 'package:flutterschool/MyWidget/button.dart';
 
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/userProfile.dart';
-
+import '../mainPage.dart';
 
 class setting extends StatefulWidget {
   const setting({Key? key}) : super(key: key);
@@ -27,89 +28,133 @@ class _settingState extends State<setting> {
   UserProfile userData = UserProfile.currentUser;
 
   @override
-  void initState() {
-    super.initState();
-
-  }
-
-  @override
   Widget build(BuildContext context) {
     print("setstate!");
     return Scaffold(
-      appBar: appBar(),
+      appBar: AppBar(
+        title: const Text('정보 수정'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Save(userData);
+              },
+              child: const Text(
+                '저장',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              )),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            schoolSection(),
-            gradeSection(),
-            classSection(),
-          ],
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 20,),
+              schoolSection(),
+              SizedBox(height: 40,),
+              gradeSection(),
+              SizedBox(height: 20),
+              classSection(),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  AppBar appBar() {
-    return AppBar(
-      title: const Text('정보 수정'),
-      actions: [
-        TextButton(
-            onPressed: () {
-              Save(userData);
-            },
-            child: const Text(
-              '저장',
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            )),
-      ],
-    );
+  Future<void> Save(UserProfile myUserData) async {
+    await UserProfile.Save(myUserData);
+
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(myUserData.uid)
+        .update({
+      'grade': myUserData.grade,
+      'class': myUserData.Class,
+    }).then((value) async {
+      print('Class Update');
+    }).catchError((error) => print("Failed to change Class: $error"));
+
+    Navigator.of(context).pop('complete');
   }
 
   Widget schoolSection() {
-    return CupertinoButton(
-      child: Text("${userData.schoolName}"),
-      onPressed: NavigateFindSchool,
+    return RoundButton(
+      text: userData.schoolName,
+      onclick: NavigateFindSchool,
+      color: Colors.grey,
     );
   }
+
   Widget gradeSection() {
     int myGrade = userData.grade;
-
-    return Row(
-      children: [
-        const Text("학년:"),
-        TextButton(onPressed: changeGrade, child: Text("$myGrade학년")),
-      ],
+    return RoundButton(
+      text: "$myGrade학년",
+      onclick: changeGrade,
+      color: Colors.greenAccent,
     );
+
   }
 
   Widget classSection() {
     int myClass = userData.Class;
-
-    return Row(
-      children: [
-        const Text("반:"),
-        TextButton(onPressed: changeClass, child: Text("$myClass반"))
-      ],
+    return RoundButton(
+      text: "$myClass반",
+      onclick: changeClass,
+      color: Colors.greenAccent,
     );
   }
 
+  Future<void> changeGrade() async {
+    Future<int> getGradeDialog(BuildContext context, int initGrade) async {
+      await SelectDialog.showModal<String>(
+        context,
+        label: "학년을 선택하세요",
+        selectedValue: "$initGrade학년",
+        items: List.generate(3, (index) {
+          var num = index + 1;
+          return "$num학년";
+        }),
+        onChange: (String selected) {
+          setState(() {
+            var dd = selected.split('');
+            initGrade = int.parse(dd[0]);
+          });
+        },
+        showSearchBox: false,
+      );
 
-  Future<void> Save(UserProfile myUserData) async {
-    await UserProfile.Save(myUserData);
+      return initGrade;
+    }
 
-    // FirebaseFirestore.instance
-    //     .collection('user')
-    //     .doc(myUserData.getUid())
-    //     .update({
-    //   'grade': myUserData.getGrade(),
-    //   'class': myUserData.getClass(),
-    //   'nickname': myUserData.getNickName()
-    // }).then((value) async {
-    //   print('Class Update');
-    // }).catchError((error) => print("Failed to change Class: $error"));
+    int Grade = await getGradeDialog(context, userData.grade);
+    userData.grade = (Grade);
+    setState(() {});
+  }
 
-    Navigator.of(context).pop('complete');
+  Future<void> changeClass() async {
+    Future<int> getClassDialog(BuildContext context, int initClass) async {
+      await SelectDialog.showModal<String>(
+        context,
+        label: "반을 선택하세요",
+        selectedValue: "$initClass반",
+        items: List.generate(9, (index) {
+          var num = index + 1;
+          return "$num반";
+        }),
+        onChange: (String selected) {
+          var dd = selected.split('');
+          initClass = int.parse(dd[0]);
+        },
+        showSearchBox: false,
+      );
+      return initClass;
+    }
+
+    int Class = await getClassDialog(context, userData.Class);
+    userData.Class = (Class);
+    setState(() {});
   }
 
   void NavigateFindSchool() {
@@ -121,55 +166,35 @@ class _settingState extends State<setting> {
     );
   }
 
-  Future<void> changeGrade() async {
-    int Grade = await getGradeDialog(context, userData.grade);
-    userData.grade=(Grade);
-    setState(() {});
-  }
-
-  Future<void> changeClass() async {
-    int Class = await getClassDialog(context, userData.Class);
-    userData.Class=(Class);
-    setState(() {});
-  }
-
-  Future<int> getGradeDialog(BuildContext context, int initGrade) async {
-    await SelectDialog.showModal<String>(
-      context,
-      label: "학년을 선택하세요",
-      selectedValue: "$initGrade학년",
-      items: List.generate(3, (index) {
-        var num = index + 1;
-        return "$num학년";
-      }),
-      onChange: (String selected) {
-        setState(() {
-          var dd = selected.split('');
-          initGrade = int.parse(dd[0]);
-        });
-      },
-      showSearchBox: false,
-    );
-
-    return initGrade;
-  }
-
-  Future<int> getClassDialog(BuildContext context, int initClass) async {
-    await SelectDialog.showModal<String>(
-      context,
-      label: "반을 선택하세요",
-      selectedValue: "$initClass반",
-      items: List.generate(9, (index) {
-        var num = index + 1;
-        return "$num반";
-      }),
-      onChange: (String selected) {
-        var dd = selected.split('');
-        initClass = int.parse(dd[0]);
-      },
-      showSearchBox: false,
-    );
-    return initClass;
-  }
-
+// navigateHome() {
+//   Navigator.pushAndRemoveUntil(
+//     context,
+//     PageRouteBuilder(
+//       pageBuilder: (context, animation, secondaryAnimation) => MyHomePage(),
+//       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+//         var begin =  Offset(-1.0, 0);
+//         var end = Offset.zero;
+//         var curve = Curves.ease;
+//
+//         var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+//
+//         return Container(
+//           decoration: BoxDecoration(
+//             boxShadow: [
+//               BoxShadow(
+//                 color: Colors.grey.withOpacity(0.1),
+//               ),
+//             ],
+//           ),
+//           child: SlideTransition(
+//             position: animation.drive(tween),
+//             child: child,
+//           ),
+//         );
+//       },
+//     ),
+//
+//     (route) => false,
+//   );
+// }
 }

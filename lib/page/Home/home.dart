@@ -1,11 +1,9 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/Profile/editProfile.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
-
 
 import '../../DB/userProfile.dart';
 import '../Profile/profile.dart';
@@ -20,15 +18,32 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      body: body(),
+      body: ListView(
+        children: [
+          TimeTableSection(),
+          LunchSection(),
+          CupertinoButton(
+            onPressed: checkKey,
+            child: const Text('저장소 확인'),
+          ),
+          const SizedBox(height: 30),
+          Container(
+            height: 400,
+            color: Colors.grey,
+          ),
+        ],
+      ),
     );
   }
 
+
   AppBar appBar() {
+
     return AppBar(
       title: Text("부천북고등학교"),
       actions: [
@@ -40,33 +55,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  ListView body() {
-    return ListView(
-      children: [
-        TimeTableSection(),
-        LunchSection(),
-        CupertinoButton(
-            child: const Text('저장소 확인'),
-            onPressed: () {
-              checkKey();
-            }),
-        const SizedBox(height: 30),
-        Container(
-          height: 400,
-          color: Colors.grey,
-        )
-      ],
-    );
-  }
-
   Widget TimeTableSection() {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: timetable(),
     );
   }
-
-
 
   Widget LunchSection() {
     print("런치");
@@ -85,12 +79,11 @@ class _HomeState extends State<Home> {
     );
 
     setState(() {});
+    print(UserProfile.currentUser);
   }
 
-
-
   Future<void> checkKey() async {
-    UserProfile userProfile=UserProfile.currentUser;
+    UserProfile userProfile = UserProfile.currentUser;
     print(userProfile);
   }
 }

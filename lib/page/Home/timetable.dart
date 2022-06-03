@@ -15,6 +15,7 @@ class timetable extends StatefulWidget {
   State<timetable> createState() => _timetableState();
 }
 
+
 class _timetableState extends State<timetable> {
   /// 이 화면은 [getInfo]에서 [UserProfile]를 얻어온다.
   /// 여기서 유저의 학년, 반, 학교코드를 얻어낸다.
@@ -24,6 +25,7 @@ class _timetableState extends State<timetable> {
   UserProfile userProfile = UserProfile.currentUser;
 
   Future getMap() async {
+
     TableDownloader tabledown = TableDownloader(
       Grade: userProfile.grade,
       Class: userProfile.Class,
@@ -38,6 +40,7 @@ class _timetableState extends State<timetable> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
+
         future: getMap(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData == false) {
