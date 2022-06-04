@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../DB/userProfile.dart';
 
@@ -80,34 +83,25 @@ class LunchScroll extends StatelessWidget {
   LunchScroll({
     Key? key,
     required this.menu,
-  }) : super(
-          key: key,
-        );
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 200,
-      child: PageView(
-        controller: PageController(
-          initialPage: 30,
-          keepPage: true,
-        ),
-        children: pages(),
+      child: ScrollablePositionedList.builder(
+        initialScrollIndex: 30, // 0 ~ 29, 30, 31~60 <= 총 61개
+        scrollDirection: Axis.horizontal,
+        itemCount: 61,
+        itemBuilder: (context, index) {
+          return box(index);
+        },
       ),
     );
   }
 
-  List<Widget> pages() {
-    List<Widget> list = [];
-    menu.forEach((element) {
-      list.add(box(element));
-    });
-
-    return list;
-  }
-
-  Widget box(List<String> foods) {
+  Widget box(int index) {
+    final List<String> foods = menu[index];
     Widget titleSection() {
       return Text(foods[0]);
     }
@@ -126,8 +120,11 @@ class LunchScroll extends StatelessWidget {
     }
 
     return Container(
+      margin: EdgeInsets.all(5),
       padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+      ),
       child: Column(
         children: [titleSection(), foodSection()],
       ),
@@ -141,8 +138,6 @@ class LunchDownloader {
   final int FROM_TERM = -30;
   final int TO_TERM = 30;
 
-
-
   LunchDownloader({
     required this.CityCode,
     required this.SchoolCode,
@@ -150,7 +145,7 @@ class LunchDownloader {
 
   late Map<String, dynamic> Json;
 
-  Future<void> downLoad() async => Json= await _getJson();
+  Future<void> downLoad() async => Json = await _getJson();
 
   List<List<String>> getCleanedList() => _cleanList(_washMap(Json));
 
@@ -172,9 +167,9 @@ class LunchDownloader {
     // 날짜 프린트
     DateTime now = DateTime.now();
     String firstday =
-    DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
     String lastday =
-    DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
 
     // uri값 얻고
     Uri uri = _getUri(SchoolCode, CityCode);
@@ -267,22 +262,16 @@ class LunchDownloader {
     }
 
     final DateTime now = DateTime.now();
-    final String fromYMD =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
-    final String toYMD =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+    final String goleYMD =
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM+1))); //+1 해주는 이유는 while문에서 -30~+30까지 가야하는데 -30~+29까지 가서 하나 더 붙여준거임 나중에 좋은 방법 나오면 고쳐야함
 
     // 목표 날짜 구하기
     DateTime plusDateTime = now.add(Duration(days: FROM_TERM));
     String plusYMD = DateFormat('yyyyMMdd').format(plusDateTime);
 
-    //print(fromYMD);
-    //print(toYMD);
-    //print("YMD: $plusYMD");
-    //print("date: $plusDateTime");
 
     // 더한 날짜가 마지막 날짜가 될 때 까지
-    while (plusYMD != toYMD) {
+    while (plusYMD != goleYMD)  {
       // 박스 안 제목 설정하기
       String date = DateFormat('MM월 dd일 ').format(plusDateTime);
       String weekday = weekdayEng2Kor(DateFormat('E').format(plusDateTime));
@@ -294,7 +283,9 @@ class LunchDownloader {
       // 추가하고 날짜 하나 올리기
       plusDateTime = plusDateTime.add(Duration(days: 1));
       plusYMD = DateFormat('yyyyMMdd').format(plusDateTime);
+
     }
+
 
     return Menu;
   }
