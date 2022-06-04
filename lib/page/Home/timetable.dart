@@ -8,14 +8,14 @@ import 'package:http/http.dart' as http;
 
 import '../../DB/userProfile.dart';
 
-class timetable extends StatefulWidget {
-  timetable({Key? key}) : super(key: key);
+class MyTimeTable extends StatefulWidget {
+  MyTimeTable({Key? key}) : super(key: key);
 
   @override
-  State<timetable> createState() => _timetableState();
+  State<MyTimeTable> createState() => _MyTimeTableState();
 }
 
-class _timetableState extends State<timetable> {
+class _MyTimeTableState extends State<MyTimeTable> {
   /// 이 화면은 [getInfo]에서 [UserProfile]를 얻어온다.
   /// 여기서 유저의 학년, 반, 학교코드를 얻어낸다.
   /// 이 값을 사용해 나이스 오픈 데이터 포털에서 시간표 정보를 json 형식으로 가져와 화면을 만들게 된다.
@@ -57,7 +57,9 @@ class _timetableState extends State<timetable> {
     return Column(
       children: [
         infoSection(),
-        Timetable(
+        TimeTable(
+          height: 450,
+          percent: 0.4,
           monday: data.Mon,
           tuesday: data.Tue,
           wednesday: data.Wed,
@@ -105,7 +107,7 @@ class _timetableState extends State<timetable> {
   }
 }
 
-class Timetable extends StatelessWidget {
+class TimeTable extends StatelessWidget {
   List<String> monday;
   List<String> tuesday;
   List<String> wednesday;
@@ -113,20 +115,28 @@ class Timetable extends StatelessWidget {
   List<String> friday;
 
   //테이블 총 세로길이 450
-  final double height = 60;
-  final double halfheight = 30;
+   double boxHeight =0;
+   double boxSmallHeight=0 ;
+   double percent=0.5;
+   int maxLenght;
 
   final TextStyle textStyle = const TextStyle(fontSize: 12);
 
-  Timetable({
+  TimeTable({
     Key? key,
-    int maxLenght = 7,
+    this.maxLenght = 7,
+    double height=450,
+    this.percent=0.5,
     required this.monday,
     required this.tuesday,
     required this.wednesday,
     required this.thursday,
     required this.friday,
   }) : super(key: key) {
+
+    boxHeight=height/(maxLenght+percent);
+    boxSmallHeight=percent*boxHeight;
+
     // 빈칸 채워주기
     while (monday.length < maxLenght) {
       monday.add('');
@@ -150,13 +160,13 @@ class Timetable extends StatelessWidget {
     return Table(
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder.all(),
-      columnWidths: const {
-        0: FlexColumnWidth(1),
-        1: FlexColumnWidth(2),
-        2: FlexColumnWidth(2),
-        3: FlexColumnWidth(2),
-        4: FlexColumnWidth(2),
-        5: FlexColumnWidth(2),
+      columnWidths:  {
+        0: FlexColumnWidth(percent),
+        1: FlexColumnWidth(1),
+        2: FlexColumnWidth(1),
+        3: FlexColumnWidth(1),
+        4: FlexColumnWidth(1),
+        5: FlexColumnWidth(1),
       },
       children: tableRows(),
     );
@@ -167,7 +177,7 @@ class Timetable extends StatelessWidget {
 
     value.add(firstBar());
 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i <maxLenght; i++) {
       value.add(subjects(index: i));
     }
 
@@ -178,7 +188,7 @@ class Timetable extends StatelessWidget {
     List<Widget> list = [];
 
     list.add(Container(
-        height: halfheight,
+        height: boxSmallHeight,
         child: Center(
             child: Text(
           " ",
@@ -218,7 +228,7 @@ class Timetable extends StatelessWidget {
 
     int kosy = index + 1;
     list.add(Container(
-        height: height,
+        height: boxHeight,
         child: Center(
             child: Text(
           "$kosy",

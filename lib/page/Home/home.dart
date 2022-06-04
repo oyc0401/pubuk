@@ -22,7 +22,15 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(),
+      appBar: AppBar(
+        title: Text("부천북고등학교"),
+        actions: [
+          IconButton(
+            onPressed: NavigateProfile,
+            icon: const Icon(Icons.account_circle),
+          ),
+        ],
+      ),
       body: ListView(
         children: [
           TimeTableSection(),
@@ -40,24 +48,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-
-  AppBar appBar() {
-
-    return AppBar(
-      title: Text("부천북고등학교"),
-      actions: [
-        IconButton(
-          onPressed: NavigateProfile,
-          icon: const Icon(Icons.account_circle),
-        ),
-      ],
-    );
-  }
-
   Widget TimeTableSection() {
     return Padding(
       padding: const EdgeInsets.all(12.0),
-      child: timetable(),
+      child: MyTimeTable(),
     );
   }
 
