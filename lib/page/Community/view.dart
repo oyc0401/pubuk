@@ -6,7 +6,7 @@ import 'package:ntp/ntp.dart';
 
 import '../../DB/userProfile.dart';
 
-import '../../Server/GetFirebase.dart';
+import '../../Server/FireTool.dart';
 import 'comment.dart';
 import 'community.dart';
 import 'edit.dart';
@@ -114,7 +114,7 @@ class _viewState extends State<view> {
     List<Widget> listcomment = [];
 
 //댓글 10개 읽기
-    await GetFirebase.readComments(widget.url).then((value) {
+    await FireTool.readComments(widget.url).then((value) {
       value.forEach((map) {
         listcomment.add(
           comment(

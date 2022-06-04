@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:flutterschool/MyWidget/button.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/userProfile.dart';
+import '../../Server/FireTool.dart';
 import '../mainPage.dart';
 
 class setting extends StatefulWidget {
@@ -50,9 +50,13 @@ class _settingState extends State<setting> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               schoolSection(),
-              SizedBox(height: 40,),
+              SizedBox(
+                height: 40,
+              ),
               gradeSection(),
               SizedBox(height: 20),
               classSection(),
@@ -64,18 +68,17 @@ class _settingState extends State<setting> {
   }
 
   Future<void> Save(UserProfile myUserData) async {
-    await UserProfile.Save(myUserData);
+    // 로컬 DB에 저장
+     UserProfile.Save(myUserData);
 
-    await FirebaseFirestore.instance
-        .collection('user')
-        .doc(myUserData.uid)
-        .update({
-      'grade': myUserData.grade,
-      'class': myUserData.Class,
-    }).then((value) async {
-      print('Class Update');
-    }).catchError((error) => print("Failed to change Class: $error"));
+    // firebase DB에 저장
+    FireUser fireUser = FireUser(uid: myUserData.uid);
+    fireUser.setGrade(
+      grade: myUserData.grade,
+      Class: myUserData.Class,
+    );
 
+    // 나가기
     Navigator.of(context).pop('complete');
   }
 
@@ -94,7 +97,6 @@ class _settingState extends State<setting> {
       onclick: changeGrade,
       color: Colors.greenAccent,
     );
-
   }
 
   Widget classSection() {

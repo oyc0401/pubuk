@@ -1,95 +1,52 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ntp/ntp.dart';
 
-class GetFirebase {
-
-String collectionName='';
-String docName='';
-
-GetFirebase({
-  required this.docName,
-});
+class FireUser {
+  String uid;
+  DocumentReference<Map<String, dynamic>> userDoc;
+  FireUser({required this.uid})
+      : userDoc = FirebaseFirestore.instance.collection('user').doc(uid);
 
 
-  late DocumentSnapshot<Map<String, dynamic>> snapshot;
-
-   getinstance() async {
-    GetFirebase db=GetFirebase(docName: 'dd');
-    await FirebaseFirestore.instance
-        .collection('user')
-        .doc('uid')
-        .get().then((value) => db.snapshot=value);
-
-    return db;
+  Future<void> setGrade({
+    required int grade,
+    required int Class,
+  }) async {
+    await userDoc.update({
+      'grade': grade,
+      'class': Class,
+    }).then((value) async {
+      print('grade Update');
+    }).catchError((error) => print("Failed to change grade: $error"));
   }
 
+  Future<void> checkRegister({
+    required Function onExist, // 유저 데이터가 존재할 때
+    required Function onNotExist, // 유저 데이터가 없을 때
+  }) async {
+    // 회원가입을 했는지 판단하는 함수
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc.get();
+    Map? map = snapshot.data();
 
-
-
-
-
-
-
-
-  static newSignIn(
-      String uid,
-      String email,
-      String displayName,
-      String photoURL,
-  ) async {
-    Future<String> LocalTime() async {
-      DateTime startDate = DateTime.now().toLocal();
-      int offset = await NTP.getNtpOffset(localTime: startDate);
-      print('네트워크 시간: ${startDate.add(Duration(milliseconds: offset))}');
-      String date = "${startDate.add(Duration(milliseconds: offset))}";
-      return date;
+    if (snapshot.exists) {
+      print("유저 정보가 있습니다. user: ${map}");
+      onExist();
+    } else {
+      print("유저 정보가 없습니다.");
+      onNotExist();
     }
-
-    String date = await LocalTime();
-    await FirebaseFirestore.instance.collection('user').doc(uid).set(
-        {
-          'ID': uid,
-          'userid': uid,
-          'email': email,
-          'nickname': displayName,
-          'displayName': displayName,
-          'photoURL': photoURL,
-          'signupDate': date,
-          'grade': 1,
-          'class': 1,
-          'auth': 'user'
-        }
-    ).then((value) {
-      print("User Sign up");
-    }).catchError((error) {
-      print("Failed to Sign up: $error");
-    });
   }
+}
 
 
-  // 읽기
-  static Future<bool> isUserExist(String uid) async {
-    bool isExist = false;
-    await FirebaseFirestore.instance
-        .collection('user')
-        .doc(uid)
-        .get()
-        .then((value) => isExist = value.data() != null);
 
-    return isExist;
-  }
+class FireTool {
+  String collectionName = '';
+  String docName = '';
 
-  static Future<Map> getUser(String uid) async {
-    Map map = {};
-    await FirebaseFirestore.instance
-        .collection('user')
-        .doc(uid)
-        .get()
-        .then((value) async {
-      map = value.data() as Map;
-    });
-    return map;
-  }
+  FireTool({
+    required this.docName,
+  });
 
   static Future<Map> readFirstMap() async {
     Map map = {};
@@ -159,8 +116,6 @@ GetFirebase({
     String date = "${startDate.add(Duration(milliseconds: offset))}";
     return date;
   }
-
-
 }
 
 class jsonConversion {

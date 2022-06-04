@@ -9,7 +9,7 @@ import 'package:ntp/ntp.dart';
 
 import '../../DB/userProfile.dart';
 
-import '../../Server/GetFirebase.dart';
+import '../../Server/FireTool.dart';
 import 'community.dart';
 
 class comment extends StatefulWidget {
@@ -209,7 +209,7 @@ class _commentState extends State<comment> {
 
   Future readReply() async {
     reply = [];
-    await GetFirebase.readReplies(widget.url, widget.json['ID']).then((list) {
+    await FireTool.readReplies(widget.url, widget.json['ID']).then((list) {
       list.forEach((map) {
         reply.add(ReplyWidget(map));
       });

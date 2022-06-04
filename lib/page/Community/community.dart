@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 
-import '../../Server/GetFirebase.dart';
+import '../../Server/FireTool.dart';
 import '../../tools/Time.dart';
 import 'view.dart';
 import 'write.dart';
@@ -32,7 +32,7 @@ class _communityState extends State<community> {
   Future readFirst() async {
     print('readFirst');
     //reset All DATA
-    await GetFirebase.readFirstMap().then((map) {
+    await FireTool.readFirstMap().then((map) {
       String firstvalue = map['date'];
       print("처음 날짜: $firstvalue");
       widgetList = [];
@@ -43,7 +43,7 @@ class _communityState extends State<community> {
 
   Future readPage() async {
     print('readPage');
-    await GetFirebase.readTexts(finalDate).then((value) {
+    await FireTool.readTexts(finalDate).then((value) {
       value.forEach((map) {
         finalDate = map['date'];
         widgetList.add(textWidget(map));

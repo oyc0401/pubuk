@@ -27,14 +27,13 @@ class _HomeState extends State<Home> {
         children: [
           TimeTableSection(),
           LunchSection(),
-          CupertinoButton(
-            onPressed: checkKey,
-            child: const Text('저장소 확인'),
-          ),
+          // CupertinoButton(
+          //   onPressed: checkKey,
+          //   child: const Text('저장소 확인'),
+          // ),
           const SizedBox(height: 30),
           Container(
             height: 400,
-            color: Colors.grey,
           ),
         ],
       ),
@@ -49,7 +48,7 @@ class _HomeState extends State<Home> {
       actions: [
         IconButton(
           onPressed: NavigateProfile,
-          icon: const Icon(Icons.edit),
+          icon: const Icon(Icons.account_circle),
         ),
       ],
     );

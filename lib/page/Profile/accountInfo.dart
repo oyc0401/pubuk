@@ -43,61 +43,150 @@ class _AccountInfoState extends State<AccountInfo> {
       child: Column(
         children: [
           ListTile(
-              leading: CircleAvatar(
-                radius: 48,
-                backgroundImage: NetworkImage(user.photoURL ??
-                    "https://dfge.de/wp-content/uploads/blank-profile-picture-973460_640.png"),
-              ),
-              title: Text(
-                user.email ?? "23",
-                style: TextStyle(fontSize: 18, color: Colors.black),
-              )),
-          Text(
-            user.uid,
-            style: TextStyle(fontSize: 18, color: Colors.black),
+            leading: CircleAvatar(
+              radius: 48,
+              backgroundImage: NetworkImage(user.photoURL ??
+                  "https://dfge.de/wp-content/uploads/blank-profile-picture-973460_640.png"),
+            ),
+            title: Text(
+              user.email ?? "23",
+              style: TextStyle(fontSize: 18, color: Colors.black),
+            ),
+            subtitle: Text(
+              "uid: ${user.uid}",
+            ),
           ),
-          CupertinoButton(child: Text("로그이웃"), onPressed: Logout),
-          CupertinoButton(child: Text("회원 탈퇴"), onPressed: deleteUser),
+          CupertinoButton(
+            child: Text(
+              "로그아웃",
+              style: TextStyle(color: Colors.blue),
+            ),
+            onPressed: _onTapLogoutButton,
+          ),
+          CupertinoButton(
+            child: Text(
+              "회원 탈퇴",
+              style: TextStyle(color: Colors.red),
+            ),
+            onPressed: _onTapDeleteButton,
+          ),
         ],
       ),
     );
   }
 
   Logout() async {
-    await FirebaseAuth.instance.signOut();
+    FirebaseAuth.instance.signOut();
     print("로그아웃");
     UserProfileHandler.SwitchGuest();
     navigateHome();
   }
 
-  deleteUser() async{
+  Future<void> deleteUser() async {
     try {
-      await FirebaseAuth.instance.currentUser!.delete();
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        FirebaseFirestore.instance
+            .collection('user')
+            .doc(user.uid)
+            .delete()
+            .then((value) => print("User Deleted"))
+            .catchError((error) => print("Failed to delete user: $error"));
 
-      UserProfileHandler.SwitchGuest();
-      navigateHome();
-
-      UserProfile userProfile=UserProfile.currentUser;
-      FirebaseFirestore.instance
-          .collection('user')
-          .doc(userProfile.uid)
-          .delete()
-          .then((value) => print("User Deleted"))
-          .catchError((error) => print("Failed to delete user: $error"));
-
+        user.delete();
+        UserProfileHandler.SwitchGuest();
+        navigateHome();
+      } else {
+        print("문제발생");
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
-        print('The user must reauthenticate before this operation can be executed.');
+        print(
+            'The user must reauthenticate before this operation can be executed.');
       }
     }
   }
 
-  void navigateHome(){
+  void _onTapDeleteButton() {
+    showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Text("회원 탈퇴"),
+            //
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "계정을 삭제 하시겠습니까?",
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text("아니요"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: Text("네"),
+                onPressed: deleteUser,
+              ),
+            ],
+          );
+        });
+  }
+
+  void _onTapLogoutButton() {
+    showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Text("로그아웃"),
+            //
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "로그아웃 하시겠습니까?",
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text("아니요"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: Text("네"),
+                onPressed: Logout,
+              ),
+            ],
+          );
+        });
+  }
+
+  void navigateHome() {
     Navigator.pushAndRemoveUntil(
         context,
         CupertinoPageRoute(
           builder: (context) => const MyHomePage(),
         ),
-            (route) => false);
+        (route) => false);
   }
 }

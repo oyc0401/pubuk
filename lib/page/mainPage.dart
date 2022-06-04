@@ -40,8 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       items: const [
         BottomNavigationBarItem(
-          label: "Favorites",
-          icon: Icon(Icons.favorite),
+          label: "home",
+          icon: Icon(Icons.home),
         ),
         BottomNavigationBarItem(
           label: "Music",
@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return [
       const Home(),
       const Text(
-        'Music',
+        'home',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
       ),
       const Text(

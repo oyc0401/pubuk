@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/userProfile.dart';
+import 'package:flutterschool/Server/FireTool.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -20,7 +21,6 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
 
   scopes: <String>[
     'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
   ],
 );
 
@@ -76,35 +76,14 @@ class _SignInState extends State<SignIn> {
     print("이동중..");
 
     if (user != null) {
-
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-          .instance
-          .collection('user')
-          .doc(user.uid)
-          .get();
-      Map? map = snapshot.data();
-
-      if (snapshot.exists) {
-        print("유저 정보가 있습니다.");
-        print(map);
-
-        UserProfile userProfile = UserProfile.FirebaseUser(map!);
-        await UserProfile.Save(userProfile);
-
-        NavigateHome();
-
-      } else {
-        print("유저 정보가 없습니다.");
-        NavigeteRegister();
-      }
-
-
-
+      FireUser fireUser=FireUser(uid: user.uid);
+      await fireUser.checkRegister(
+          onNotExist: NavigeteRegister,
+          onExist: NavigateHome);
     } else {
       print("이게 왜?");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -162,8 +141,6 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-
-
   InkWell appleLoginButton() {
     return InkWell(
       child: Container(
@@ -183,7 +160,8 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  void NavigeteRegister(){
+  void NavigeteRegister() {
+    print("회원가입 이동합니다.");
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
@@ -191,7 +169,8 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-  void NavigateHome(){
+
+  void NavigateHome() {
     Navigator.pushReplacement(
       context,
       CupertinoPageRoute(
@@ -199,6 +178,4 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-
-
 }
