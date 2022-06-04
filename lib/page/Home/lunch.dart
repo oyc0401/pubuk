@@ -27,7 +27,10 @@ class _LunchState extends State<Lunch> {
 
     LunchDownloader lunchDownloader =
         LunchDownloader(SchoolCode: schoolCode, CityCode: cityCode);
-    return await lunchDownloader.getCleanedList();
+
+    await lunchDownloader.downLoad();
+
+    return lunchDownloader.getCleanedList();
   }
 
   @override
@@ -47,8 +50,8 @@ class _LunchState extends State<Lunch> {
   }
 
   Widget succeed(AsyncSnapshot<dynamic> snapshot) {
-
-    return lunchSection(snapshot.data);
+    List<List<String>> list = snapshot.data;
+    return LunchScroll(menu: list);
   }
 
   Widget error(AsyncSnapshot<dynamic> snapshot) {
@@ -69,18 +72,20 @@ class _LunchState extends State<Lunch> {
       ),
     );
   }
+}
 
-  Widget lunchSection(List<List<String>> menu) {
-    List<Widget> pages() {
-      List<Widget> list = [];
+class LunchScroll extends StatelessWidget {
+  List<List<String>> menu;
 
-      menu.forEach((element) {
-        list.add(box(element));
-      });
+  LunchScroll({
+    Key? key,
+    required this.menu,
+  }) : super(
+          key: key,
+        );
 
-      return list;
-    }
-
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       height: 200,
       child: PageView(
@@ -91,6 +96,15 @@ class _LunchState extends State<Lunch> {
         children: pages(),
       ),
     );
+  }
+
+  List<Widget> pages() {
+    List<Widget> list = [];
+    menu.forEach((element) {
+      list.add(box(element));
+    });
+
+    return list;
   }
 
   Widget box(List<String> foods) {
@@ -127,10 +141,18 @@ class LunchDownloader {
   final int FROM_TERM = -30;
   final int TO_TERM = 30;
 
+
+
   LunchDownloader({
     required this.CityCode,
     required this.SchoolCode,
   });
+
+  late Map<String, dynamic> Json;
+
+  Future<void> downLoad() async => Json= await _getJson();
+
+  List<List<String>> getCleanedList() => _cleanList(_washMap(Json));
 
   Uri _getUri(int SchoolCode, String CityCode) {
     DateTime now = DateTime.now();
@@ -147,6 +169,13 @@ class LunchDownloader {
   }
 
   Future<Map<String, dynamic>> _getJson() async {
+    // 날짜 프린트
+    DateTime now = DateTime.now();
+    String firstday =
+    DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
+    String lastday =
+    DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+
     // uri값 얻고
     Uri uri = _getUri(SchoolCode, CityCode);
 
@@ -155,7 +184,7 @@ class LunchDownloader {
 
     // 요청 성공하면 리턴
     if (response.statusCode == 200) {
-      print("Lunch: 급식 json 파싱 완료 $uri");
+      print("$firstday ~ $lastday 급식메뉴: $uri");
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load post');
@@ -199,7 +228,7 @@ class LunchDownloader {
     return cleanMap;
   }
 
-  List<List<String>> _cleanList(Map<String, List<String>> cleanedMap) {
+  List<List<String>> _cleanList(Map<String, List<String>> washedMap) {
     //맵을 받으면 급식 2차원 배열을 리턴한다. [index][11월 22일 월요일, 오므라이스, 쑥갓어묵국, 치즈떡볶이, 수제야채튀김, 배추김치, 사과]
 
     //print(cleanedMap);
@@ -208,7 +237,7 @@ class LunchDownloader {
     List foodList(String date) {
       // 날짜(yyyyMMdd)를 입력하면 그 날짜의 급식을 담은 1차원 배열을 리턴한다.
 
-      List? list = cleanedMap[date];
+      List? list = washedMap[date];
       list ??= ["급식정보가 없습니다."];
       return list;
     }
@@ -268,12 +297,6 @@ class LunchDownloader {
     }
 
     return Menu;
-  }
-
-  Future<List<List<String>>> getCleanedList() async {
-    Map<String, dynamic> json = await _getJson();
-    Map<String, List<String>> washedMap = _washMap(json);
-    return _cleanList(washedMap);
   }
 
 // json은 원본상태

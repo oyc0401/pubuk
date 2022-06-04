@@ -15,7 +15,6 @@ class timetable extends StatefulWidget {
   State<timetable> createState() => _timetableState();
 }
 
-
 class _timetableState extends State<timetable> {
   /// 이 화면은 [getInfo]에서 [UserProfile]를 얻어온다.
   /// 여기서 유저의 학년, 반, 학교코드를 얻어낸다.
@@ -24,40 +23,47 @@ class _timetableState extends State<timetable> {
 
   UserProfile userProfile = UserProfile.currentUser;
 
-  Future getMap() async {
-
+  Future<ClassData> getData() async {
     TableDownloader tabledown = TableDownloader(
       Grade: userProfile.grade,
       Class: userProfile.Class,
       SchoolCode: userProfile.schoolCode,
       CityCode: userProfile.schoolLocalCode,
     );
-    Map cleanedmap = await tabledown.getCleanedMap();
+    await tabledown.downLoad();
 
-    return cleanedmap;
+    ClassData dataBox = tabledown.getData();
+
+    return dataBox;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-
-        future: getMap(),
+        future: getData(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData == false) {
             return waiting();
           } else if (snapshot.hasError) {
             return error(snapshot);
           } else {
-            return succeed(snapshot);
+            ClassData dataBox = snapshot.data;
+            return succeed(dataBox);
           }
         });
   }
 
-  Widget succeed(AsyncSnapshot<dynamic> snapshot) {
+  Widget succeed(ClassData data) {
     return Column(
       children: [
         infoSection(),
-        timetableSection(snapshot.data),
+        Timetable(
+          monday: data.Mon,
+          tuesday: data.Tue,
+          wednesday: data.Wed,
+          thursday: data.Thu,
+          friday: data.Fri,
+        )
       ],
     );
   }
@@ -97,106 +103,50 @@ class _timetableState extends State<timetable> {
       ),
     );
   }
+}
 
-  Widget timetableSection(Map cleanedMap) {
-    List<TableRow> tableRows() {
-      //테이블 총 세로길이 450
-      const double height = 60;
-      const double halfheight = 30;
-      final TextStyle textStyle = const TextStyle(fontSize: 12);
+class Timetable extends StatelessWidget {
+  List<String> monday;
+  List<String> tuesday;
+  List<String> wednesday;
+  List<String> thursday;
+  List<String> friday;
 
-      List<Widget> weekends() {
-        List<Widget> list = [];
-        list.add(Container(
-            height: halfheight,
-            child: Center(
-                child: Text(
-              " ",
-              style: textStyle,
-            ))));
-        list.add(Text(
-          "월요일",
-          textAlign: TextAlign.center,
-          style: textStyle,
-        ));
-        list.add(Text(
-          "화요일",
-          textAlign: TextAlign.center,
-          style: textStyle,
-        ));
-        list.add(Text(
-          "수요일",
-          textAlign: TextAlign.center,
-          style: textStyle,
-        ));
-        list.add(Text(
-          "목요일",
-          textAlign: TextAlign.center,
-          style: textStyle,
-        ));
-        list.add(Text(
-          "금요일",
-          textAlign: TextAlign.center,
-          style: textStyle,
-        ));
-        return list;
-      }
+  //테이블 총 세로길이 450
+  final double height = 60;
+  final double halfheight = 30;
 
-      List<Widget> subjects(int num) {
-        List<Widget> list = [];
-        int kosy = num + 1;
-        list.add(Container(
-            height: height,
-            child: Center(
-                child: Text(
-              "$kosy",
-              textAlign: TextAlign.center,
-              style: textStyle,
-            ))));
-        list.add(Center(
-            child: Text(
-          cleanedMap["Monday"][num],
-          textAlign: TextAlign.center,
-          style: textStyle,
-        )));
-        list.add(Center(
-            child: Text(
-          cleanedMap["Tuesday"][num],
-          textAlign: TextAlign.center,
-          style: textStyle,
-        )));
-        list.add(Center(
-            child: Text(
-          cleanedMap["Wednesday"][num],
-          textAlign: TextAlign.center,
-          style: textStyle,
-        )));
-        list.add(Center(
-            child: Text(
-          cleanedMap["Thursday"][num],
-          textAlign: TextAlign.center,
-          style: textStyle,
-        )));
-        list.add(Center(
-            child: Text(
-          cleanedMap["Friday"][num],
-          textAlign: TextAlign.center,
-          style: textStyle,
-        )));
-        return list;
-      }
+  final TextStyle textStyle = const TextStyle(fontSize: 12);
 
-      List<TableRow> list = [];
-
-      list.add(TableRow(children: [...weekends()]));
-
-      for (int i = 0; i < 7; i++) {
-        list.add(TableRow(children: [...subjects(i)]));
-      }
-
-      return list;
+  Timetable({
+    Key? key,
+    int maxLenght = 7,
+    required this.monday,
+    required this.tuesday,
+    required this.wednesday,
+    required this.thursday,
+    required this.friday,
+  }) : super(key: key) {
+    // 빈칸 채워주기
+    while (monday.length < maxLenght) {
+      monday.add('');
     }
+    while (tuesday.length < maxLenght) {
+      tuesday.add('');
+    }
+    while (wednesday.length < maxLenght) {
+      wednesday.add('');
+    }
+    while (thursday.length < maxLenght) {
+      thursday.add('');
+    }
+    while (friday.length < maxLenght) {
+      friday.add('');
+    }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Table(
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder.all(),
@@ -208,8 +158,105 @@ class _timetableState extends State<timetable> {
         4: FlexColumnWidth(2),
         5: FlexColumnWidth(2),
       },
-      children: [...tableRows()],
+      children: tableRows(),
     );
+  }
+
+  List<TableRow> tableRows() {
+    List<TableRow> value = [];
+
+    value.add(firstBar());
+
+    for (int i = 0; i < 7; i++) {
+      value.add(subjects(index: i));
+    }
+
+    return value;
+  }
+
+  TableRow firstBar() {
+    List<Widget> list = [];
+
+    list.add(Container(
+        height: halfheight,
+        child: Center(
+            child: Text(
+          " ",
+          style: textStyle,
+        ))));
+    list.add(Text(
+      "월요일",
+      textAlign: TextAlign.center,
+      style: textStyle,
+    ));
+    list.add(Text(
+      "화요일",
+      textAlign: TextAlign.center,
+      style: textStyle,
+    ));
+    list.add(Text(
+      "수요일",
+      textAlign: TextAlign.center,
+      style: textStyle,
+    ));
+    list.add(Text(
+      "목요일",
+      textAlign: TextAlign.center,
+      style: textStyle,
+    ));
+    list.add(Text(
+      "금요일",
+      textAlign: TextAlign.center,
+      style: textStyle,
+    ));
+
+    return TableRow(children: list);
+  }
+
+  TableRow subjects({required int index}) {
+    List<Widget> list = [];
+
+    int kosy = index + 1;
+    list.add(Container(
+        height: height,
+        child: Center(
+            child: Text(
+          "$kosy",
+          textAlign: TextAlign.center,
+          style: textStyle,
+        ))));
+    list.add(Center(
+        child: Text(
+      monday[index],
+      textAlign: TextAlign.center,
+      style: textStyle,
+    )));
+    list.add(Center(
+        child: Text(
+      tuesday[index],
+      textAlign: TextAlign.center,
+      style: textStyle,
+    )));
+    list.add(Center(
+        child: Text(
+      wednesday[index],
+      textAlign: TextAlign.center,
+      style: textStyle,
+    )));
+    list.add(Center(
+        child: Text(
+      thursday[index],
+      textAlign: TextAlign.center,
+      style: textStyle,
+    )));
+    list.add(Center(
+        child: Text(
+      friday[index],
+      textAlign: TextAlign.center,
+      style: textStyle,
+    )));
+
+    return TableRow(children: list);
   }
 }
 
@@ -224,9 +271,15 @@ class TableDownloader {
     required this.Class,
     required this.CityCode,
     required this.SchoolCode,
-  }) {}
+  });
 
-  Uri _getUri(int SchoolCode, int Grade, int Class, String CityCode) {
+  late Map<String, dynamic> Json;
+
+  Future<void> downLoad() async => Json = await _getJson();
+
+  ClassData getData() => _Data(Json);
+
+  Uri _MyUri() {
     var now = DateTime.now();
     var mon = DateFormat('yyyyMMdd')
         .format(now.add(Duration(days: -1 * now.weekday + 1)));
@@ -239,32 +292,31 @@ class TableDownloader {
     return uri;
   }
 
-  Future _getJson() async {
+  Future<Map<String, dynamic>> _getJson() async {
     // uri값 얻고
-    Uri uri = _getUri(SchoolCode, Grade, Class, CityCode);
+    Uri uri = _MyUri();
 
     // 요청하기
     final Response response = await http.get(uri);
 
     // 요청 성공하면 리턴
     if (response.statusCode == 200) {
-      print("timetable: 시간표 json 파싱 완료 $uri");
+      print("$Grade학년 $Class반 시간표 url: $uri");
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load post');
     }
   }
 
-  Map _cleanMap(Map<String, dynamic> json) {
+  ClassData _Data(Map<String, dynamic> json) {
     // 각 요일의 날짜를 구하기
-    DateTime now = DateTime.now();
+    final DateTime now = DateTime.now();
 
     List<String> dates = [];
     for (int i = 1; i <= 5; i++) {
       dates.add(DateFormat('yyyyMMdd')
           .format(now.add(Duration(days: -1 * now.weekday + i))));
     }
-    //print("이번주 날짜: " + dates.toString());
 
     // 과목이 담길 리스트를 만든다
     List<String> arrMon = [],
@@ -287,9 +339,6 @@ class TableDownloader {
       // 이 리스트는 시간 맵이 모두 들어있는 리스트
       List TimeList = json['hisTimetable'][1]['row'];
 
-      int listLength = TimeList.length;
-      //print("TimeTable: 시간표 배열 길이: $listLength");
-
       for (int i = 0; i < TimeList.length; i++) {
         final String date = TimeList[i]['ALL_TI_YMD'];
         final String subject = TimeList[i]['ITRT_CNTNT'];
@@ -308,36 +357,19 @@ class TableDownloader {
       }
     }
 
-    // 빈칸 채워주기
-    while (arrMon.length <= 6) {
-      arrMon.add('');
-    }
-    while (arrTue.length <= 6) {
-      arrTue.add('');
-    }
-    while (arrWed.length <= 6) {
-      arrWed.add('');
-    }
-    while (arrThu.length <= 6) {
-      arrThu.add('');
-    }
-    while (arrFri.length <= 6) {
-      arrFri.add('');
-    }
-
-    //print("TimeTable: $arrMon\n$arrTue\n$arrWed\n$arrThu\n$arrFri");
-
-    return {
-      "Monday": arrMon,
-      "Tuesday": arrTue,
-      "Wednesday": arrWed,
-      "Thursday": arrThu,
-      "Friday": arrFri,
-    };
+    return ClassData(
+        Mon: arrMon, Tue: arrTue, Wed: arrWed, Thu: arrThu, Fri: arrFri);
   }
+}
 
-  Future<Map> getCleanedMap() async {
-    Map<String, dynamic> map = await _getJson();
-    return _cleanMap(map);
-  }
+class ClassData {
+  List<String> Mon, Tue, Wed, Thu, Fri;
+
+  ClassData({
+    required this.Mon,
+    required this.Tue,
+    required this.Wed,
+    required this.Thu,
+    required this.Fri,
+  });
 }

@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -76,10 +75,9 @@ class _SignInState extends State<SignIn> {
     print("이동중..");
 
     if (user != null) {
-      FireUser fireUser=FireUser(uid: user.uid);
+      FireUser fireUser = FireUser(uid: user.uid);
       await fireUser.checkRegister(
-          onNotExist: NavigeteRegister,
-          onExist: NavigateHome);
+          onNotExist: NavigeteRegister, onExist: NavigateHome);
     } else {
       print("이게 왜?");
     }
@@ -171,11 +169,12 @@ class _SignInState extends State<SignIn> {
   }
 
   void NavigateHome() {
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       CupertinoPageRoute(
         builder: (context) => const MyHomePage(),
       ),
+      (route) => false,
     );
   }
 }
