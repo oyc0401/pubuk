@@ -88,6 +88,7 @@ class _MyTimeTableState extends State<MyTimeTable> {
         ),
         Container(
           height: 450,
+          // color: Colors.grey,
           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
           child: Center(
             child: CircularProgressIndicator(),

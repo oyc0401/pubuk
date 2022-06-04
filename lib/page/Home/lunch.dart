@@ -68,11 +68,26 @@ class _LunchState extends State<Lunch> {
   }
 
   Widget waiting() {
-    return const SizedBox(
-      height: 340,
-      child: Center(
-        child: CircularProgressIndicator(),
+    return Container(
+      height: 200,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 7,
+        itemBuilder: (context,index){
+         return Container(
+           width:160 ,
+           margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+           padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+          );
+        },
+
+
+
       ),
+      // child: Center(
+      //   child: CircularProgressIndicator(),
+      // ),
     );
   }
 }
@@ -119,11 +134,16 @@ class LunchScroll extends StatelessWidget {
       );
     }
 
+    Color lineColor = Colors.black;
+    if (index == 30) {
+      lineColor = Colors.blue;
+    }
     return Container(
-      margin: EdgeInsets.all(5),
+      width: 160,
+      margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
+        border: Border.all(color: lineColor),
       ),
       child: Column(
         children: [titleSection(), foodSection()],
@@ -262,16 +282,16 @@ class LunchDownloader {
     }
 
     final DateTime now = DateTime.now();
-    final String goleYMD =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM+1))); //+1 해주는 이유는 while문에서 -30~+30까지 가야하는데 -30~+29까지 가서 하나 더 붙여준거임 나중에 좋은 방법 나오면 고쳐야함
+    final String goleYMD = DateFormat('yyyyMMdd').format(now.add(Duration(
+        days: TO_TERM +
+            1))); //+1 해주는 이유는 while문에서 -30~+30까지 가야하는데 -30~+29까지 가서 하나 더 붙여준거임 나중에 좋은 방법 나오면 고쳐야함
 
     // 목표 날짜 구하기
     DateTime plusDateTime = now.add(Duration(days: FROM_TERM));
     String plusYMD = DateFormat('yyyyMMdd').format(plusDateTime);
 
-
     // 더한 날짜가 마지막 날짜가 될 때 까지
-    while (plusYMD != goleYMD)  {
+    while (plusYMD != goleYMD) {
       // 박스 안 제목 설정하기
       String date = DateFormat('MM월 dd일 ').format(plusDateTime);
       String weekday = weekdayEng2Kor(DateFormat('E').format(plusDateTime));
@@ -283,9 +303,7 @@ class LunchDownloader {
       // 추가하고 날짜 하나 올리기
       plusDateTime = plusDateTime.add(Duration(days: 1));
       plusYMD = DateFormat('yyyyMMdd').format(plusDateTime);
-
     }
-
 
     return Menu;
   }
