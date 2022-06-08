@@ -11,36 +11,36 @@ import 'package:skeletons/skeletons.dart';
 
 import '../../DB/userProfile.dart';
 
-class Lunch extends StatefulWidget {
-  const Lunch({Key? key}) : super(key: key);
+class LunchBuilder extends StatefulWidget {
+  const LunchBuilder({Key? key}) : super(key: key);
 
   @override
-  _LunchState createState() => _LunchState();
+  _LunchBuilderState createState() => _LunchBuilderState();
 }
 
-class _LunchState extends State<Lunch> {
+class _LunchBuilderState extends State<LunchBuilder> {
   /// 이 화면은 [getSchoolCode]에서 [UserProfile]를 얻어온다.
   /// 여기서 유저의 학교코드를 얻어낸다.
   /// 이 값을 사용해 나이스 오픈 데이터 포털에서 급식 정보를 json 형식으로 가져와 화면을 만들게 된다.
   /// [lunchSection]에 매개변수로 [LunchDownloader]에서 가져온 정리된 데이터를 매개변수로 넣게 되면 급식 위젯을 반환한다.
 
-  Future<List<List<String>>> getList() async {
+  Future<List<Lunch>> getLunch() async {
     UserProfile userData = UserProfile.currentUser;
     int schoolCode = userData.schoolCode;
     String cityCode = userData.schoolLocalCode;
 
     LunchDownloader lunchDownloader =
-        LunchDownloader(SchoolCode: schoolCode, CityCode: cityCode);
+    LunchDownloader(SchoolCode: schoolCode, CityCode: cityCode);
 
     await lunchDownloader.downLoad();
 
-    return lunchDownloader.getCleanedList();
+    return lunchDownloader.getLunches();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getList(),
+      future: getLunch(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData == false) {
           return waiting();
@@ -55,8 +55,8 @@ class _LunchState extends State<Lunch> {
   }
 
   Widget succeed(AsyncSnapshot<dynamic> snapshot) {
-    List<List<String>> list = snapshot.data;
-    return LunchScroll(menu: list);
+    List<Lunch> lunches = snapshot.data;
+    return LunchScroll(lunches: lunches);
   }
 
   Widget error(AsyncSnapshot<dynamic> snapshot) {
@@ -83,7 +83,7 @@ class _LunchState extends State<Lunch> {
     );
   }
 
-  Widget page(int index){
+  Widget page(int index) {
     Color lineColor = Colors.black;
     if (index == 5) {
       lineColor = Colors.blue;
@@ -128,11 +128,11 @@ class _LunchState extends State<Lunch> {
 }
 
 class LunchScroll extends StatelessWidget {
-  List<List<String>> menu;
+  List<Lunch> lunches;
 
   LunchScroll({
     Key? key,
-    required this.menu,
+    required this.lunches,
   }) : super(key: key);
 
   @override
@@ -144,44 +144,34 @@ class LunchScroll extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: 61,
         itemBuilder: (context, index) {
-          return box(index);
+          Color color = Colors.black;
+          if (index == 30) {
+            color = Colors.blue;
+          }
+          return LunchContainer(
+            lunch: lunches[index],
+            lineColor: color,
+          );
         },
       ),
     );
   }
+}
 
-  Widget box(int index) {
-    final List<String> foods = menu[index];
+class LunchContainer extends StatelessWidget {
+  Lunch lunch;
+  Color lineColor;
+  bool isSkeleton;
 
-    // fun
-    Widget titleSection() {
-      return Padding(
-        padding: const EdgeInsets.all(2.0),
-        child: Text(foods[0]),
-      );
-    }
+  LunchContainer({
+    Key? key,
+    required this.lunch,
+    this.isSkeleton = false,
+    this.lineColor = Colors.black,
+  }) : super(key: key);
 
-    // fun
-    Widget foodSection() {
-      List<Widget> list = [];
-
-      for (int i = 1; i < foods.length; i++) {
-        String text = foods[i];
-        list.add(Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Text(text, overflow: TextOverflow.ellipsis),
-        ));
-      }
-
-      return Column(
-        children: list,
-      );
-    }
-
-    Color lineColor = Colors.black;
-    if (index == 30) {
-      lineColor = Colors.blue;
-    }
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 160,
       margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -194,9 +184,39 @@ class LunchScroll extends StatelessWidget {
       ),
     );
   }
+
+  Widget titleSection() {
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: Text(lunch.date),
+    );
+  }
+
+  Widget foodSection() {
+    List<Widget> list = [];
+
+    lunch.menu.forEach((text) {
+      list.add(Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: Text(text, overflow: TextOverflow.ellipsis),
+      ));
+    });
+
+    return Column(
+      children: list,
+    );
+  }
 }
 
+class Lunch {
+  String date;
+  List<String> menu;
 
+  Lunch({
+    required this.date,
+    required this.menu,
+  });
+}
 
 /// 급식 사진 다운로드
 class LunchDownloader {
@@ -214,19 +234,19 @@ class LunchDownloader {
 
   Future<void> downLoad() async => Json = await _getJson();
 
-  List<List<String>> getCleanedList() => _cleanList(_washMap(Json));
+  List<Lunch> getLunches() => _cleanLunch(_washMap(Json));
 
   Uri _getUri(int SchoolCode, String CityCode) {
     DateTime now = DateTime.now();
     String firstday =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
+    DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
     String lastday =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+    DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
-        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&"
-        "MLSV_FROM_YMD=$firstday&MLSV_TO_YMD=$lastday");
+            "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&"
+            "MLSV_FROM_YMD=$firstday&MLSV_TO_YMD=$lastday");
     return uri;
   }
 
@@ -234,9 +254,9 @@ class LunchDownloader {
     // 날짜 프린트
     DateTime now = DateTime.now();
     String firstday =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
+    DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
     String lastday =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+    DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
 
     // uri값 얻고
     Uri uri = _getUri(SchoolCode, CityCode);
@@ -290,16 +310,16 @@ class LunchDownloader {
     return cleanMap;
   }
 
-  List<List<String>> _cleanList(Map<String, List<String>> washedMap) {
+  List<Lunch> _cleanLunch(Map<String, List<String>> washedMap) {
     //맵을 받으면 급식 2차원 배열을 리턴한다. [index][11월 22일 월요일, 오므라이스, 쑥갓어묵국, 치즈떡볶이, 수제야채튀김, 배추김치, 사과]
 
     //print(cleanedMap);
-    List<List<String>> Menu = [];
+    List<Lunch> boxes = [];
 
-    List foodList(String date) {
+    List<String> foodList(String date) {
       // 날짜(yyyyMMdd)를 입력하면 그 날짜의 급식을 담은 1차원 배열을 리턴한다.
 
-      List? list = washedMap[date];
+      List<String>? list = washedMap[date];
       list ??= ["급식정보가 없습니다."];
       return list;
     }
@@ -345,17 +365,19 @@ class LunchDownloader {
       String title = "$date $weekday";
 
       // 배열에 메뉴 추가
-      Menu.add([title, ...foodList(plusYMD)]);
+      boxes.add(Lunch(date: title, menu: foodList(plusYMD)));
 
       // 추가하고 날짜 하나 올리기
       plusDateTime = plusDateTime.add(Duration(days: 1));
       plusYMD = DateFormat('yyyyMMdd').format(plusDateTime);
     }
 
-    return Menu;
+    return boxes;
   }
 
 // json은 원본상태
 // wash는 불순물 제거
 // clean은 사용하기 좋게 변환
 }
+
+

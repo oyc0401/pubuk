@@ -59,7 +59,7 @@ class _HomeState extends State<Home> {
     print("런치");
     return const Padding(
       padding: EdgeInsets.all(12.0),
-      child: Lunch(),
+      child: LunchBuilder(),
     );
   }
 
