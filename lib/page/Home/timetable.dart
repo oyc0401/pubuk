@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:skeletons/skeletons.dart';
 
 import '../../DB/userProfile.dart';
 
@@ -39,34 +40,34 @@ class _MyTimeTableState extends State<MyTimeTable> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getData(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData == false) {
-            return waiting();
-          } else if (snapshot.hasError) {
-            return error(snapshot);
-          } else {
-            ClassData dataBox = snapshot.data;
-            return succeed(dataBox);
-          }
-        });
-  }
-
-  Widget succeed(ClassData data) {
     return Column(
       children: [
         infoSection(),
-        TimeTable(
-          height: 450,
-          percent: 0.4,
-          monday: data.Mon,
-          tuesday: data.Tue,
-          wednesday: data.Wed,
-          thursday: data.Thu,
-          friday: data.Fri,
-        )
+        FutureBuilder(
+            future: getData(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData == false) {
+                return waiting();
+              } else if (snapshot.hasError) {
+                return error(snapshot);
+              } else {
+                ClassData dataBox = snapshot.data;
+                return succeed(dataBox);
+              }
+            }),
       ],
+    );
+  }
+
+  Widget succeed(ClassData data) {
+    return TimeTable(
+      height: 450,
+      percent: 0.4,
+      monday: data.Mon,
+      tuesday: data.Tue,
+      wednesday: data.Wed,
+      thursday: data.Thu,
+      friday: data.Fri,
     );
   }
 
@@ -81,22 +82,14 @@ class _MyTimeTableState extends State<MyTimeTable> {
   }
 
   Widget waiting() {
-    return Column(
-      children: [
-        SizedBox(
-          height: 30,
-        ),
-        Container(
-          height: 450,
-          // color: Colors.grey,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        )
-      ],
+    return Skeleton(
+      isLoading: true,
+      skeleton: const SkeletonAvatar(
+          style: SkeletonAvatarStyle(width: 480, height: 450)),
+      child: Container(),
     );
   }
+
 
   Widget infoSection() {
     return SizedBox(
@@ -116,27 +109,27 @@ class TimeTable extends StatelessWidget {
   List<String> friday;
 
   //테이블 총 세로길이 450
-   double boxHeight =0;
-   double boxSmallHeight=0 ;
-   double percent=0.5;
-   int maxLenght;
+  double boxHeight = 0;
+  double boxSmallHeight = 0;
+
+  double percent = 0.5;
+  int maxLenght;
 
   final TextStyle textStyle = const TextStyle(fontSize: 12);
 
   TimeTable({
     Key? key,
     this.maxLenght = 7,
-    double height=450,
-    this.percent=0.5,
+    double height = 450,
+    this.percent = 0.5,
     required this.monday,
     required this.tuesday,
     required this.wednesday,
     required this.thursday,
     required this.friday,
   }) : super(key: key) {
-
-    boxHeight=height/(maxLenght+percent);
-    boxSmallHeight=percent*boxHeight;
+    boxHeight = height / (maxLenght + percent);
+    boxSmallHeight = percent * boxHeight;
 
     // 빈칸 채워주기
     while (monday.length < maxLenght) {
@@ -161,7 +154,7 @@ class TimeTable extends StatelessWidget {
     return Table(
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder.all(),
-      columnWidths:  {
+      columnWidths: {
         0: FlexColumnWidth(percent),
         1: FlexColumnWidth(1),
         2: FlexColumnWidth(1),
@@ -178,7 +171,7 @@ class TimeTable extends StatelessWidget {
 
     value.add(firstBar());
 
-    for (int i = 0; i <maxLenght; i++) {
+    for (int i = 0; i < maxLenght; i++) {
       value.add(subjects(index: i));
     }
 

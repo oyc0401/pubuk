@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:skeletons/skeletons.dart';
 
 import '../../DB/userProfile.dart';
 
@@ -47,6 +48,7 @@ class _LunchState extends State<Lunch> {
           return error(snapshot);
         } else {
           return succeed(snapshot);
+          //  return waiting();
         }
       },
     );
@@ -70,24 +72,57 @@ class _LunchState extends State<Lunch> {
   Widget waiting() {
     return Container(
       height: 200,
-      child: ListView.builder(
+      child: ScrollablePositionedList.builder(
+        initialScrollIndex: 5, // 0 1 2 3 4, 5, 6 7 8 9 10
         scrollDirection: Axis.horizontal,
-        itemCount: 7,
-        itemBuilder: (context,index){
-         return Container(
-           width:160 ,
-           margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
-           padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          );
+        itemCount: 11,
+        itemBuilder: (context, index) {
+          return page(index);
         },
-
-
-
       ),
-      // child: Center(
-      //   child: CircularProgressIndicator(),
-      // ),
+    );
+  }
+
+  Widget page(int index){
+    Color lineColor = Colors.black;
+    if (index == 5) {
+      lineColor = Colors.blue;
+    }
+    return Container(
+      width: 160,
+      margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(border: Border.all(color: lineColor)),
+      child: Column(
+        children: [
+          te(),
+          ...List.generate(6, (index) => sk()),
+        ],
+      ),
+    );
+  }
+
+  Widget sk() {
+    return Skeleton(
+      isLoading: true,
+      skeleton: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: const SkeletonAvatar(
+            style: SkeletonAvatarStyle(width: 100, height: 14)),
+      ),
+      child: Container(),
+    );
+  }
+
+  Widget te() {
+    return Skeleton(
+      isLoading: true,
+      skeleton: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: const SkeletonAvatar(
+            style: SkeletonAvatarStyle(width: 130, height: 14)),
+      ),
+      child: Container(),
     );
   }
 }
@@ -117,16 +152,25 @@ class LunchScroll extends StatelessWidget {
 
   Widget box(int index) {
     final List<String> foods = menu[index];
+
+    // fun
     Widget titleSection() {
-      return Text(foods[0]);
+      return Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: Text(foods[0]),
+      );
     }
 
+    // fun
     Widget foodSection() {
       List<Widget> list = [];
 
       for (int i = 1; i < foods.length; i++) {
         String text = foods[i];
-        list.add(Text(text, overflow: TextOverflow.ellipsis));
+        list.add(Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Text(text, overflow: TextOverflow.ellipsis),
+        ));
       }
 
       return Column(
@@ -152,6 +196,9 @@ class LunchScroll extends StatelessWidget {
   }
 }
 
+
+
+/// 급식 사진 다운로드
 class LunchDownloader {
   int SchoolCode;
   String CityCode;
