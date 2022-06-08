@@ -51,13 +51,13 @@ class _SignInState extends State<SignIn> {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
-          await googleUser!.authentication;
+      await googleUser!.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
       UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+      await FirebaseAuth.instance.signInWithCredential(credential);
 
       // print(userCredential.additionalUserInfo);
       // print(userCredential.credential);
@@ -108,7 +108,11 @@ class _SignInState extends State<SignIn> {
               SizedBox(
                 height: 20,
               ),
-              appleLoginButton()
+              appleLoginButton(),
+              SizedBox(
+                height: 20,
+              ),
+              kakaoLoginButton()
             ],
           ),
         ),
@@ -158,6 +162,25 @@ class _SignInState extends State<SignIn> {
     );
   }
 
+  InkWell kakaoLoginButton() {
+    return InkWell(
+      child: Container(
+        width: 300,
+        height: 50,
+        decoration: BoxDecoration(
+          color: Color(0xffFEE500),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            "Sign in with KaKao",
+            style: TextStyle(fontSize: 18, color: Colors.black),
+          ),
+        ),
+      ),
+    );
+  }
+
   void NavigeteRegister() {
     print("회원가입 이동합니다.");
     Navigator.pushReplacement(
@@ -174,7 +197,7 @@ class _SignInState extends State<SignIn> {
       CupertinoPageRoute(
         builder: (context) => const MyHomePage(),
       ),
-      (route) => false,
+          (route) => false,
     );
   }
 }
