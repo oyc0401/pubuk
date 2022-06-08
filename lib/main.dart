@@ -7,6 +7,7 @@ import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/SignIn/register.dart';
 
 import 'package:flutterschool/page/mainPage.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart'as kakao;
 
 import 'firebase_options.dart';
 
@@ -18,6 +19,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  kakao.KakaoSdk.init(nativeAppKey: '3e345bcd63a5df82971a7d52cabb73a2');
   await UserProfile.initializeUser();
 
 

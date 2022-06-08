@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
 
@@ -10,6 +11,8 @@ import 'dart:async';
 import 'dart:convert' show json;
 
 import 'package:http/http.dart' as http;
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart'as kakao;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../Home/home.dart';
 import '../mainPage.dart';
@@ -22,6 +25,8 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
     'email',
   ],
 );
+
+
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -65,6 +70,39 @@ class _SignInState extends State<SignIn> {
       navigate();
     } catch (error) {
       print(error);
+    }
+  }
+
+  Future signInWithApple() async {}
+
+  Future signInWithKaKao() async {
+    if (await kakao.isKakaoTalkInstalled()) {
+      try {
+        await kakao.UserApi.instance.loginWithKakaoTalk();
+        print('카카오톡으로 로그인 성공');
+      } catch (error) {
+        print('카카오톡으로 로그인 실패 $error');
+
+        // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
+        // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
+        if (error is PlatformException && error.code == 'CANCELED') {
+          return;
+        }
+        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
+        try {
+          await kakao.UserApi.instance.loginWithKakaoAccount();
+          print('카카오계정으로 로그인 성공');
+        } catch (error) {
+          print('카카오계정으로 로그인 실패 $error');
+        }
+      }
+    } else {
+      try {
+        await kakao.UserApi.instance.loginWithKakaoAccount();
+        print('카카오계정으로 로그인 성공');
+      } catch (error) {
+        print('카카오계정으로 로그인 실패 $error');
+      }
     }
   }
 
@@ -143,27 +181,27 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  InkWell appleLoginButton() {
-    return InkWell(
-      child: Container(
-        width: 300,
-        height: 50,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Text(
-            "Sign in with Apple",
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        ),
-      ),
+  Widget appleLoginButton() {
+    return SignInWithAppleButton(
+      onPressed: () async {
+        final credential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
+
+        print(credential);
+
+        // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
+        // after they have been validated with Apple (see `Integration` section for more information on how to do this)
+      },
     );
   }
 
   InkWell kakaoLoginButton() {
     return InkWell(
+      onTap: signInWithKaKao,
       child: Container(
         width: 300,
         height: 50,
