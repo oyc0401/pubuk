@@ -76,10 +76,25 @@ class _SignInState extends State<SignIn> {
   Future signInWithApple() async {}
 
   Future signInWithKaKao() async {
+    try {
+      await kakao.UserApi.instance.logout();
+      print('로그아웃 성공, SDK에서 토큰 삭제');
+    } catch (error) {
+      print('로그아웃 실패, SDK에서 토큰 삭제 $error');
+    }
+
+    // try {
+    //   await kakao.UserApi.instance.unlink();
+    //   print('연결 끊기 성공, SDK에서 토큰 삭제');
+    // } catch (error) {
+    //   print('연결 끊기 실패 $error');
+    // }
+
+
     if (await kakao.isKakaoTalkInstalled()) {
       try {
         await kakao.UserApi.instance.loginWithKakaoTalk();
-        print('카카오톡으로 로그인 성공');
+        print('카카오톡으로 로그인 성공1');
       } catch (error) {
         print('카카오톡으로 로그인 실패 $error');
 
@@ -91,7 +106,8 @@ class _SignInState extends State<SignIn> {
         // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
         try {
           await kakao.UserApi.instance.loginWithKakaoAccount();
-          print('카카오계정으로 로그인 성공');
+          print('카카오계정으로 로그인 성공2');
+
         } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
         }
@@ -99,7 +115,18 @@ class _SignInState extends State<SignIn> {
     } else {
       try {
         await kakao.UserApi.instance.loginWithKakaoAccount();
-        print('카카오계정으로 로그인 성공');
+        print('카카오계정으로 로그인 성공3');
+
+        try {
+          kakao.User user = await kakao.UserApi.instance.me();
+          print('사용자 정보 요청 성공'
+              '\n회원번호: ${user.id}'
+              '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
+              '\n이메일: ${user.kakaoAccount?.email}');
+        } catch (error) {
+          print('사용자 정보 요청 실패 $error');
+        }
+
       } catch (error) {
         print('카카오계정으로 로그인 실패 $error');
       }
