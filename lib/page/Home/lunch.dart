@@ -80,7 +80,7 @@ class LunchScroll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
+      height: 220,
       child: ScrollablePositionedList.builder(
         initialScrollIndex: 30, // 0 ~ 29, 30, 31~60 <= 총 61개
         scrollDirection: Axis.horizontal,
