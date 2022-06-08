@@ -40,8 +40,8 @@ class _LunchBuilderState extends State<LunchBuilder> {
         } else if (snapshot.hasError) {
           return error(snapshot);
         } else {
-          return waiting();
-          //return succeed(snapshot);
+          //return waiting();
+          return succeed(snapshot);
           //  return waiting();
         }
       },
