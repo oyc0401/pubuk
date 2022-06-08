@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -19,10 +17,7 @@ class LunchBuilder extends StatefulWidget {
 }
 
 class _LunchBuilderState extends State<LunchBuilder> {
-  /// 이 화면은 [getSchoolCode]에서 [UserProfile]를 얻어온다.
-  /// 여기서 유저의 학교코드를 얻어낸다.
-  /// 이 값을 사용해 나이스 오픈 데이터 포털에서 급식 정보를 json 형식으로 가져와 화면을 만들게 된다.
-  /// [lunchSection]에 매개변수로 [LunchDownloader]에서 가져온 정리된 데이터를 매개변수로 넣게 되면 급식 위젯을 반환한다.
+  /// [getLunch]로 나이스 오픈 데이터 포털에서 급식 정보를 가져온다.
 
   Future<List<Lunch>> getLunch() async {
     UserProfile userData = UserProfile.currentUser;
@@ -30,10 +25,8 @@ class _LunchBuilderState extends State<LunchBuilder> {
     String cityCode = userData.schoolLocalCode;
 
     LunchDownloader lunchDownloader =
-    LunchDownloader(SchoolCode: schoolCode, CityCode: cityCode);
-
+        LunchDownloader(SchoolCode: schoolCode, CityCode: cityCode);
     await lunchDownloader.downLoad();
-
     return lunchDownloader.getLunches();
   }
 
@@ -47,7 +40,8 @@ class _LunchBuilderState extends State<LunchBuilder> {
         } else if (snapshot.hasError) {
           return error(snapshot);
         } else {
-          return succeed(snapshot);
+          return waiting();
+          //return succeed(snapshot);
           //  return waiting();
         }
       },
@@ -70,66 +64,14 @@ class _LunchBuilderState extends State<LunchBuilder> {
   }
 
   Widget waiting() {
-    return Container(
-      height: 200,
-      child: ScrollablePositionedList.builder(
-        initialScrollIndex: 5, // 0 1 2 3 4, 5, 6 7 8 9 10
-        scrollDirection: Axis.horizontal,
-        itemCount: 11,
-        itemBuilder: (context, index) {
-          return page(index);
-        },
-      ),
-    );
-  }
-
-  Widget page(int index) {
-    Color lineColor = Colors.black;
-    if (index == 5) {
-      lineColor = Colors.blue;
-    }
-    return Container(
-      width: 160,
-      margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(border: Border.all(color: lineColor)),
-      child: Column(
-        children: [
-          te(),
-          ...List.generate(6, (index) => sk()),
-        ],
-      ),
-    );
-  }
-
-  Widget sk() {
-    return Skeleton(
-      isLoading: true,
-      skeleton: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: const SkeletonAvatar(
-            style: SkeletonAvatarStyle(width: 100, height: 14)),
-      ),
-      child: Container(),
-    );
-  }
-
-  Widget te() {
-    return Skeleton(
-      isLoading: true,
-      skeleton: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: const SkeletonAvatar(
-            style: SkeletonAvatarStyle(width: 130, height: 14)),
-      ),
-      child: Container(),
-    );
+    return const SkeletonScroll();
   }
 }
 
 class LunchScroll extends StatelessWidget {
-  List<Lunch> lunches;
+  /// Lunch 배열로 만드는 스크롤 위젯
 
+  List<Lunch> lunches;
   LunchScroll({
     Key? key,
     required this.lunches,
@@ -159,6 +101,9 @@ class LunchScroll extends StatelessWidget {
 }
 
 class LunchContainer extends StatelessWidget {
+  /// Lunch 사각형 박스 객체
+  /// skeleton 설정도 가능하다.
+
   Lunch lunch;
   Color lineColor;
   bool isSkeleton;
@@ -174,8 +119,8 @@ class LunchContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 160,
-      margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
-      padding: EdgeInsets.all(12),
+      margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border.all(color: lineColor),
       ),
@@ -188,27 +133,74 @@ class LunchContainer extends StatelessWidget {
   Widget titleSection() {
     return Padding(
       padding: const EdgeInsets.all(2.0),
-      child: Text(lunch.date),
+      child: skeletonText(lunch.date),
     );
   }
 
   Widget foodSection() {
     List<Widget> list = [];
 
-    lunch.menu.forEach((text) {
+    for (String text in lunch.menu) {
       list.add(Padding(
         padding: const EdgeInsets.all(2.0),
-        child: Text(text, overflow: TextOverflow.ellipsis),
+        child: skeletonText(text),
       ));
-    });
+    }
 
     return Column(
       children: list,
     );
   }
+
+  Widget skeletonText(String text) {
+    return Skeleton(
+      isLoading: isSkeleton,
+      skeleton: const Padding(
+        padding: EdgeInsets.all(3.0),
+        child:
+        SkeletonAvatar(style: SkeletonAvatarStyle(width: 100, height: 14)),
+      ),
+      child: Text(text, overflow: TextOverflow.ellipsis),
+    );
+  }
+}
+
+class SkeletonScroll extends StatelessWidget {
+  const SkeletonScroll({Key? key}) : super(key: key);
+
+  /// skeleton 스크롤 위젯
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      child: ScrollablePositionedList.builder(
+        initialScrollIndex: 5, // 0 1 2 3 4 , 5, 6 7 8 9 10
+        scrollDirection: Axis.horizontal,
+        itemCount: 11,
+        itemBuilder: (context, index) {
+          Color color = Colors.black;
+          if (index == 5) {
+            color = Colors.blue;
+          }
+          return LunchContainer(
+            lunch: Lunch(
+              date: "",
+              menu: List.generate(6, (index) => ""),
+            ),
+            lineColor: color,
+            isSkeleton: true,
+          );
+        },
+      ),
+    );
+    
+  }
 }
 
 class Lunch {
+  /// 하루의 점심 정보를 담고있는 객체
+
   String date;
   List<String> menu;
 
@@ -218,8 +210,9 @@ class Lunch {
   });
 }
 
-/// 급식 사진 다운로드
 class LunchDownloader {
+  /// 급식 사진 다운로드
+
   int SchoolCode;
   String CityCode;
   final int FROM_TERM = -30;
@@ -239,14 +232,14 @@ class LunchDownloader {
   Uri _getUri(int SchoolCode, String CityCode) {
     DateTime now = DateTime.now();
     String firstday =
-    DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
     String lastday =
-    DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
-            "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&"
-            "MLSV_FROM_YMD=$firstday&MLSV_TO_YMD=$lastday");
+        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&"
+        "MLSV_FROM_YMD=$firstday&MLSV_TO_YMD=$lastday");
     return uri;
   }
 
@@ -254,9 +247,9 @@ class LunchDownloader {
     // 날짜 프린트
     DateTime now = DateTime.now();
     String firstday =
-    DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
     String lastday =
-    DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
 
     // uri값 얻고
     Uri uri = _getUri(SchoolCode, CityCode);
@@ -379,5 +372,3 @@ class LunchDownloader {
 // wash는 불순물 제거
 // clean은 사용하기 좋게 변환
 }
-
-
