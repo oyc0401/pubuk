@@ -7,38 +7,32 @@ import 'package:flutterschool/page/Home/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:select_dialog/select_dialog.dart';
 
+import '../../Server/FireTool.dart';
 import '../mainPage.dart';
 
 class register extends StatefulWidget {
-  const register({Key? key}) : super(key: key);
+  register({Key? key, required String uid, required String provider})
+      : userProfile = UserProfile(uid: uid, provider: provider),
+        super(key: key);
+
+  UserProfile userProfile;
 
   @override
   State<register> createState() => _registerState();
 }
 
 class _registerState extends State<register> {
-  UserProfile userProfile = UserProfile();
 
-  signUp() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      userProfile.uid = user.uid;
+  Future<void> signUp() async {
+    /// 파이어베이스 DB 에 저장
+    FireUser fireUser=FireUser(uid: widget.userProfile.uid);
+    await fireUser.addUserProfile(widget.userProfile);
 
-      FirebaseFirestore.instance
-          .collection('user')
-          .doc(user.uid)
-          .set(userProfile.toMap())
-          .then((value) async {})
-          .catchError((error) {
-            print("Failed to Sign in: $error");
-          });
+    /// 로컬 DB에 저장
+    await UserProfile.saveUserInLocalDB(widget.userProfile);
 
-      await UserProfile.Save(userProfile);
-
-      navigateHome();
-    }
+    navigateHome();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +43,6 @@ class _registerState extends State<register> {
             SizedBox(
               height: 120,
             ),
-
             SizedBox(
               height: 40,
             ),
@@ -70,9 +63,6 @@ class _registerState extends State<register> {
     );
   }
 
-
-
-
   Widget nickNameSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +79,7 @@ class _registerState extends State<register> {
           width: 250,
           child: TextFormField(
             onChanged: (text) {
-              userProfile.nickname = text;
+              widget.userProfile.nickname = text;
             },
             keyboardType: TextInputType.multiline,
             maxLines: 1,
@@ -123,7 +113,7 @@ class _registerState extends State<register> {
         ),
         child: Center(
           child: Text(
-            "${userProfile.grade} 학년",
+            "${widget.userProfile.grade} 학년",
             style: TextStyle(fontSize: 18, color: Colors.black),
           ),
         ),
@@ -143,7 +133,7 @@ class _registerState extends State<register> {
         ),
         child: Center(
           child: Text(
-            "${userProfile.Class} 반",
+            "${widget.userProfile.Class} 반",
             style: TextStyle(fontSize: 18, color: Colors.black),
           ),
         ),
@@ -172,12 +162,14 @@ class _registerState extends State<register> {
   }
 
   Future<void> changeGrade() async {
-    userProfile.grade = await getGradeDialog(context, userProfile.grade);
+    widget.userProfile.grade =
+        await getGradeDialog(context, widget.userProfile.grade);
     setState(() {});
   }
 
   Future<void> changeClass() async {
-    userProfile.Class = await getClassDialog(context, userProfile.Class);
+    widget.userProfile.Class =
+        await getClassDialog(context, widget.userProfile.Class);
     setState(() {});
   }
 
@@ -220,14 +212,12 @@ class _registerState extends State<register> {
     return initClass;
   }
 
-  navigateHome(){
+  navigateHome() {
     Navigator.pushAndRemoveUntil(
         context,
         CupertinoPageRoute(
           builder: (context) => const MyHomePage(),
         ),
-            (route) => false);
+        (route) => false);
   }
-
-
 }

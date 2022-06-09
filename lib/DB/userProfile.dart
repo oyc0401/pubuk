@@ -45,7 +45,7 @@ class UserProfile {
     }
   }
 
-  static Future<void> Save(UserProfile userProfile) async {
+  static Future<void> saveUserInLocalDB(UserProfile userProfile) async {
     _current = userProfile;
     SavePro savePro = await SavePro.Instance();
     savePro.setUserProfile(userProfile);
@@ -65,6 +65,7 @@ class UserProfile {
       authLevel: map['authLevel'],
       Class: map['class'],
       grade: map['grade'],
+      provider:map['provider'],
       nickname: map['nickname'],
       schoolLocalCode: map['schoolLocalCode'],
       schoolName: map['schoolName'],
@@ -80,6 +81,7 @@ class UserProfile {
       'authLevel': authLevel,
       'class': Class,
       'grade': grade,
+      'provider':provider,
       'nickname': nickname,
       'schoolLocalCode': schoolLocalCode,
       'schoolName': schoolName,
@@ -98,7 +100,7 @@ class UserProfile {
 class UserProfileHandler extends UserProfile {
   static SwitchGuest() {
     UserProfile userProfile = UserProfile.guest();
-    UserProfile.Save(userProfile);
+    UserProfile.saveUserInLocalDB(userProfile);
   }
 }
 

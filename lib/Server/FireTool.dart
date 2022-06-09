@@ -22,7 +22,14 @@ class FireUser {
     }
   }
 
-  Future<void> setGrade({required int grade, required int Class}) async {
+  Future<void> addUserProfile(UserProfile userProfile)async{
+    userDoc.set(userProfile.toMap())
+        .catchError((error) {
+      print("Failed to Sign in: $error");
+    });
+  }
+
+  Future<void> updateGrade({required int grade, required int Class}) async {
     await userDoc.update({
       'grade': grade,
       'class': Class,
@@ -32,8 +39,8 @@ class FireUser {
   }
 
   Future<void> checkRegister(
-      {required Function onExist, // 유저 데이터가 존재할 때
-      required Function onNotExist // 유저 데이터가 없을 때
+      {required Function onExist, // 데이터베이스에 유저 데이터가 존재할 때
+      required Function onNotExist // 데이터베이스에 유저 데이터가 없을 때
       }) async {
     // 회원가입을 했는지 판단하는 함수
     DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc.get();

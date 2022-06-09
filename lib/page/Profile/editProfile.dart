@@ -69,11 +69,12 @@ class _settingState extends State<setting> {
 
   Future<void> Save(UserProfile myUserData) async {
     // 로컬 DB에 저장
-     UserProfile.Save(myUserData);
+     UserProfile.saveUserInLocalDB(myUserData);
 
+     print(myUserData);
     // firebase DB에 저장
     FireUser fireUser = FireUser(uid: myUserData.uid);
-    fireUser.setGrade(
+    fireUser.updateGrade(
       grade: myUserData.grade,
       Class: myUserData.Class,
     );

@@ -43,7 +43,7 @@ Run_App() async {
         },
         onNotExist: () {
           runApp(MyApp(
-            initialWidget: register(),
+            initialWidget: register(uid: "test",provider: "Google"),
           ));
         });
   } else {

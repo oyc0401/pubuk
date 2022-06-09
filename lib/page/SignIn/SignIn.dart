@@ -19,48 +19,92 @@ import 'register.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
+  /// 로그인 버튼을 누르면 로그인 창이 열리고 로그인을 하면 uid를 얻음
+  /// uid가 없으면 이동하지 않는다.
+  /// 서버 DB에 uid에 알맞는 유저 정보가 있으면 그 정보를 로컬 DB에 저장하고 홈 화면으로 이동한다.
+  /// 서버 DB에 uid에 알맞는 유저 정보가 없으면 uid와 provider를 넘기면서 회원가입 화면으로 이동한다.
 
   @override
   State<SignIn> createState() => _SignInState();
 }
 
 class _SignInState extends State<SignIn> {
+
   Future signInWithGoogle() async {
+    /// 구글 로그인을 통해 uid를 얻는다.
     GoogleLogin googleLogin = GoogleLogin();
     await googleLogin.login();
-    String? recivedUid=googleLogin.uid;
+    String? recivedUid = googleLogin.uid;
 
+    /// uid를 얻는데에 성공하면 화면을 이동한다.
     if (recivedUid != null) {
       print("uid: ${recivedUid}");
-      navigate(recivedUid);
-    }else{
+      navigate(recivedUid,"Google");
+    } else {
       print("로그인 실패");
     }
   }
 
   Future signInWithApple() async {
+    /// 애플 로그인 아직 미구현
     AppleLogin appleLogin = AppleLogin();
     await appleLogin.login();
   }
 
   Future signInWithKaKao() async {
+    /// 카카오 로그인을 통해 uid를 얻는다.
     KakaoLogin kakaoLogin = KakaoLogin();
     await kakaoLogin.login();
-    String? recivedUid= kakaoLogin.uid;
+    String? recivedUid = kakaoLogin.uid;
 
+    /// uid를 얻는데에 성공하면 화면을 이동한다.
     if (recivedUid != null) {
       print("uid: ${recivedUid}");
-      navigate(recivedUid);
-    }else{
+      navigate(recivedUid,"Kakao");
+    } else {
       print("로그인 실패");
     }
   }
 
-  void navigate(String uid) async {
-    print("${uid} 회원가입 이동중..");
+  void navigate(String uid,String provider) async {
+    /// 서버 DB에 uid에 알맞는 유저 정보가 있으면 홈화면으로 이동하고
+    /// 없다면 회원가입 화면으로 이동한다.
+
+    print("서버에 계정이 있는지 확인중... uid: ${uid}");
+
     FireUser fireUser = FireUser(uid: uid);
-    await fireUser.checkRegister(
-        onNotExist: NavigeteRegister, onExist: NavigateHome);
+    UserProfile? userProfile= await fireUser.getUserProfile();
+    if (userProfile==null){
+      print("서버 DB에 동일한 유저 정보가 없습니다. 회원가입 이동...");
+      NavigeteRegister(uid,provider);
+    }else{
+      print("서버 DB에 동일한 유저 정보가 있습니다. 홈 화면 이동...");
+      await UserProfile.saveUserInLocalDB(userProfile);
+      NavigateHome();
+    }
+
+  }
+
+  void NavigeteRegister(String uid,String provider) {
+    print("회원가입 화면 이동합니다.");
+    Navigator.pushAndRemoveUntil(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => register(uid: uid,provider: provider),
+      ),
+          (route) => false,
+    );
+  }
+
+  void NavigateHome() {
+    print("홈 화면 이동합니다.");
+    Navigator.pushAndRemoveUntil(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const MyHomePage(),
+      ),
+          (route) => false,
+    );
   }
 
   @override
@@ -112,26 +156,6 @@ class _SignInState extends State<SignIn> {
           color: const Color(0xffFEE500),
         ),
       ],
-    );
-  }
-
-  void NavigeteRegister() {
-    print("회원가입 이동합니다.");
-    Navigator.pushReplacement(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => const register(),
-      ),
-    );
-  }
-
-  void NavigateHome() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => const MyHomePage(),
-      ),
-      (route) => false,
     );
   }
 }
