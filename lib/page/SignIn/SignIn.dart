@@ -72,6 +72,9 @@ class _SignInState extends State<SignIn> {
 
     print("서버에 계정이 있는지 확인중... uid: ${uid}");
 
+    /// 회원가입 하다가 나가도 회원가입 할 수 있게 DB에 저장 하기
+    UserProfile.saveUserInLocalDB(UserProfile(uid: uid, provider: provider));
+
     FireUser fireUser = FireUser(uid: uid);
     UserProfile? userProfile= await fireUser.getUserProfile();
     if (userProfile==null){

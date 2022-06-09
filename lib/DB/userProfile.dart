@@ -47,6 +47,7 @@ class UserProfile {
 
   static Future<void> saveUserInLocalDB(UserProfile userProfile) async {
     _current = userProfile;
+    print("static User update");
     SavePro savePro = await SavePro.Instance();
     savePro.setUserProfile(userProfile);
   }
@@ -65,7 +66,7 @@ class UserProfile {
       authLevel: map['authLevel'],
       Class: map['class'],
       grade: map['grade'],
-      provider:map['provider'],
+      provider: map['provider'],
       nickname: map['nickname'],
       schoolLocalCode: map['schoolLocalCode'],
       schoolName: map['schoolName'],
@@ -81,7 +82,7 @@ class UserProfile {
       'authLevel': authLevel,
       'class': Class,
       'grade': grade,
-      'provider':provider,
+      'provider': provider,
       'nickname': nickname,
       'schoolLocalCode': schoolLocalCode,
       'schoolName': schoolName,
@@ -93,7 +94,7 @@ class UserProfile {
 
   @override
   String toString() {
-    return ("schoolName: $schoolName, grade: $grade, Class: $Class, uid: $uid, authLevel: $authLevel");
+    return toMap().toString();
   }
 }
 
@@ -139,6 +140,8 @@ class SavePro {
   _setCertifiedSchoolCode(String certified) =>
       prefs.setString('certifiedSchoolCode', certified);
 
+  _setProvider(String provider) => prefs.setString('provider', provider);
+
   /// _get
   int _getGrade() => prefs.getInt('Grade') ?? userProfile.grade;
 
@@ -164,27 +167,31 @@ class SavePro {
   String _getCertifiedSchoolCode() =>
       prefs.getString('certifiedSchoolCode') ?? userProfile.certifiedSchoolCode;
 
+  String _getProvider() => prefs.getString('provider') ?? userProfile.provider;
+
   UserProfile getUserProfile() {
     return UserProfile(
         uid: _getUid(),
         nickname: _getNickName(),
         authLevel: _getAuthLevel(),
+        provider: _getProvider(),
         grade: _getGrade(),
         Class: _getClass(),
         schoolLocalCode: _getSchoolLocalCode(),
         schoolCode: _getSchoolCode(),
         schoolName: _getSchoolName(),
-        schoolLevel: 3,
-        certifiedSchoolCode: "null");
+        schoolLevel: _getSchoolLevel(),
+        certifiedSchoolCode: _getCertifiedSchoolCode());
   }
 
-  setUserProfile(UserProfile UserProfile) {
-    _setUid(UserProfile.uid);
-    _setNickName(UserProfile.nickname);
-    _setAuthLevel(UserProfile.authLevel);
-    _setGrade(UserProfile.grade);
-    _setClass(UserProfile.Class);
-    _setSchoolCode(UserProfile.schoolCode);
-    print('saveKey: 유저 값 저장');
+  setUserProfile(UserProfile userProfile) {
+    _setUid(userProfile.uid);
+    _setNickName(userProfile.nickname);
+    _setAuthLevel(userProfile.authLevel);
+    _setProvider(userProfile.provider);
+    _setGrade(userProfile.grade);
+    _setClass(userProfile.Class);
+    _setSchoolCode(userProfile.schoolCode);
+    print('Local DB: 유저 저장');
   }
 }

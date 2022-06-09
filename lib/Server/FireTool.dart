@@ -11,10 +11,10 @@ class FireUser {
 
   Future<UserProfile?> getUserProfile() async {
     DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc.get();
-    print(snapshot.data());
+    //print(snapshot.data());
 
     Map<String, dynamic>? map = snapshot.data();
-    print(map);
+    //print(map);
     if (map != null) {
       return UserProfile.FirebaseUser(map);
     } else {
@@ -36,23 +36,6 @@ class FireUser {
     }).then((value) async {
       print('grade Update');
     }).catchError((error) => print("Failed to change grade: $error"));
-  }
-
-  Future<void> checkRegister(
-      {required Function onExist, // 데이터베이스에 유저 데이터가 존재할 때
-      required Function onNotExist // 데이터베이스에 유저 데이터가 없을 때
-      }) async {
-    // 회원가입을 했는지 판단하는 함수
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc.get();
-    Map? map = snapshot.data();
-
-    if (snapshot.exists) {
-      print("유저 정보가 있습니다. user: ${map}");
-      onExist();
-    } else {
-      print("유저 정보가 없습니다.");
-      onNotExist();
-    }
   }
 }
 
