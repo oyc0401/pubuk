@@ -2,31 +2,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutterschool/DB/userProfile.dart';
+import 'package:flutterschool/MyWidget/button.dart';
 import 'package:flutterschool/Server/FireTool.dart';
-
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutterschool/page/SignIn/AppleLogin.dart';
+import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
 
 import 'dart:async';
-import 'dart:convert' show json;
 
-import 'package:http/http.dart' as http;
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart'as kakao;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import '../Home/home.dart';
 import '../mainPage.dart';
+import 'GoogleLogin.dart';
 import 'register.dart';
-
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  // Optional clientId 개새끼..
-
-  scopes: <String>[
-    'email',
-  ],
-);
-
-
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -36,116 +25,42 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  GoogleSignInAccount? _currentUser;
-  String _contactText = '';
-
-  @override
-  void initState() {
-    super.initState();
-
-    /// 테스트기간에만 주석 해놓는것이다. 이 페이지에 들어오면 무조건 로그인 해제 상태여야 한다.
-    _handleSignOut();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      _currentUser = account;
-      print("로그인 정보가 변화하면 이게 울림");
-    });
-    _googleSignIn.signInSilently();
-  }
-
   Future signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser!.authentication;
-      final OAuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithCredential(credential);
+    GoogleLogin googleLogin = GoogleLogin();
+    await googleLogin.login();
+    String? recivedUid=googleLogin.uid;
 
-      // print(userCredential.additionalUserInfo);
-      // print(userCredential.credential);
-      // print(userCredential.user);
-      navigate();
-    } catch (error) {
-      print(error);
+    if (recivedUid != null) {
+      print("uid: ${recivedUid}");
+      navigate(recivedUid);
+    }else{
+      print("로그인 실패");
     }
   }
 
-  Future signInWithApple() async {}
+  Future signInWithApple() async {
+    AppleLogin appleLogin = AppleLogin();
+    await appleLogin.login();
+  }
 
   Future signInWithKaKao() async {
-    try {
-      await kakao.UserApi.instance.logout();
-      print('로그아웃 성공, SDK에서 토큰 삭제');
-    } catch (error) {
-      print('로그아웃 실패, SDK에서 토큰 삭제 $error');
-    }
+    KakaoLogin kakaoLogin = KakaoLogin();
+    await kakaoLogin.login();
+    String? recivedUid= kakaoLogin.uid;
 
-    // try {
-    //   await kakao.UserApi.instance.unlink();
-    //   print('연결 끊기 성공, SDK에서 토큰 삭제');
-    // } catch (error) {
-    //   print('연결 끊기 실패 $error');
-    // }
-
-
-    if (await kakao.isKakaoTalkInstalled()) {
-      try {
-        await kakao.UserApi.instance.loginWithKakaoTalk();
-        print('카카오톡으로 로그인 성공1');
-      } catch (error) {
-        print('카카오톡으로 로그인 실패 $error');
-
-        // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-        // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
-        if (error is PlatformException && error.code == 'CANCELED') {
-          return;
-        }
-        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
-        try {
-          await kakao.UserApi.instance.loginWithKakaoAccount();
-          print('카카오계정으로 로그인 성공2');
-
-        } catch (error) {
-          print('카카오계정으로 로그인 실패 $error');
-        }
-      }
-    } else {
-      try {
-        await kakao.UserApi.instance.loginWithKakaoAccount();
-        print('카카오계정으로 로그인 성공3');
-
-        try {
-          kakao.User user = await kakao.UserApi.instance.me();
-          print('사용자 정보 요청 성공'
-              '\n회원번호: ${user.id}'
-              '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
-              '\n이메일: ${user.kakaoAccount?.email}');
-        } catch (error) {
-          print('사용자 정보 요청 실패 $error');
-        }
-
-      } catch (error) {
-        print('카카오계정으로 로그인 실패 $error');
-      }
+    if (recivedUid != null) {
+      print("uid: ${recivedUid}");
+      navigate(recivedUid);
+    }else{
+      print("로그인 실패");
     }
   }
 
-  Future<void> _handleSignOut() => _googleSignIn.disconnect();
-
-  void navigate() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    print("이동중..");
-
-    if (user != null) {
-      FireUser fireUser = FireUser(uid: user.uid);
-      await fireUser.checkRegister(
-          onNotExist: NavigeteRegister, onExist: NavigateHome);
-    } else {
-      print("이게 왜?");
-    }
+  void navigate(String uid) async {
+    print("${uid} 회원가입 이동중..");
+    FireUser fireUser = FireUser(uid: uid);
+    await fireUser.checkRegister(
+        onNotExist: NavigeteRegister, onExist: NavigateHome);
   }
 
   @override
@@ -169,15 +84,7 @@ class _SignInState extends State<SignIn> {
               SizedBox(
                 height: 300,
               ),
-              googleLoginButton(),
-              SizedBox(
-                height: 20,
-              ),
-              appleLoginButton(),
-              SizedBox(
-                height: 20,
-              ),
-              kakaoLoginButton()
+              loginButtonSection()
             ],
           ),
         ),
@@ -185,64 +92,26 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  InkWell googleLoginButton() {
-    return InkWell(
-      child: Container(
-        width: 300,
-        height: 50,
-        decoration: BoxDecoration(
+  Widget loginButtonSection() {
+    return Column(
+      children: [
+        RoundButton(
+          onclick: signInWithGoogle,
+          text: "Sign in with Google",
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
         ),
-        child: Center(
-          child: Text(
-            "Sign in with Google",
-            style: TextStyle(fontSize: 18, color: Colors.black),
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SignInWithAppleButton(
+            onPressed: signInWithApple,
           ),
         ),
-      ),
-      onTap: () {
-        print("google Login touch");
-        signInWithGoogle();
-      },
-    );
-  }
-
-  Widget appleLoginButton() {
-    return SignInWithAppleButton(
-      onPressed: () async {
-        final credential = await SignInWithApple.getAppleIDCredential(
-          scopes: [
-            AppleIDAuthorizationScopes.email,
-            AppleIDAuthorizationScopes.fullName,
-          ],
-        );
-
-        print(credential);
-
-        // Now send the credential (especially `credential.authorizationCode`) to your server to create a session
-        // after they have been validated with Apple (see `Integration` section for more information on how to do this)
-      },
-    );
-  }
-
-  InkWell kakaoLoginButton() {
-    return InkWell(
-      onTap: signInWithKaKao,
-      child: Container(
-        width: 300,
-        height: 50,
-        decoration: BoxDecoration(
-          color: Color(0xffFEE500),
-          borderRadius: BorderRadius.circular(10),
+        RoundButton(
+          onclick: signInWithKaKao,
+          text: "Sign in with KaKao",
+          color: const Color(0xffFEE500),
         ),
-        child: Center(
-          child: Text(
-            "Sign in with KaKao",
-            style: TextStyle(fontSize: 18, color: Colors.black),
-          ),
-        ),
-      ),
+      ],
     );
   }
 
@@ -262,7 +131,7 @@ class _SignInState extends State<SignIn> {
       CupertinoPageRoute(
         builder: (context) => const MyHomePage(),
       ),
-          (route) => false,
+      (route) => false,
     );
   }
 }

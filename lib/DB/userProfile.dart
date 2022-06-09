@@ -6,6 +6,7 @@ class UserProfile {
   String uid; // 유저 id
   String nickname; // 닉네임
   int authLevel; // 자신의 권한 1 = user, 2= teacher, 3 = parents, 10 = master
+  String provider; // 로그인 환경
   // school
   String schoolLocalCode; // 학교 교육청 코드
   int schoolCode; // 학교 코드
@@ -19,6 +20,7 @@ class UserProfile {
       {this.uid = '',
       this.nickname = '',
       this.authLevel = 1,
+      this.provider = "",
       this.grade = 1,
       this.Class = 1,
       this.schoolLocalCode = "J10",
@@ -44,7 +46,7 @@ class UserProfile {
   }
 
   static Future<void> Save(UserProfile userProfile) async {
-    _current=userProfile;
+    _current = userProfile;
     SavePro savePro = await SavePro.Instance();
     savePro.setUserProfile(userProfile);
   }
@@ -72,8 +74,8 @@ class UserProfile {
     );
   }
 
-  Map <String, dynamic> toMap(){
-    return{
+  Map<String, dynamic> toMap() {
+    return {
       'uid': uid,
       'authLevel': authLevel,
       'class': Class,
@@ -93,18 +95,12 @@ class UserProfile {
   }
 }
 
-
-
 class UserProfileHandler extends UserProfile {
-
   static SwitchGuest() {
-    UserProfile userProfile=UserProfile.guest();
+    UserProfile userProfile = UserProfile.guest();
     UserProfile.Save(userProfile);
   }
-
-
 }
-
 
 class SavePro {
   // _set 하는것은 Instance가 필요 없지만

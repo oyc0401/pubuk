@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/page/Home/home.dart';
-import 'package:flutterschool/page/SignIn/searchSchool.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:select_dialog/select_dialog.dart';
 
@@ -50,7 +49,7 @@ class _registerState extends State<register> {
             SizedBox(
               height: 120,
             ),
-            univButton(),
+
             SizedBox(
               height: 40,
             ),
@@ -71,44 +70,8 @@ class _registerState extends State<register> {
     );
   }
 
-  InkWell univButton() {
-    return InkWell(
-      onTap: NavigateSearch,
-      child: Container(
-        width: 300,
-        height: 45,
-        decoration: BoxDecoration(
-          color: Color(0xffF5C4C4),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: Center(
-          child: Text(
-            userProfile.schoolName,
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.black,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
-  NavigateSearch() async {
-    List list = await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => const SearchSchool(),
-      ),
-    );
-    School school = School.listToSchool(list);
 
-    userProfile.schoolLocalCode = school.cityCode;
-    userProfile.schoolName = school.name;
-    userProfile.schoolCode = int.parse(school.schoolCode);
-    userProfile.schoolLevel = school.level;
-    setState(() {});
-  }
 
   Widget nickNameSection() {
     return Column(

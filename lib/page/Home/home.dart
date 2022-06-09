@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/Profile/editProfile.dart';
 import 'package:intl/intl.dart';
 
@@ -36,7 +37,9 @@ class _HomeState extends State<Home> {
           TimeTableSection(),
           LunchSection(),
           // CupertinoButton(
-          //   onPressed: checkKey,
+          //   onPressed: (){
+          //
+          //   },
           //   child: const Text('저장소 확인'),
           // ),
           const SizedBox(height: 30),
