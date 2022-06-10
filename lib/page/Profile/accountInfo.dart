@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
+import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
 import 'package:flutterschool/page/mainPage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -78,21 +79,32 @@ class _AccountInfoState extends State<AccountInfo> {
   }
 
   Logout() async {
-    GoogleLogin googleLogin = GoogleLogin();
-    await googleLogin.logout();
+    UserProfile userProfile = UserProfile.currentUser;
+    if (userProfile.provider == "Google") {
+      GoogleLogin googleLogin = GoogleLogin();
+      await googleLogin.logout();
+    } else if (userProfile.provider == "Kakao") {
+      KakaoLogin kakaoLogin = KakaoLogin();
+      kakaoLogin.logout();
+    }
 
+    FirebaseAuth.instance.signOut();
     UserProfileHandler.SwitchGuest();
     navigateHome();
   }
 
   Future<void> deleteUser() async {
-
     UserProfile userProfile = UserProfile.currentUser;
     FireUser fireUser = FireUser(uid: userProfile.uid);
     await fireUser.deleteUser();
 
-    GoogleLogin googleLogin = GoogleLogin();
-    await googleLogin.deleteUser();
+    if (userProfile.provider == "Google") {
+      GoogleLogin googleLogin = GoogleLogin();
+      await googleLogin.deleteUser();
+    } else if (userProfile.provider == "Kakao") {
+      KakaoLogin kakaoLogin = KakaoLogin();
+      kakaoLogin.deleteUser();
+    }
 
     UserProfileHandler.SwitchGuest();
     navigateHome();
@@ -178,6 +190,6 @@ class _AccountInfoState extends State<AccountInfo> {
         CupertinoPageRoute(
           builder: (context) => const MyHomePage(),
         ),
-            (route) => false);
+        (route) => false);
   }
 }

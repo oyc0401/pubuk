@@ -70,19 +70,21 @@ class _SignInState extends State<SignIn> {
     /// 서버 DB에 uid에 알맞는 유저 정보가 있으면 홈화면으로 이동하고
     /// 없다면 회원가입 화면으로 이동한다.
 
+    // 회원가입 하다가 나가도 회원가입 할 수 있게 DB에 저장 하기
+    UserProfile.save(UserProfile(uid: uid, provider: provider));
+
     print("uid: ${uid}\n서버에 계정이 있는지 확인중... ");
 
-    /// 회원가입 하다가 나가도 회원가입 할 수 있게 DB에 저장 하기
-    UserProfile.saveUserInLocalDB(UserProfile(uid: uid, provider: provider));
-
+    // 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
     FireUser fireUser = FireUser(uid: uid);
     UserProfile? userProfile= await fireUser.getUserProfile();
+
     if (userProfile==null){
       print("서버 DB에 동일한 유저 정보가 없습니다. 회원가입 이동...");
       NavigeteRegister(uid,provider);
     }else{
       print("서버 DB에 동일한 유저 정보가 있습니다. 홈 화면 이동...");
-      await UserProfile.saveUserInLocalDB(userProfile);
+      await UserProfile.save(userProfile);
       NavigateHome();
     }
 

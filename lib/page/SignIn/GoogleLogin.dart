@@ -44,19 +44,13 @@ class GoogleLogin implements Login {
 
   @override
   deleteUser() async {
-    bool issi = await _googleSignIn.isSignedIn();
-    if(issi){
-      print("로그인 ok");
-    }else{
-      print("로그인 ㄴㄴ");
-
-    }
     await reAuth();
 
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        user.delete();
+        await user.delete();
+        print("firebase Auth 계정 삭제 완료.");
       } else {
         print("현재 유저가 없습니다.");
       }
@@ -70,6 +64,7 @@ class GoogleLogin implements Login {
       }
     }
     _googleSignIn.disconnect();
+    print("google 소셜 로그인 연결끊기.");
   }
 
   @override

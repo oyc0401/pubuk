@@ -29,7 +29,7 @@ class _registerState extends State<register> {
     await fireUser.addUserProfile(widget.userProfile);
 
     /// 로컬 DB에 저장
-    await UserProfile.saveUserInLocalDB(widget.userProfile);
+    await UserProfile.save(widget.userProfile);
 
     navigateHome();
   }

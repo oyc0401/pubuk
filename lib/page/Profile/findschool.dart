@@ -117,7 +117,7 @@ class _findSchoolState extends State<findSchool> {
     UserProfile myUser = UserProfile.currentUser;
     myUser.schoolLocalCode = cityCode;
     myUser.schoolCode = schoolCode;
-    await UserProfile.saveUserInLocalDB(myUser);
+    await UserProfile.save(myUser);
 
     Navigator.of(context).pop('complete');
 

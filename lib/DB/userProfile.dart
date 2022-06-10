@@ -17,7 +17,7 @@ class UserProfile {
   String certifiedSchoolCode; // 인증 받은 학교 코드
 
   UserProfile(
-      {this.uid = '',
+      {this.uid = 'guest',
       this.nickname = '',
       this.authLevel = 1,
       this.provider = "",
@@ -45,7 +45,7 @@ class UserProfile {
     }
   }
 
-  static Future<void> saveUserInLocalDB(UserProfile userProfile) async {
+  static Future<void> save(UserProfile userProfile) async {
     _current = userProfile;
     print("static User update");
     SavePro savePro = await SavePro.Instance();
@@ -100,8 +100,9 @@ class UserProfile {
 
 class UserProfileHandler extends UserProfile {
   static SwitchGuest() {
+    print("Local DB 게스트 상태로 변경");
     UserProfile userProfile = UserProfile.guest();
-    UserProfile.saveUserInLocalDB(userProfile);
+    UserProfile.save(userProfile);
   }
 }
 
