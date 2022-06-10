@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
 import 'package:flutterschool/page/mainPage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../DB/userProfile.dart';
+import '../../Server/FireTool.dart';
 import '../Home/home.dart';
 
 class AccountInfo extends StatefulWidget {
@@ -76,35 +78,24 @@ class _AccountInfoState extends State<AccountInfo> {
   }
 
   Logout() async {
-    FirebaseAuth.instance.signOut();
-    print("로그아웃");
+    GoogleLogin googleLogin = GoogleLogin();
+    await googleLogin.logout();
+
     UserProfileHandler.SwitchGuest();
     navigateHome();
   }
 
   Future<void> deleteUser() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        FirebaseFirestore.instance
-            .collection('user')
-            .doc(user.uid)
-            .delete()
-            .then((value) => print("User Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
 
-        user.delete();
-        UserProfileHandler.SwitchGuest();
-        navigateHome();
-      } else {
-        print("문제발생");
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        print(
-            'The user must reauthenticate before this operation can be executed.');
-      }
-    }
+    UserProfile userProfile = UserProfile.currentUser;
+    FireUser fireUser = FireUser(uid: userProfile.uid);
+    await fireUser.deleteUser();
+
+    GoogleLogin googleLogin = GoogleLogin();
+    await googleLogin.deleteUser();
+
+    UserProfileHandler.SwitchGuest();
+    navigateHome();
   }
 
   void _onTapDeleteButton() {
@@ -187,6 +178,6 @@ class _AccountInfoState extends State<AccountInfo> {
         CupertinoPageRoute(
           builder: (context) => const MyHomePage(),
         ),
-        (route) => false);
+            (route) => false);
   }
 }

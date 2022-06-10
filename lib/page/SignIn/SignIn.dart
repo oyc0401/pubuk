@@ -38,10 +38,10 @@ class _SignInState extends State<SignIn> {
 
     /// uid를 얻는데에 성공하면 화면을 이동한다.
     if (recivedUid != null) {
-      print("uid: ${recivedUid}");
+      print("계정으로부터 받은 uid: ${recivedUid}");
       navigate(recivedUid,"Google");
     } else {
-      print("로그인 실패");
+      print("uid가 없습니다.");
     }
   }
 
@@ -70,7 +70,7 @@ class _SignInState extends State<SignIn> {
     /// 서버 DB에 uid에 알맞는 유저 정보가 있으면 홈화면으로 이동하고
     /// 없다면 회원가입 화면으로 이동한다.
 
-    print("서버에 계정이 있는지 확인중... uid: ${uid}");
+    print("uid: ${uid}\n서버에 계정이 있는지 확인중... ");
 
     /// 회원가입 하다가 나가도 회원가입 할 수 있게 DB에 저장 하기
     UserProfile.saveUserInLocalDB(UserProfile(uid: uid, provider: provider));

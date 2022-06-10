@@ -2,9 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart' as fire;
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
-class KakaoLogin {
+import 'Login.dart';
+
+class KakaoLogin implements Login{
+  @override
   String? uid;
 
+  @override
   login() async {
     // kakao, firebase 로그인이 성공 하면
     if (await signInWithKaKao() && await anonymousLogin()) {
@@ -84,7 +88,9 @@ class KakaoLogin {
     }
   }
 
+  @override
   logout() async {
+    await fire.FirebaseAuth.instance.signOut();
     try {
       await UserApi.instance.logout();
       print('로그아웃 성공, SDK에서 토큰 삭제');
@@ -93,12 +99,22 @@ class KakaoLogin {
     }
   }
 
+  @override
   deleteUser() async {
     try {
       await UserApi.instance.unlink();
+
       print('연결 끊기 성공, SDK에서 토큰 삭제');
     } catch (error) {
       print('연결 끊기 실패 $error');
     }
+  }
+
+
+
+  @override
+  Future<void> reAuth() {
+    // TODO: implement reAuth
+    throw UnimplementedError();
   }
 }

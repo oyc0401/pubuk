@@ -6,7 +6,9 @@ import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-class AppleLogin {
+import 'Login.dart';
+
+class AppleLogin implements Login{
   login() async {
     // final credential = await SignInWithApple.getAppleIDCredential(
     //   scopes: [
@@ -60,5 +62,26 @@ class AppleLogin {
     // Sign in the user with Firebase. If the nonce we generated earlier does
     // not match the nonce in `appleCredential.identityToken`, sign in will fail.
     return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+  }
+
+  @override
+  String? uid;
+
+  @override
+  deleteUser() {
+    // TODO: implement deleteUser
+    throw UnimplementedError();
+  }
+
+  @override
+  logout() {
+    // TODO: implement logout
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> reAuth() {
+    // TODO: implement reAuth
+    throw UnimplementedError();
   }
 }

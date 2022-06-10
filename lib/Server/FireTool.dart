@@ -22,9 +22,8 @@ class FireUser {
     }
   }
 
-  Future<void> addUserProfile(UserProfile userProfile)async{
-    userDoc.set(userProfile.toMap())
-        .catchError((error) {
+  Future<void> addUserProfile(UserProfile userProfile) async {
+    userDoc.set(userProfile.toMap()).catchError((error) {
       print("Failed to Sign in: $error");
     });
   }
@@ -36,6 +35,13 @@ class FireUser {
     }).then((value) async {
       print('grade Update');
     }).catchError((error) => print("Failed to change grade: $error"));
+  }
+
+  Future<void> deleteUser() async {
+    userDoc
+        .delete()
+        .then((value) => print("User Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
   }
 }
 
