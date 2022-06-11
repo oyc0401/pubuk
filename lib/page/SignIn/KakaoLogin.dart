@@ -4,7 +4,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 import 'Login.dart';
 
-class KakaoLogin implements Login{
+class KakaoLogin implements Login {
   @override
   String? uid;
 
@@ -101,20 +101,19 @@ class KakaoLogin implements Login{
 
   @override
   deleteUser() async {
+    await fire.FirebaseAuth.instance.currentUser?.delete();
     try {
       await UserApi.instance.unlink();
-
       print('연결 끊기 성공, SDK에서 토큰 삭제');
     } catch (error) {
       print('연결 끊기 실패 $error');
     }
   }
 
-
-
   @override
-  Future<void> reAuth() {
-    // TODO: implement reAuth
-    throw UnimplementedError();
+  Future<void> reAuth() async {
+    fire.FirebaseAuth.instance.signInAnonymously();
   }
+
+
 }
