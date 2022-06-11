@@ -6,6 +6,7 @@ class UserProfile {
   String uid; // 유저 id
   String nickname; // 닉네임
   int authLevel; // 자신의 권한 1 = user, 2= teacher, 3 = parents, 10 = master
+  String provider; // 로그인 환경
   // school
   String schoolLocalCode; // 학교 교육청 코드
   int schoolCode; // 학교 코드
@@ -16,9 +17,10 @@ class UserProfile {
   String certifiedSchoolCode; // 인증 받은 학교 코드
 
   UserProfile(
-      {this.uid = '',
+      {this.uid = 'guest',
       this.nickname = '',
       this.authLevel = 1,
+      this.provider = "",
       this.grade = 1,
       this.Class = 1,
       this.schoolLocalCode = "J10",
@@ -43,8 +45,9 @@ class UserProfile {
     }
   }
 
-  static Future<void> Save(UserProfile userProfile) async {
-    _current=userProfile;
+  static Future<void> save(UserProfile userProfile) async {
+    _current = userProfile;
+    print("static User update");
     SavePro savePro = await SavePro.Instance();
     savePro.setUserProfile(userProfile);
   }
@@ -63,6 +66,7 @@ class UserProfile {
       authLevel: map['authLevel'],
       Class: map['class'],
       grade: map['grade'],
+      provider: map['provider'],
       nickname: map['nickname'],
       schoolLocalCode: map['schoolLocalCode'],
       schoolName: map['schoolName'],
@@ -72,12 +76,13 @@ class UserProfile {
     );
   }
 
-  Map <String, dynamic> toMap(){
-    return{
+  Map<String, dynamic> toMap() {
+    return {
       'uid': uid,
       'authLevel': authLevel,
       'class': Class,
       'grade': grade,
+      'provider': provider,
       'nickname': nickname,
       'schoolLocalCode': schoolLocalCode,
       'schoolName': schoolName,
@@ -89,22 +94,17 @@ class UserProfile {
 
   @override
   String toString() {
-    return ("schoolName: $schoolName, grade: $grade, Class: $Class, uid: $uid, authLevel: $authLevel");
+    return toMap().toString();
   }
 }
-
-
 
 class UserProfileHandler extends UserProfile {
-
   static SwitchGuest() {
-    UserProfile userProfile=UserProfile.guest();
-    UserProfile.Save(userProfile);
+    print("Local DB 게스트 상태로 변경");
+    UserProfile userProfile = UserProfile.guest();
+    UserProfile.save(userProfile);
   }
-
-
 }
-
 
 class SavePro {
   // _set 하는것은 Instance가 필요 없지만
@@ -141,6 +141,8 @@ class SavePro {
   _setCertifiedSchoolCode(String certified) =>
       prefs.setString('certifiedSchoolCode', certified);
 
+  _setProvider(String provider) => prefs.setString('provider', provider);
+
   /// _get
   int _getGrade() => prefs.getInt('Grade') ?? userProfile.grade;
 
@@ -166,27 +168,31 @@ class SavePro {
   String _getCertifiedSchoolCode() =>
       prefs.getString('certifiedSchoolCode') ?? userProfile.certifiedSchoolCode;
 
+  String _getProvider() => prefs.getString('provider') ?? userProfile.provider;
+
   UserProfile getUserProfile() {
     return UserProfile(
         uid: _getUid(),
         nickname: _getNickName(),
         authLevel: _getAuthLevel(),
+        provider: _getProvider(),
         grade: _getGrade(),
         Class: _getClass(),
         schoolLocalCode: _getSchoolLocalCode(),
         schoolCode: _getSchoolCode(),
         schoolName: _getSchoolName(),
-        schoolLevel: 3,
-        certifiedSchoolCode: "null");
+        schoolLevel: _getSchoolLevel(),
+        certifiedSchoolCode: _getCertifiedSchoolCode());
   }
 
-  setUserProfile(UserProfile UserProfile) {
-    _setUid(UserProfile.uid);
-    _setNickName(UserProfile.nickname);
-    _setAuthLevel(UserProfile.authLevel);
-    _setGrade(UserProfile.grade);
-    _setClass(UserProfile.Class);
-    _setSchoolCode(UserProfile.schoolCode);
-    print('saveKey: 유저 값 저장');
+  setUserProfile(UserProfile userProfile) {
+    _setUid(userProfile.uid);
+    _setNickName(userProfile.nickname);
+    _setAuthLevel(userProfile.authLevel);
+    _setProvider(userProfile.provider);
+    _setGrade(userProfile.grade);
+    _setClass(userProfile.Class);
+    _setSchoolCode(userProfile.schoolCode);
+    print('Local DB: 유저 저장');
   }
 }

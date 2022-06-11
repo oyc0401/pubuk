@@ -10,7 +10,7 @@ import 'package:skeletons/skeletons.dart';
 import '../../DB/userProfile.dart';
 
 class MyTimeTable extends StatefulWidget {
-  MyTimeTable({Key? key}) : super(key: key);
+  const MyTimeTable({Key? key}) : super(key: key);
 
   @override
   State<MyTimeTable> createState() => _MyTimeTableState();

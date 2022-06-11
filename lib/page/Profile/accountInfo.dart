@@ -2,11 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
+import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
 import 'package:flutterschool/page/mainPage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../DB/userProfile.dart';
+import '../../Server/FireTool.dart';
 import '../Home/home.dart';
 
 class AccountInfo extends StatefulWidget {
@@ -76,35 +79,35 @@ class _AccountInfoState extends State<AccountInfo> {
   }
 
   Logout() async {
+    UserProfile userProfile = UserProfile.currentUser;
+    if (userProfile.provider == "Google") {
+      GoogleLogin googleLogin = GoogleLogin();
+      await googleLogin.logout();
+    } else if (userProfile.provider == "Kakao") {
+      KakaoLogin kakaoLogin = KakaoLogin();
+      kakaoLogin.logout();
+    }
+
     FirebaseAuth.instance.signOut();
-    print("로그아웃");
     UserProfileHandler.SwitchGuest();
     navigateHome();
   }
 
   Future<void> deleteUser() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        FirebaseFirestore.instance
-            .collection('user')
-            .doc(user.uid)
-            .delete()
-            .then((value) => print("User Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
+    UserProfile userProfile = UserProfile.currentUser;
+    FireUser fireUser = FireUser(uid: userProfile.uid);
+    await fireUser.deleteUser();
 
-        user.delete();
-        UserProfileHandler.SwitchGuest();
-        navigateHome();
-      } else {
-        print("문제발생");
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        print(
-            'The user must reauthenticate before this operation can be executed.');
-      }
+    if (userProfile.provider == "Google") {
+      GoogleLogin googleLogin = GoogleLogin();
+      await googleLogin.deleteUser();
+    } else if (userProfile.provider == "Kakao") {
+      KakaoLogin kakaoLogin = KakaoLogin();
+      kakaoLogin.deleteUser();
     }
+
+    UserProfileHandler.SwitchGuest();
+    navigateHome();
   }
 
   void _onTapDeleteButton() {

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/Profile/editProfile.dart';
 import 'package:intl/intl.dart';
 
@@ -18,12 +19,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("부천북고등학교"),
+        title: const Text("부천북고등학교"),
         actions: [
           IconButton(
             onPressed: NavigateProfile,
@@ -35,10 +35,13 @@ class _HomeState extends State<Home> {
         children: [
           TimeTableSection(),
           LunchSection(),
-          // CupertinoButton(
-          //   onPressed: checkKey,
-          //   child: const Text('저장소 확인'),
-          // ),
+          CupertinoButton(
+            onPressed: () {
+              UserProfile user = UserProfile.currentUser;
+              print(user.toMap());
+            },
+            child: const Text('저장소 확인'),
+          ),
           const SizedBox(height: 30),
           Container(
             height: 400,
@@ -49,6 +52,8 @@ class _HomeState extends State<Home> {
   }
 
   Widget TimeTableSection() {
+
+    // MyTimeTable 에 const 붙히면 정보가 바뀌어도 재시작 안함
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: MyTimeTable(),
@@ -56,7 +61,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget LunchSection() {
-    print("런치");
     return const Padding(
       padding: EdgeInsets.all(12.0),
       child: LunchBuilder(),
@@ -71,8 +75,10 @@ class _HomeState extends State<Home> {
       ),
     );
 
-    setState(() {});
-    print(UserProfile.currentUser);
+    setState(() {
+      print(
+          "회원 정보가 바뀌었을 수도 있어서 setState 합니다. userProfile: ${UserProfile.currentUser}");
+    });
   }
 
   Future<void> checkKey() async {

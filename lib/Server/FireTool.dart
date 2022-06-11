@@ -1,17 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutterschool/DB/userProfile.dart';
 import 'package:ntp/ntp.dart';
 
 class FireUser {
   String uid;
   DocumentReference<Map<String, dynamic>> userDoc;
+
   FireUser({required this.uid})
       : userDoc = FirebaseFirestore.instance.collection('user').doc(uid);
 
+  Future<UserProfile?> getUserProfile() async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc.get();
+    //print(snapshot.data());
 
-  Future<void> setGrade({
-    required int grade,
-    required int Class,
-  }) async {
+    Map<String, dynamic>? map = snapshot.data();
+    //print(map);
+    if (map != null) {
+      return UserProfile.FirebaseUser(map);
+    } else {
+      return null;
+    }
+  }
+
+  Future<void> addUserProfile(UserProfile userProfile) async {
+    userDoc.set(userProfile.toMap()).catchError((error) {
+      print("Failed to Sign in: $error");
+    });
+  }
+
+  Future<void> updateGrade({required int grade, required int Class}) async {
     await userDoc.update({
       'grade': grade,
       'class': Class,
@@ -20,25 +37,13 @@ class FireUser {
     }).catchError((error) => print("Failed to change grade: $error"));
   }
 
-  Future<void> checkRegister({
-    required Function onExist, // 유저 데이터가 존재할 때
-    required Function onNotExist, // 유저 데이터가 없을 때
-  }) async {
-    // 회원가입을 했는지 판단하는 함수
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc.get();
-    Map? map = snapshot.data();
-
-    if (snapshot.exists) {
-      print("유저 정보가 있습니다. user: ${map}");
-      onExist();
-    } else {
-      print("유저 정보가 없습니다.");
-      onNotExist();
-    }
+  Future<void> deleteUser() async {
+    userDoc
+        .delete()
+        .then((value) => print("User Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
   }
 }
-
-
 
 class FireTool {
   String collectionName = '';

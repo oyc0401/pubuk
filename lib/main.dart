@@ -7,45 +7,57 @@ import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/SignIn/register.dart';
 
 import 'package:flutterschool/page/mainPage.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  print("1");
+  print("start");
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
+  // 스플래시 화면 켜기
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  // 파이어베이스 초기화
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // 카카오 sdk 시작
+  kakao.KakaoSdk.init(nativeAppKey: '3e345bcd63a5df82971a7d52cabb73a2');
+  // 유저 가져오기
   await UserProfile.initializeUser();
 
-
-  print("실행");
-  //runApp(const MyApp());
+  print("runApp");
   await Run_App();
-  print("끄기");
+  print("splash 끄기");
   FlutterNativeSplash.remove();
 }
 
 Run_App() async {
-  // 회원가입 하다가 만 상태면 회원가입 화면으로 이동한다.
-  User? user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    FireUser fireUser=FireUser(uid: user.uid);
-    await fireUser.checkRegister(
-        onExist: () {
-          runApp(MyApp(
-            initialWidget: MyHomePage(),
-          ));
-        },
-        onNotExist: () {
-          runApp(MyApp(
-            initialWidget: register(),
-          ));
-        });
+  // db에 있는 유저 정보를 통해 로그인인지 아닌지 확인한다.
+  UserProfile localUser = UserProfile.currentUser;
+
+  // 로그인 provider가 없으면 로그인을 하지 않은것으로 판단.
+  if (localUser.provider == "") {
+    print("로그인을 하지 않았습니다. 홈 화면 이동...");
+    runApp(MyApp(initialWidget: const MyHomePage()));
+    return;
+  }
+
+  // 여기까지 오면 로그인을 했을것이다.
+  // 이제 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
+  FireUser fireUser = FireUser(uid: localUser.uid);
+  UserProfile? serverUser = await fireUser.getUserProfile();
+
+  // 저장소가 없으면 로그인은 했지만 회원가입을 하지 않은것으로 판단.
+  if (serverUser == null) {
+    print("회원가입 중 입니다. 회원가입 이동...");
+    runApp(MyApp(
+        initialWidget:
+            register(uid: localUser.uid, provider: localUser.provider)));
   } else {
-    runApp(MyApp(initialWidget: MyHomePage()));
+    // 저장소가 있고 로그인을 했다고 판단.
+    print("현재 uid: ${localUser.uid} 홈 화면 이동...");
+    await UserProfile.save(serverUser);
+    runApp(MyApp(initialWidget: const MyHomePage()));
   }
 }
 
@@ -56,7 +68,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    print("build");
+    print("main widget is built");
     return MaterialApp(
       builder: (context, child) {
         return MediaQuery(
@@ -73,4 +85,7 @@ class MyApp extends StatelessWidget {
       home: initialWidget,
     );
   }
+}
+class IDontWantRestart{
+  static bool canBuild=true;
 }

@@ -49,8 +49,8 @@ dependencies:
   ntp: ^2.0.0  #네트워크 시간
 
   google_sign_in: ^5.3.0
-
-  #실행이 안되면 구글로그인 해제하고 실행하고 다시 넣고 실행
+  sign_in_with_apple: ^4.0.0
+  kakao_flutter_sdk: ^1.1.1
 
 
   flutter_signin_button: ^2.0.0
@@ -61,6 +61,8 @@ dependencies:
   dropdown_button2: ^1.2.2
   scrollable_positioned_list: ^0.3.2
   skeletons: ^0.0.3
+  crypto: ^3.0.2
+
 
 
 dev_dependencies:

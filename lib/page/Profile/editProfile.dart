@@ -18,18 +18,37 @@ class setting extends StatefulWidget {
 }
 
 class _settingState extends State<setting> {
-  /// [getUserData]에서 [UserProfile]를 불러온다.
-  /// [isfirst]가 true면 [userData]에 집어넣고 [isfirst]를 false로 바꾼다.
-  /// [userData]는 중요한 역할을 하고있다.
-  /// 닉네임, 학년, 반을 바꾸면 이 내부 값을 변화시킨다.
-  /// 저장 버튼을 누르면 [userData]에 있는 값을 [saveKey]에 저장하고 화면을 종료한다.
-  /// 나중에 로그인을 구현한다면 저장을 할 때 파이어베이스의 유저정보도 함께 바꿔야 한다.
+  /// 닉네임, 학년, 반을 바꾸면 [userData] 내부 값을 변화시킨다.
+  /// 저장 버튼을 누르면 [userData]에 있는 값을 저장하고 화면을 종료한다.
+  /// 로그인 상태라면 파이어베이스에도 저장한다.
 
   UserProfile userData = UserProfile.currentUser;
 
+  Future<void> Save(UserProfile myUserData) async {
+    // 로컬 DB에 저장
+    UserProfile.save(myUserData);
+
+    switch (userData.provider) {
+      case "Google":
+      case "Apple":
+      case "Kakao":
+        // firebase DB에 저장
+        print("현재 로그인 상태입니다.");
+        FireUser fireUser = FireUser(uid: myUserData.uid);
+        fireUser.updateGrade(
+          grade: myUserData.grade,
+          Class: myUserData.Class,
+        );
+        break;
+    }
+
+    // 나가기
+    Navigator.of(context).pop('complete');
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("setstate!");
+    //print("setstate!");
     return Scaffold(
       appBar: AppBar(
         title: const Text('정보 수정'),
@@ -65,21 +84,6 @@ class _settingState extends State<setting> {
         ),
       ),
     );
-  }
-
-  Future<void> Save(UserProfile myUserData) async {
-    // 로컬 DB에 저장
-     UserProfile.Save(myUserData);
-
-    // firebase DB에 저장
-    FireUser fireUser = FireUser(uid: myUserData.uid);
-    fireUser.setGrade(
-      grade: myUserData.grade,
-      Class: myUserData.Class,
-    );
-
-    // 나가기
-    Navigator.of(context).pop('complete');
   }
 
   Widget schoolSection() {
@@ -120,6 +124,7 @@ class _settingState extends State<setting> {
         }),
         onChange: (String selected) {
           setState(() {
+            print(selected);
             var dd = selected.split('');
             initGrade = int.parse(dd[0]);
           });
@@ -146,6 +151,7 @@ class _settingState extends State<setting> {
           return "$num반";
         }),
         onChange: (String selected) {
+          print(selected);
           var dd = selected.split('');
           initClass = int.parse(dd[0]);
         },
@@ -167,36 +173,4 @@ class _settingState extends State<setting> {
       ),
     );
   }
-
-// navigateHome() {
-//   Navigator.pushAndRemoveUntil(
-//     context,
-//     PageRouteBuilder(
-//       pageBuilder: (context, animation, secondaryAnimation) => MyHomePage(),
-//       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//         var begin =  Offset(-1.0, 0);
-//         var end = Offset.zero;
-//         var curve = Curves.ease;
-//
-//         var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-//
-//         return Container(
-//           decoration: BoxDecoration(
-//             boxShadow: [
-//               BoxShadow(
-//                 color: Colors.grey.withOpacity(0.1),
-//               ),
-//             ],
-//           ),
-//           child: SlideTransition(
-//             position: animation.drive(tween),
-//             child: child,
-//           ),
-//         );
-//       },
-//     ),
-//
-//     (route) => false,
-//   );
-// }
 }
