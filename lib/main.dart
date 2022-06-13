@@ -29,7 +29,7 @@ Future<void> main() async {
   print("runApp");
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.white, // navigation bar color
+    //systemNavigationBarColor: Colors.white, // navigation bar color
     statusBarColor: Colors.transparent, // status bar color
   ));
 
@@ -95,6 +95,7 @@ class MyApp extends StatelessWidget {
           centerTitle: true,
           elevation: 0,
           scrolledUnderElevation: 3,
+          shadowColor: Color(0x67FFFFFF),
           toolbarTextStyle: TextStyle(color: Colors.black),
           backgroundColor: Colors.white,
           iconTheme: IconThemeData(color: Colors.black),
