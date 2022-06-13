@@ -1,9 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core_web/firebase_core_web_interop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_signin_button/button_list.dart';
+
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/MyWidget/button.dart';
 import 'package:flutterschool/Server/FireTool.dart';
@@ -20,6 +17,7 @@ import 'register.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
+
   /// 로그인 버튼을 누르면 로그인 창이 열리고 로그인을 하면 uid를 얻음
   /// uid가 없으면 이동하지 않는다.
   /// 서버 DB에 uid에 알맞는 유저 정보가 있으면 그 정보를 로컬 DB에 저장하고 홈 화면으로 이동한다.
@@ -30,18 +28,6 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  initState(){
-    super.initState();
-    //changeColor();
-  }
-  changeColor(){
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.black, // navigation bar color
-      statusBarColor: Colors.black, // status bar color
-    ));
-
-  }
-
   Future signInWithGoogle() async {
     /// 구글 로그인을 통해 uid를 얻는다.
     GoogleLogin googleLogin = GoogleLogin();
@@ -51,7 +37,7 @@ class _SignInState extends State<SignIn> {
     /// uid를 얻는데에 성공하면 화면을 이동한다.
     if (recivedUid != null) {
       print("계정으로부터 받은 uid: ${recivedUid}");
-      navigate(recivedUid,"Google");
+      navigate(recivedUid, "Google");
     } else {
       print("uid가 없습니다.");
     }
@@ -72,13 +58,13 @@ class _SignInState extends State<SignIn> {
     /// uid를 얻는데에 성공하면 화면을 이동한다.
     if (recivedUid != null) {
       print("uid: ${recivedUid}");
-      navigate(recivedUid,"Kakao");
+      navigate(recivedUid, "Kakao");
     } else {
       print("로그인 실패");
     }
   }
 
-  void navigate(String uid,String provider) async {
+  void navigate(String uid, String provider) async {
     /// 서버 DB에 uid에 알맞는 유저 정보가 있으면 홈화면으로 이동하고
     /// 없다면 회원가입 화면으로 이동한다.
 
@@ -89,27 +75,26 @@ class _SignInState extends State<SignIn> {
 
     // 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
     FireUser fireUser = FireUser(uid: uid);
-    UserProfile? userProfile= await fireUser.getUserProfile();
+    UserProfile? userProfile = await fireUser.getUserProfile();
 
-    if (userProfile==null){
+    if (userProfile == null) {
       print("서버 DB에 동일한 유저 정보가 없습니다. 회원가입 이동...");
-      NavigeteRegister(uid,provider);
-    }else{
+      NavigeteRegister(uid, provider);
+    } else {
       print("서버 DB에 동일한 유저 정보가 있습니다. 홈 화면 이동...");
       await UserProfile.save(userProfile);
       NavigateHome();
     }
-
   }
 
-  void NavigeteRegister(String uid,String provider) {
+  void NavigeteRegister(String uid, String provider) {
     print("회원가입 화면 이동합니다.");
     Navigator.pushAndRemoveUntil(
       context,
       CupertinoPageRoute(
-        builder: (context) => register(uid: uid,provider: provider),
+        builder: (context) => register(uid: uid, provider: provider),
       ),
-          (route) => false,
+      (route) => false,
     );
   }
 
@@ -120,15 +105,18 @@ class _SignInState extends State<SignIn> {
       CupertinoPageRoute(
         builder: (context) => const MyHomePage(),
       ),
-          (route) => false,
+      (route) => false,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xff99765F),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
       body: Container(
-        color: Color(0xff99765F),
         child: Center(
           child: Column(
             children: [
