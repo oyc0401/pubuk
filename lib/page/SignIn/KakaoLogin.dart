@@ -9,11 +9,13 @@ class KakaoLogin implements Login {
   String? uid;
 
   @override
-  login() async {
+  Future<bool> login() async {
     // kakao, firebase 로그인이 성공 하면
     if (await signInWithKaKao() && await anonymousLogin()) {
       uid = await getUid();
+      return true;
     }
+    return false;
   }
 
   Future<String?> getUid() async {
@@ -35,7 +37,7 @@ class KakaoLogin implements Login {
     print("익명 로그인");
     try {
       final userCredential =
-      await fire.FirebaseAuth.instance.signInAnonymously();
+          await fire.FirebaseAuth.instance.signInAnonymously();
       print("Signed in with temporary account.");
       return true;
     } on fire.FirebaseAuthException catch (e) {
@@ -89,62 +91,75 @@ class KakaoLogin implements Login {
   }
 
   @override
-  logout() async {
+  Future<bool> logout() async {
     await fire.FirebaseAuth.instance.signOut();
     try {
       await UserApi.instance.logout();
       print('로그아웃 성공, SDK에서 토큰 삭제');
+      return true;
     } catch (error) {
       print('로그아웃 실패, SDK에서 토큰 삭제 $error');
     }
+    return false;
+  }
+  getCurrentUser()async{
+    User user=await UserApi.instance.me();
+    return user.toString();
   }
 
   @override
-  deleteUser() async {
+  Future<bool> deleteUser() async {
 
-    await reAuth();
-    await fire.FirebaseAuth.instance.currentUser?.delete();
-    try {
-      await UserApi.instance.unlink();
-      print('연결 끊기 성공, SDK에서 토큰 삭제');
-    } catch (error) {
-      print('연결 끊기 실패 $error');
+    bool isok = await reAuth();
+    if (isok) {
+      // 파이어베이스 재 로그인
+      fire.FirebaseAuth.instance.signInAnonymously();
+      try {
+        // 카카오 연결 끊기
+        await UserApi.instance.unlink();
+        print('연결 끊기 성공, SDK에서 토큰 삭제');
+        // 파이어베이스 연결 끊기
+        await fire.FirebaseAuth.instance.currentUser?.delete();
+        return true;
+      } catch (error) {
+        print('연결 끊기 실패 $error');
+        return false;
+      }
+
     }
+    print("재 로그인 안됌");
+    return false;
   }
 
+
+
   @override
-  Future<void> reAuth() async {
-    fire.FirebaseAuth.instance.signInAnonymously();
+  Future<bool> reAuth() async {
+
 
     if (await AuthApi.instance.hasToken()) {
       try {
-        AccessTokenInfo tokenInfo =
-        await UserApi.instance.accessTokenInfo();
-        print('토큰 유효성 체크 성공 ${tokenInfo.id} ${tokenInfo.expiresIn}');
+        AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
+        print('토큰 정보 보기 성공'
+            '\n회원정보: ${tokenInfo.id}'
+            '\n만료시간: ${tokenInfo.expiresIn} 초');
+        return true;
       } catch (error) {
         if (error is KakaoException && error.isInvalidTokenError()) {
           print('토큰 만료 $error');
         } else {
           print('토큰 정보 조회 실패 $error');
         }
-
-        try {
-          // 카카오 계정으로 로그인
-          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-          print('로그인 성공 ${token.accessToken}');
-        } catch (error) {
-          print('로그인 실패 $error');
-        }
       }
     } else {
       print('발급된 토큰 없음');
-      try {
-        OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-        print('로그인 성공 ${token.accessToken}');
-      } catch (error) {
-        print('로그인 실패 $error');
-      }
+    }
+    if (await login()) {
+      return true;
+    } else {
+      return false;
     }
   }
 
+  _checkToken() async {}
 }

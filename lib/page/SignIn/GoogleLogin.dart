@@ -15,9 +15,13 @@ class GoogleLogin implements Login {
   String? uid;
 
   @override
-  Future<void> login() async {
+  Future<bool> login() async {
     UserCredential? userCredential = await signInWithGoogle();
     uid = userCredential?.user?.uid;
+    if (userCredential?.user?.uid == null) {
+      return false;
+    }
+    return true;
   }
 
   Future<UserCredential?> signInWithGoogle() async {
@@ -41,18 +45,29 @@ class GoogleLogin implements Login {
       return null;
     }
   }
+ getCurrentUser(){
 
+    GoogleSignInAccount? googleSignInAccount=_googleSignIn.currentUser;
+    String? string=_googleSignIn.clientId??"null";
+
+    print(googleSignInAccount);
+  return string;
+}
   @override
-  deleteUser() async {
-    await reAuth();
+  Future deleteUser() async {
 
+if(await reAuth()==true){
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await user.delete();
         print("firebase Auth 계정 삭제 완료.");
+        _googleSignIn.disconnect();
+        print("google 소셜 로그인 연결끊기.");
+        return true;
       } else {
         print("현재 유저가 없습니다.");
+        return false;
       }
     } on FirebaseAuthException catch (e) {
       print("회원탈퇴 실패");
@@ -62,9 +77,9 @@ class GoogleLogin implements Login {
       } else {
         print(e.code);
       }
-    }
-    _googleSignIn.disconnect();
-    print("google 소셜 로그인 연결끊기.");
+    }}
+
+    return false;
   }
 
   @override
@@ -75,7 +90,7 @@ class GoogleLogin implements Login {
   }
 
   @override
-  Future<void> reAuth() async {
+  Future<bool> reAuth() async {
     print("구글 재인증하는중...");
     // 조용히 로그인 하기
     final GoogleSignInAccount? googleUser =
@@ -91,9 +106,14 @@ class GoogleLogin implements Login {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       print("구글 재인증 성공!");
+      return true;
     } else {
       print("재 인증 실패, 다시 로그인해야합니다.");
-      await signInWithGoogle();
+      if( await login()==true){
+        return true;
+      }
     }
+    print("로그인 실패");
+    return false;
   }
 }

@@ -10,6 +10,7 @@ class FireUser {
       : userDoc = FirebaseFirestore.instance.collection('user').doc(uid);
 
   Future<UserProfile?> getUserProfile() async {
+
     DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc.get();
     //print(snapshot.data());
 

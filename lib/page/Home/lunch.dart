@@ -173,7 +173,7 @@ class SkeletonScroll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
+      height: 220,
       child: ScrollablePositionedList.builder(
         initialScrollIndex: 5, // 0 1 2 3 4 , 5, 6 7 8 9 10
         scrollDirection: Axis.horizontal,

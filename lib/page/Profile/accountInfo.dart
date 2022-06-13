@@ -100,14 +100,24 @@ class _AccountInfoState extends State<AccountInfo> {
 
     if (userProfile.provider == "Google") {
       GoogleLogin googleLogin = GoogleLogin();
-      await googleLogin.deleteUser();
+      if( await googleLogin.deleteUser()==true){
+        UserProfileHandler.SwitchGuest();
+        navigateHome();
+      }else{
+        print("회원탈퇴가 안되었습니다.");
+      }
     } else if (userProfile.provider == "Kakao") {
       KakaoLogin kakaoLogin = KakaoLogin();
-      kakaoLogin.deleteUser();
+      if(await kakaoLogin.deleteUser()==true){
+        UserProfileHandler.SwitchGuest();
+        navigateHome();
+      }else{
+        print("회원탈퇴가 안되었습니다.");
+      }
+
     }
 
-    UserProfileHandler.SwitchGuest();
-    navigateHome();
+
   }
 
   void _onTapDeleteButton() {

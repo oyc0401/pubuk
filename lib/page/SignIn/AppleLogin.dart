@@ -19,6 +19,7 @@ class AppleLogin implements Login{
     //
     // print(credential);
     signInWithApple();
+    return false;
   }
 
   String generateNonce([int length = 32]) {
@@ -80,7 +81,7 @@ class AppleLogin implements Login{
   }
 
   @override
-  Future<void> reAuth() {
+  Future<bool> reAuth() {
     // TODO: implement reAuth
     throw UnimplementedError();
   }

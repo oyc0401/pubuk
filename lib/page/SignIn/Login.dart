@@ -7,11 +7,11 @@ import '../../DB/userProfile.dart';
 abstract class Login {
   String? uid;
 
-  Future<void> login();
+  Future<bool> login();
 
   Future<void> logout();
 
   Future<void> deleteUser();
 
-  Future<void> reAuth();
+  Future reAuth();
 }
