@@ -1,16 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
 import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
-import 'package:flutterschool/page/SignIn/SignIn.dart';
+
 import 'package:flutterschool/page/mainPage.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../DB/userProfile.dart';
 import '../../Server/FireTool.dart';
-import '../Home/home.dart';
 
 class AccountInfo extends StatefulWidget {
   const AccountInfo({Key? key}) : super(key: key);
@@ -25,60 +23,29 @@ class _AccountInfoState extends State<AccountInfo> {
     return Scaffold(
       appBar: AppBar(),
       body: Column(
-        children: [
-          AccountWidget(),
-        ],
-      ),
-    );
-  }
-
-  Widget AccountWidget() {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      return Text("Dsa");
-    }
-
-    return Card(
-      margin: EdgeInsets.all(12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      child: Column(
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              radius: 48,
-              backgroundImage: NetworkImage(user.photoURL ??
-                  "https://dfge.de/wp-content/uploads/blank-profile-picture-973460_640.png"),
-            ),
-            title: Text(
-              user.email ?? "23",
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
-            subtitle: Text(
-              "uid: ${user.uid}",
-            ),
-          ),
-          CupertinoButton(
-            child: Text(
-              "로그아웃",
-              style: TextStyle(color: Colors.blue),
-            ),
-            onPressed: _onTapLogoutButton,
-          ),
-          CupertinoButton(
-            child: Text(
-              "회원 탈퇴",
-              style: TextStyle(color: Colors.red),
-            ),
-            onPressed: _onTapDeleteButton,
+        children: const [
+          Padding(
+            padding: EdgeInsets.all(12.0),
+            child: AccountWidget(),
           ),
         ],
       ),
     );
   }
+}
 
-  Logout() async {
+class AccountWidget extends StatefulWidget {
+  const AccountWidget({Key? key}) : super(key: key);
+
+  @override
+  State<AccountWidget> createState() => _AccountWidgetState();
+}
+
+class _AccountWidgetState extends State<AccountWidget> {
+  String? email = "";
+  Widget image = const Image(image: AssetImage("assets/logo/grey_logo.png"));
+
+  Future<void> Logout() async {
     UserProfile userProfile = UserProfile.currentUser;
     if (userProfile.provider == "Google") {
       GoogleLogin googleLogin = GoogleLogin();
@@ -100,24 +67,88 @@ class _AccountInfoState extends State<AccountInfo> {
 
     if (userProfile.provider == "Google") {
       GoogleLogin googleLogin = GoogleLogin();
-      if( await googleLogin.deleteUser()==true){
+      if (await googleLogin.deleteUser() == true) {
         UserProfileHandler.SwitchGuest();
         navigateHome();
-      }else{
+      } else {
         print("회원탈퇴가 안되었습니다.");
       }
     } else if (userProfile.provider == "Kakao") {
       KakaoLogin kakaoLogin = KakaoLogin();
-      if(await kakaoLogin.deleteUser()==true){
+      if (await kakaoLogin.deleteUser() == true) {
         UserProfileHandler.SwitchGuest();
         navigateHome();
-      }else{
+      } else {
         print("회원탈퇴가 안되었습니다.");
       }
+    }
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    setEmail();
+  }
+
+  void setEmail() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    UserProfile userProfile = UserProfile.currentUser;
+
+    if (userProfile.provider == "Google") {
+      email = user?.email;
+      image = const Image(image: AssetImage("assets/logo/Google_logo.png"));
+    } else if (userProfile.provider == "Apple") {
+      email = user?.email;
+      image = const Image(image: AssetImage("assets/logo/Apple_logo.png"));
+    } else if (userProfile.provider == "Kakao") {
+      KakaoLogin kakaoLogin = KakaoLogin();
+      email = await kakaoLogin.getEmail();
+      image = const Image(image: AssetImage("assets/logo/Kakao_logo.png"));
+    }
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return const Text("계정이 없습니다.");
     }
 
-
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            leading: image,
+            title: Text(
+              email ?? "",
+              style: const TextStyle(fontSize: 18, color: Colors.black),
+            ),
+            subtitle: Text(
+              "uid: ${user.uid}",
+            ),
+          ),
+          CupertinoButton(
+            onPressed: _onTapLogoutButton,
+            child: const Text(
+              "로그아웃",
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+          CupertinoButton(
+            onPressed: _onTapDeleteButton,
+            child: const Text(
+              "회원 탈퇴",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onTapDeleteButton() {
@@ -130,12 +161,12 @@ class _AccountInfoState extends State<AccountInfo> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
-            title: Text("회원 탈퇴"),
+            title: const Text("회원 탈퇴"),
             //
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: const <Widget>[
                 Text(
                   "계정을 삭제 하시겠습니까?",
                 ),
@@ -143,13 +174,13 @@ class _AccountInfoState extends State<AccountInfo> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text("아니요"),
+                child: const Text("아니요"),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: Text("네"),
+                child: const Text("네"),
                 onPressed: deleteUser,
               ),
             ],
@@ -167,26 +198,26 @@ class _AccountInfoState extends State<AccountInfo> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
-            title: Text("로그아웃"),
+            title: const Text("로그아웃"),
             //
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "로그아웃 하시겠습니까?",
                 ),
               ],
             ),
             actions: <Widget>[
               TextButton(
-                child: Text("아니요"),
+                child: const Text("아니요"),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: Text("네"),
+                child: const Text("네"),
                 onPressed: Logout,
               ),
             ],

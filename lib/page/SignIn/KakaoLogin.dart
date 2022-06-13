@@ -34,11 +34,11 @@ class KakaoLogin implements Login {
   }
 
   Future<bool> anonymousLogin() async {
-    print("익명 로그인");
+
     try {
       final userCredential =
           await fire.FirebaseAuth.instance.signInAnonymously();
-      print("Signed in with temporary account.");
+      print("익명 로그인 uid: ${userCredential.user?.uid}");
       return true;
     } on fire.FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -102,14 +102,22 @@ class KakaoLogin implements Login {
     }
     return false;
   }
-  getCurrentUser()async{
+  Future<User> getCurrentUser()async{
     User user=await UserApi.instance.me();
+    return user;
+  }
+  Future<String?> getEmail() async {
+    User user=await UserApi.instance.me();
+    return user.kakaoAccount?.email;
+  }
+
+  getTime()async{
     try {
       AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
       print('토큰 정보 보기 성공'
           '\n회원정보: ${tokenInfo.id}'
           '\n만료시간: ${tokenInfo.expiresIn} 초');
-      return "${user.toString()}\n만료시간: ${tokenInfo.expiresIn} 초";
+      return "만료시간: ${tokenInfo.expiresIn} 초";
     } catch (error) {
       if (error is KakaoException && error.isInvalidTokenError()) {
         print('토큰 만료 $error');
@@ -117,9 +125,7 @@ class KakaoLogin implements Login {
         print('토큰 정보 조회 실패 $error');
       }
     }
-
-
-    return user.toString();
+    return "";
   }
 
   @override
@@ -176,5 +182,5 @@ class KakaoLogin implements Login {
     }
   }
 
-  _checkToken() async {}
+
 }

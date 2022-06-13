@@ -2,12 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/Server/FireTool.dart';
-import 'package:flutterschool/page/Profile/editProfile.dart';
+
 import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
 import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
-import 'package:intl/intl.dart';
 
-import 'package:http/http.dart' as http;
 
 import '../../DB/userProfile.dart';
 import '../Profile/profile.dart';
@@ -144,7 +142,8 @@ class _UserWidgetState extends State<UserWidget> {
       loginColor = Colors.indigo;
     } else if (userProfile.provider == "Kakao") {
       KakaoLogin kakaoLogin = KakaoLogin();
-      googleKakao = await kakaoLogin.getCurrentUser();
+      googleKakao =
+          "${(await kakaoLogin.getCurrentUser()).toString()}\n${await kakaoLogin.getTime()}";
       loginColor = Colors.indigo;
     } else if (userProfile.provider == "") {
       googleKakao = "소셜 로그인 상태가 아닙니다.";
