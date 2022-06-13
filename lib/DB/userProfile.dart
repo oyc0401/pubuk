@@ -2,11 +2,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfile {
+  /// DB 더 추가하려면 17개의 인자를 추가해야함
+  /// UserProfile: 필드, 생성자 [UserProfile], 파이어베이스 전달 함수 [UserProfile.FirebaseUser], toMap 함수 [toMap]
+  /// DataBase: DB 저장함수, DB 불러오기 함수, UserProfile 받아서 저장하기 함수
+  /// Firebase Storage 직접 추가
+  ///
   // user
   String uid; // 유저 id
   String nickname; // 닉네임
   int authLevel; // 자신의 권한 1 = user, 2= teacher, 3 = parents, 10 = master
   String provider; // 로그인 환경
+  String authId; // 로그인 환경
   // school
   String schoolLocalCode; // 학교 교육청 코드
   int schoolCode; // 학교 코드
@@ -16,18 +22,18 @@ class UserProfile {
   int Class; // 반
   String certifiedSchoolCode; // 인증 받은 학교 코드
 
-  UserProfile(
-      {this.uid = 'guest',
-      this.nickname = '',
-      this.authLevel = 1,
-      this.provider = "",
-      this.grade = 1,
-      this.Class = 1,
-      this.schoolLocalCode = "J10",
-      this.schoolName = "부천북고등학교",
-      this.schoolLevel = 3,
-      this.schoolCode = 7530072,
-      this.certifiedSchoolCode = "null"});
+  UserProfile({this.uid = 'guest',
+    this.nickname = '',
+    this.authLevel = 1,
+    this.provider = "",
+    this.authId = "",
+    this.grade = 1,
+    this.Class = 1,
+    this.schoolLocalCode = "J10",
+    this.schoolName = "부천북고등학교",
+    this.schoolLevel = 3,
+    this.schoolCode = 7530072,
+    this.certifiedSchoolCode = "null"});
 
   static UserProfile? _current;
 
@@ -67,6 +73,7 @@ class UserProfile {
       Class: map['class'],
       grade: map['grade'],
       provider: map['provider'],
+      authId:map['authId'],
       nickname: map['nickname'],
       schoolLocalCode: map['schoolLocalCode'],
       schoolName: map['schoolName'],
@@ -83,6 +90,7 @@ class UserProfile {
       'class': Class,
       'grade': grade,
       'provider': provider,
+      'authId':authId,
       'nickname': nickname,
       'schoolLocalCode': schoolLocalCode,
       'schoolName': schoolName,
@@ -143,6 +151,8 @@ class SavePro {
 
   _setProvider(String provider) => prefs.setString('provider', provider);
 
+  _setAuthId(String authId) => prefs.setString('authId', authId);
+
   /// _get
   int _getGrade() => prefs.getInt('Grade') ?? userProfile.grade;
 
@@ -170,12 +180,15 @@ class SavePro {
 
   String _getProvider() => prefs.getString('provider') ?? userProfile.provider;
 
+  String _getAuthId() => prefs.getString('authId') ?? userProfile.authId;
+
   UserProfile getUserProfile() {
     return UserProfile(
         uid: _getUid(),
         nickname: _getNickName(),
         authLevel: _getAuthLevel(),
         provider: _getProvider(),
+        authId: _getAuthId(),
         grade: _getGrade(),
         Class: _getClass(),
         schoolLocalCode: _getSchoolLocalCode(),
@@ -190,6 +203,7 @@ class SavePro {
     _setNickName(userProfile.nickname);
     _setAuthLevel(userProfile.authLevel);
     _setProvider(userProfile.provider);
+    _setAuthId(userProfile.authId);
     _setGrade(userProfile.grade);
     _setClass(userProfile.Class);
     _setSchoolCode(userProfile.schoolCode);

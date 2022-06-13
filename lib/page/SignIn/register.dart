@@ -23,13 +23,21 @@ class register extends StatefulWidget {
 
 class _registerState extends State<register> {
 
+  initState(){
+    super.initState();
+    widget.userProfile.authId=FirebaseAuth.instance.currentUser?.uid??"";
+  }
+
   Future<void> signUp() async {
+
     /// 파이어베이스 DB 에 저장
     FireUser fireUser=FireUser(uid: widget.userProfile.uid);
     await fireUser.addUserProfile(widget.userProfile);
 
     /// 로컬 DB에 저장
     await UserProfile.save(widget.userProfile);
+
+
 
     navigateHome();
   }
