@@ -34,7 +34,6 @@ class KakaoLogin implements Login {
   }
 
   Future<bool> anonymousLogin() async {
-
     try {
       final userCredential =
           await fire.FirebaseAuth.instance.signInAnonymously();
@@ -102,40 +101,15 @@ class KakaoLogin implements Login {
     }
     return false;
   }
-  Future<User> getCurrentUser()async{
-    User user=await UserApi.instance.me();
-    return user;
-  }
-  Future<String?> getEmail() async {
-    User user=await UserApi.instance.me();
-    return user.kakaoAccount?.email;
-  }
-
-  getTime()async{
-    try {
-      AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
-      print('토큰 정보 보기 성공'
-          '\n회원정보: ${tokenInfo.id}'
-          '\n만료시간: ${tokenInfo.expiresIn} 초');
-      return "만료시간: ${tokenInfo.expiresIn} 초";
-    } catch (error) {
-      if (error is KakaoException && error.isInvalidTokenError()) {
-        print('토큰 만료 $error');
-      } else {
-        print('토큰 정보 조회 실패 $error');
-      }
-    }
-    return "";
-  }
 
   @override
   Future<bool> deleteUser() async {
-
     bool isok = await reAuth();
     if (isok) {
       // 파이어베이스 재 로그인
       fire.FirebaseAuth.instance.signInAnonymously();
-      try {// 파이어베이스 연결 끊기
+      try {
+        // 파이어베이스 연결 끊기
         await fire.FirebaseAuth.instance.currentUser?.delete();
         // 카카오 연결 끊기
         await UserApi.instance.unlink();
@@ -146,18 +120,13 @@ class KakaoLogin implements Login {
         print('연결 끊기 실패 $error');
         return false;
       }
-
     }
     print("재 로그인 안됌");
     return false;
   }
 
-
-
   @override
   Future<bool> reAuth() async {
-
-
     if (await AuthApi.instance.hasToken()) {
       try {
         AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
@@ -182,5 +151,30 @@ class KakaoLogin implements Login {
     }
   }
 
+  Future<User> getCurrentUser() async {
+    User user = await UserApi.instance.me();
+    return user;
+  }
 
+  Future<String?> getEmail() async {
+    User user = await UserApi.instance.me();
+    return user.kakaoAccount?.email;
+  }
+
+  Future<String> getTime() async {
+    try {
+      AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
+      print('토큰 정보 보기 성공'
+          '\n회원정보: ${tokenInfo.id}'
+          '\n만료시간: ${tokenInfo.expiresIn} 초');
+      return "만료시간: ${tokenInfo.expiresIn} 초";
+    } catch (error) {
+      if (error is KakaoException && error.isInvalidTokenError()) {
+        print('토큰 만료 $error');
+      } else {
+        print('토큰 정보 조회 실패 $error');
+      }
+    }
+    return "";
+  }
 }

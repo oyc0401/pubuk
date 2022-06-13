@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core_web/firebase_core_web_interop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +30,17 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  initState(){
+    super.initState();
+    //changeColor();
+  }
+  changeColor(){
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black, // navigation bar color
+      statusBarColor: Colors.black, // status bar color
+    ));
+
+  }
 
   Future signInWithGoogle() async {
     /// 구글 로그인을 통해 uid를 얻는다.

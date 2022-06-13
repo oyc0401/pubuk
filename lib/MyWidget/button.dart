@@ -5,6 +5,7 @@ class RoundButton extends StatelessWidget {
   String text;
   double width;
   double height;
+  double fontSize;
   GestureTapCallback onclick;
   Color color;
 
@@ -14,6 +15,7 @@ class RoundButton extends StatelessWidget {
     this.width = 300,
     this.height = 50,
     this.color = Colors.grey,
+    this.fontSize=18,
   });
 
   @override
@@ -31,7 +33,7 @@ class RoundButton extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: TextStyle(fontSize: 18, color: Colors.black),
+            style: TextStyle(fontSize: fontSize, color: Colors.black),
           ),
         ),
       ),

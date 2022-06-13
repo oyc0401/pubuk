@@ -7,6 +7,7 @@ import 'package:flutterschool/page/Home/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:select_dialog/select_dialog.dart';
 
+import '../../MyWidget/button.dart';
 import '../../Server/FireTool.dart';
 import '../mainPage.dart';
 
@@ -32,7 +33,7 @@ class _registerState extends State<register> {
 
     /// 파이어베이스 DB 에 저장
     FireUser fireUser=FireUser(uid: widget.userProfile.uid);
-    await fireUser.addUserProfile(widget.userProfile);
+    await fireUser.setUserProfile(widget.userProfile);
 
     /// 로컬 DB에 저장
     await UserProfile.save(widget.userProfile);
@@ -67,7 +68,12 @@ class _registerState extends State<register> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: registerButton(),
+      floatingActionButton: RoundButton(
+        onclick: signUp,
+        text: '회원가입',
+        color: Color(0xffFFEC83),
+        fontSize: 20,
+      ),
     );
   }
 
@@ -143,26 +149,6 @@ class _registerState extends State<register> {
           child: Text(
             "${widget.userProfile.Class} 반",
             style: TextStyle(fontSize: 18, color: Colors.black),
-          ),
-        ),
-      ),
-    );
-  }
-
-  InkWell registerButton() {
-    return InkWell(
-      onTap: signUp,
-      child: Container(
-        width: 300,
-        height: 50,
-        decoration: BoxDecoration(
-          color: Color(0xffFFEC83),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: Center(
-          child: Text(
-            "회원가입",
-            style: TextStyle(fontSize: 20, color: Colors.black),
           ),
         ),
       ),

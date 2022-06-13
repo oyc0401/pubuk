@@ -10,7 +10,7 @@ import 'package:skeletons/skeletons.dart';
 import '../../DB/userProfile.dart';
 
 class MyTimeTable extends StatefulWidget {
-  const MyTimeTable({Key? key}) : super(key: key);
+  MyTimeTable({Key? key}) : super(key: key);
 
   @override
   State<MyTimeTable> createState() => _MyTimeTableState();
@@ -44,17 +44,18 @@ class _MyTimeTableState extends State<MyTimeTable> {
       children: [
         infoSection(),
         FutureBuilder(
-            future: getData(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData == false) {
-                return waiting();
-              } else if (snapshot.hasError) {
-                return error(snapshot);
-              } else {
-                ClassData dataBox = snapshot.data;
-                return succeed(dataBox);
-              }
-            }),
+          future: getData(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData == false) {
+              return waiting();
+            } else if (snapshot.hasError) {
+              return error(snapshot);
+            } else {
+              ClassData dataBox = snapshot.data;
+              return succeed(dataBox);
+            }
+          },
+        ),
       ],
     );
   }
@@ -89,7 +90,6 @@ class _MyTimeTableState extends State<MyTimeTable> {
       child: Container(),
     );
   }
-
 
   Widget infoSection() {
     return SizedBox(

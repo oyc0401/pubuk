@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
@@ -26,6 +27,12 @@ Future<void> main() async {
   await UserProfile.initializeUser();
 
   print("runApp");
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.white, // navigation bar color
+    statusBarColor: Color(0xffffff), // status bar color
+  ));
+
   await Run_App();
   print("splash 끄기");
   FlutterNativeSplash.remove();
@@ -69,6 +76,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("main widget is built");
+
     return MaterialApp(
       builder: (context, child) {
         return MediaQuery(
@@ -78,14 +86,28 @@ class MyApp extends StatelessWidget {
       },
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme:  AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.dark, // 2
+
+
+          centerTitle: true,
+          elevation: 0,
+          scrolledUnderElevation: 3,
+          toolbarTextStyle: TextStyle(color: Colors.black),
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+        ),
       ),
+      //debugShowCheckedModeBanner: false,
       //home: const SignIn(),
       //home: const SwitchPage(),
       home: initialWidget,
     );
   }
 }
-class IDontWantRestart{
-  static bool canBuild=true;
+
+class IDontWantRestart {
+  static bool canBuild = true;
 }

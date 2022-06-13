@@ -23,7 +23,10 @@ class _profileState extends State<profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile"),
+        title: const Text(
+          '프로필',
+          style: TextStyle(color: Colors.black),
+        ),
       ),
       body: Column(
         children: [

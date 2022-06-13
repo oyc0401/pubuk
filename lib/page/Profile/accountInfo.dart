@@ -21,7 +21,12 @@ class _AccountInfoState extends State<AccountInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text(
+          '계정 정보',
+          style: TextStyle(color: Colors.black),
+        ),
+      ),
       body: Column(
         children: const [
           Padding(

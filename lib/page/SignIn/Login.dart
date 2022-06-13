@@ -11,7 +11,7 @@ abstract class Login {
 
   Future<void> logout();
 
-  Future<void> deleteUser();
+  Future<bool> deleteUser();
 
-  Future reAuth();
+  Future<bool> reAuth();
 }

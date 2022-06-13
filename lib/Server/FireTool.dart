@@ -3,33 +3,37 @@ import 'package:flutterschool/DB/userProfile.dart';
 import 'package:ntp/ntp.dart';
 
 class FireUser {
-  String uid;
+  // 유저 Document 객체
   DocumentReference<Map<String, dynamic>> userDoc;
 
-  FireUser({required this.uid})
+  FireUser({required String uid})
       : userDoc = FirebaseFirestore.instance.collection('user').doc(uid);
 
   Future<UserProfile?> getUserProfile() async {
-
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc.get();
-    //print(snapshot.data());
-
+    // 정보 얻어오기
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await userDoc.get().catchError((error) {
+      print("Failed to get document: $error");
+    });
     Map<String, dynamic>? map = snapshot.data();
-    //print(map);
+
+    // map이 null이 아니면 리턴
     if (map != null) {
-      return UserProfile.FirebaseUser(map);
+      return UserProfile.fromMap(map);
     } else {
       return null;
     }
   }
 
-  Future<void> addUserProfile(UserProfile userProfile) async {
+  Future<void> setUserProfile(UserProfile userProfile) async {
+    // 파라미터로 받은 유저 객체를 이 document에 저장
     userDoc.set(userProfile.toMap()).catchError((error) {
       print("Failed to Sign in: $error");
     });
   }
 
   Future<void> updateGrade({required int grade, required int Class}) async {
+    // 유저의 학년, 반을 업데이트
     await userDoc.update({
       'grade': grade,
       'class': Class,

@@ -48,49 +48,50 @@ class _settingState extends State<setting> {
 
   @override
   Widget build(BuildContext context) {
-    //print("setstate!");
     return Scaffold(
       appBar: AppBar(
-        title: const Text('정보 수정'),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Save(userData);
-              },
-              child: const Text(
-                '저장',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              )),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              schoolSection(),
-              SizedBox(
-                height: 40,
-              ),
-              gradeSection(),
-              SizedBox(height: 20),
-              classSection(),
-            ],
-          ),
+        title: const Text(
+          '정보 수정',
+          style: TextStyle(color: Colors.black),
         ),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 40,
+            ),
+            schoolSection(),
+            SizedBox(
+              height: 40,
+            ),
+            gradeSection(),
+            SizedBox(
+              height: 15,
+            ),
+            classSection()
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: RoundButton(
+        onclick: () {
+          Save(userData);
+        },
+        text: '저장',
+        color: Color(0xffFFEC83),
+        fontSize: 20,
       ),
     );
   }
+
+
 
   Widget schoolSection() {
     return RoundButton(
       text: userData.schoolName,
       onclick: NavigateFindSchool,
-      color: Colors.grey,
+      color: Color(0xffb4d5ff),
     );
   }
 
@@ -99,7 +100,7 @@ class _settingState extends State<setting> {
     return RoundButton(
       text: "$myGrade학년",
       onclick: changeGrade,
-      color: Colors.greenAccent,
+      color: Color(0xffeeeeee),
     );
   }
 
@@ -108,7 +109,7 @@ class _settingState extends State<setting> {
     return RoundButton(
       text: "$myClass반",
       onclick: changeClass,
-      color: Colors.greenAccent,
+      color: Color(0xffeeeeee),
     );
   }
 

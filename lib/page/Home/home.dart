@@ -6,7 +6,6 @@ import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
 import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
 
-
 import '../../DB/userProfile.dart';
 import '../Profile/profile.dart';
 import 'lunch.dart';
@@ -24,7 +23,10 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("부천북고등학교"),
+        title: const Text(
+          '부천북고등학교',
+          style: TextStyle(color: Colors.black),
+        ),
         actions: [
           IconButton(
             onPressed: NavigateProfile,
@@ -32,39 +34,26 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+
       body: ListView(
         children: [
-          TimeTableSection(),
-          LunchSection(),
-          UserWidget(),
-          CupertinoButton(
-            onPressed: () {
-              UserProfile user = UserProfile.currentUser;
-              print(user.toMap());
-            },
-            child: const Text('저장소 확인'),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: MyTimeTable(),
           ),
-          const SizedBox(height: 30),
+          const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: LunchBuilder(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: UserWidget(),
+          ),
           Container(
             height: 400,
           ),
         ],
       ),
-    );
-  }
-
-  Widget TimeTableSection() {
-    // MyTimeTable 에 const 붙히면 정보가 바뀌어도 재시작 안함
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: MyTimeTable(),
-    );
-  }
-
-  Widget LunchSection() {
-    return const Padding(
-      padding: EdgeInsets.all(12.0),
-      child: LunchBuilder(),
     );
   }
 
@@ -82,14 +71,10 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Future<void> checkKey() async {
-    UserProfile userProfile = UserProfile.currentUser;
-    print(userProfile);
-  }
 }
 
 class UserWidget extends StatefulWidget {
-  const UserWidget({Key? key}) : super(key: key);
+  UserWidget({Key? key}) : super(key: key);
 
   @override
   State<UserWidget> createState() => _UserWidgetState();
@@ -116,7 +101,7 @@ class _UserWidgetState extends State<UserWidget> {
     setGoogle();
   }
 
-  setServerDB() async {
+  void setServerDB() async {
     FireUser fireUser = FireUser(uid: userProfile.uid);
     if (userProfile.provider == "") {
       return;
@@ -135,7 +120,7 @@ class _UserWidgetState extends State<UserWidget> {
         "오류: 서버 정보와 현재 휴대폰 정보와 같지 않습니다.");
   }
 
-  setGoogle() async {
+  void setGoogle() async {
     if (userProfile.provider == "Google") {
       GoogleLogin googleLogin = GoogleLogin();
       googleKakao = googleLogin.getCurrentUser();
@@ -156,7 +141,6 @@ class _UserWidgetState extends State<UserWidget> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8.0),
-      margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black),
       ),
@@ -166,22 +150,22 @@ class _UserWidgetState extends State<UserWidget> {
             LocalIsServer,
             style: TextStyle(color: titleColor),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             'User profile: ${userProfile.toString()}',
             style: TextStyle(color: profileColor),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             'Server profile: ${serverProfile.toString()}',
             style: TextStyle(color: serverColor),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             "Local firebase user: ${user.toString()}",
             style: TextStyle(color: localColor),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             "Login information: $googleKakao",
             style: TextStyle(color: loginColor),
