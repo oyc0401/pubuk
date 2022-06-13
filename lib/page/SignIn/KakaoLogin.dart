@@ -92,7 +92,7 @@ class KakaoLogin implements Login {
 
   @override
   Future<bool> logout() async {
-    await fire.FirebaseAuth.instance.signOut();
+    await fire.FirebaseAuth.instance.currentUser?.delete();
     try {
       await UserApi.instance.logout();
       print('로그아웃 성공, SDK에서 토큰 삭제');
@@ -104,6 +104,21 @@ class KakaoLogin implements Login {
   }
   getCurrentUser()async{
     User user=await UserApi.instance.me();
+    try {
+      AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
+      print('토큰 정보 보기 성공'
+          '\n회원정보: ${tokenInfo.id}'
+          '\n만료시간: ${tokenInfo.expiresIn} 초');
+      return "${user.toString()}\n만료시간: ${tokenInfo.expiresIn} 초";
+    } catch (error) {
+      if (error is KakaoException && error.isInvalidTokenError()) {
+        print('토큰 만료 $error');
+      } else {
+        print('토큰 정보 조회 실패 $error');
+      }
+    }
+
+
     return user.toString();
   }
 
@@ -114,12 +129,12 @@ class KakaoLogin implements Login {
     if (isok) {
       // 파이어베이스 재 로그인
       fire.FirebaseAuth.instance.signInAnonymously();
-      try {
+      try {// 파이어베이스 연결 끊기
+        await fire.FirebaseAuth.instance.currentUser?.delete();
         // 카카오 연결 끊기
         await UserApi.instance.unlink();
         print('연결 끊기 성공, SDK에서 토큰 삭제');
-        // 파이어베이스 연결 끊기
-        await fire.FirebaseAuth.instance.currentUser?.delete();
+
         return true;
       } catch (error) {
         print('연결 끊기 실패 $error');
@@ -154,7 +169,7 @@ class KakaoLogin implements Login {
     } else {
       print('발급된 토큰 없음');
     }
-    if (await login()) {
+    if (await signInWithKaKao()) {
       return true;
     } else {
       return false;
