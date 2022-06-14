@@ -79,7 +79,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icon/test_icon.png"
+  image_path: "assets/icon/pubuk_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -96,6 +96,7 @@ flutter:
   assets:
     - assets/
     - assets/logo/
+    - assets/icon/
 
   # An image assets can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -138,7 +139,7 @@ flutter_native_splash:
   # splash screen to a png image.  This is useful for gradients. The image will be stretch to the
   # size of the app. Only one parameter can be used, color and background_image cannot both be set.
   color: "#e1f5fe"
-  # background_image: assets/flutter1.png
+  #background_image: "assets/background.png"
 
   # Optional parameters are listed below.  To enable a parameter, uncomment the line by removing
   # the leading # character.
@@ -160,9 +161,9 @@ flutter_native_splash:
   # parameters from above. If the image_dark parameter is specified, color_dark or
   # background_image_dark must be specified.  color_dark and background_image_dark cannot both be
   # set.
-  #color_dark: "#042a49"
+  color_dark: "#042a49"
   #background_image_dark: "assets/dark-background.png"
-  #image_dark: assets/splash-invert.png
+  image_dark: assets/logo_lockup_flutter_vertical.png
   #branding_dark: assets/dart_dark.png
 
   # Android 12 handles the splash screen differently than previous versions.  Please visit
@@ -171,7 +172,6 @@ flutter_native_splash:
   android_12:
   # The image parameter sets the splash screen icon image.  If this parameter is not specified,
   # the app's launcher icon will be used instead.
-  # Please note that the splash screen will be clipped to a circle on the center of the screen.
   # App icon with an icon background: This should be 960×960 pixels, and fit within a circle
   # 640 pixels in diameter.
   # App icon without an icon background: This should be 1152×1152 pixels, and fit within a circle
@@ -180,16 +180,18 @@ flutter_native_splash:
 
   # Splash screen background color.
   #color: "#42a5f5"
-
+    color: "#e1f5fe"
+    image: assets/logo_lockup_flutter_vertical.png
   # App icon background color.
-  #icon_background_color: "#111111"
+#    icon_background_color: "#eeeeee"
+
 
   # The image_dark parameter and icon_background_color_dark set the image and icon background
   # color when the device is in dark mode. If they are not specified, the app will use the
   # parameters from above.
   #image_dark: assets/android12splash-invert.png
   #color_dark: "#042a49"
-  #icon_background_color_dark: "#eeeeee"
+  #icon_background_color_dark: "#111111"
 
   # The android, ios and web parameters can be used to disable generating a splash screen on a given
   # platform.
@@ -215,7 +217,12 @@ flutter_native_splash:
   # web_image_mode can be one of the following modes: center, contain, stretch, and cover.
   #web_image_mode: center
 
-  # To hide the notification bar, use the fullscreen parameter.  Has no effect in web since web
+  # The screen orientation can be set in Android with the android_screen_orientation parameter.
+  # Valid parameters can be found here:
+  # https://developer.android.com/guide/topics/manifest/activity-element#screen
+  #android_screen_orientation: sensorLandscape
+
+  # To hide the notification bar, use the fullscreen parameter.  Has no affect in web since web
   # has no notification bar.  Defaults to false.
   # NOTE: Unlike Android, iOS will not automatically show the notification bar when the app loads.
   #       To show the notification bar, add the following code to your Flutter app:

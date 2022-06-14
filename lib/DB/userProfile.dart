@@ -60,10 +60,14 @@ class UserProfile {
   }
 
   factory UserProfile.guest() {
+    UserProfile userProfile = UserProfile.currentUser;
+
     return UserProfile(
       uid: 'guest',
       nickname: 'guest',
       authLevel: 1,
+      grade: userProfile.grade,
+      Class: userProfile.Class,
     );
   }
 

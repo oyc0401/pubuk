@@ -19,22 +19,49 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  UserProfile userProfile = UserProfile.currentUser;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '부천북고등학교',
-          style: TextStyle(color: Colors.black),
+        toolbarHeight: 80,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              userProfile.schoolName,
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.normal),
+            ),
+            Text(
+              '${userProfile.grade}학년 ${userProfile.Class}반',
+              style: const TextStyle(
+                  color: Colors.blue,
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal),
+            ),
+          ],
         ),
+        //backgroundColor: Colors.blue,
+        centerTitle: false,
         actions: [
-          IconButton(
-            onPressed: NavigateProfile,
-            icon: const Icon(Icons.account_circle),
+          Padding(
+            padding: const EdgeInsets.only(top: 24,right: 8),
+            child: IconButton(
+              onPressed: NavigateProfile,
+              icon: const Icon(
+                Icons.person_outlined,
+                size: 28,
+                color: Color(0xff191919),
+
+              ),
+            ),
           ),
         ],
       ),
-
       body: ListView(
         children: [
           Padding(
@@ -42,7 +69,7 @@ class _HomeState extends State<Home> {
             child: MyTimeTable(),
           ),
           const Padding(
-            padding: EdgeInsets.all(12.0),
+            padding: EdgeInsets.only(top: 12, bottom: 12),
             child: LunchBuilder(),
           ),
           Padding(
@@ -70,7 +97,6 @@ class _HomeState extends State<Home> {
           "회원 정보가 바뀌었을 수도 있어서 setState 합니다. userProfile: ${UserProfile.currentUser}");
     });
   }
-
 }
 
 class UserWidget extends StatefulWidget {

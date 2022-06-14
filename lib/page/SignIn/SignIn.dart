@@ -13,6 +13,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../mainPage.dart';
 import 'GoogleLogin.dart';
+import 'SignInButton.dart';
 import 'register.dart';
 
 class SignIn extends StatefulWidget {
@@ -120,8 +121,9 @@ class _SignInState extends State<SignIn> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(
-                height: 170,
+              Flexible(
+                flex: 2,
+                child: Container(),
               ),
               Text(
                 "Title",
@@ -130,10 +132,15 @@ class _SignInState extends State<SignIn> {
                     color: Colors.white,
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(
-                height: 300,
+              Flexible(
+                flex: 3,
+                child: Container(),
               ),
-              loginButtonSection()
+              loginButtonSection(),
+              Flexible(
+                flex: 1,
+                child: Container(),
+              ),
             ],
           ),
         ),
@@ -142,25 +149,26 @@ class _SignInState extends State<SignIn> {
   }
 
   Widget loginButtonSection() {
-    return Column(
-      children: [
-        RoundButton(
-          onclick: signInWithGoogle,
-          text: "Sign in with Google",
-          color: Colors.white,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SignInWithAppleButton(
-            onPressed: signInWithApple,
+    return Container(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+            child: SignInButton(
+                onPressed: signInWithGoogle, style: SignInButtonStyle.google),
           ),
-        ),
-        RoundButton(
-          onclick: signInWithKaKao,
-          text: "Sign in with KaKao",
-          color: const Color(0xffFEE500),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+            child: SignInButton(
+                onPressed: signInWithApple, style: SignInButtonStyle.apple),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+            child: SignInButton(
+                onPressed: signInWithKaKao, style: SignInButtonStyle.kakao),
+          ),
+        ],
+      ),
     );
   }
 }

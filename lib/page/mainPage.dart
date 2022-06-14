@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return [
       const Home(),
       const Text(
-        'home',
+        'Music',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
       ),
       const Text(

@@ -86,11 +86,10 @@ class MyApp extends StatelessWidget {
       },
       title: 'Flutter Demo',
       theme: ThemeData(
-
         scaffoldBackgroundColor: Colors.white,
-        appBarTheme:  AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle.dark, // 2
-
+        appBarTheme: AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
+          // 2
 
           centerTitle: true,
           elevation: 0,
@@ -101,7 +100,7 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: Colors.black),
         ),
       ),
-      //debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
       //home: const SignIn(),
       //home: const SwitchPage(),
       home: initialWidget,
