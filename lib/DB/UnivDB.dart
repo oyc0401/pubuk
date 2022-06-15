@@ -3,7 +3,8 @@ import 'package:sqflite/sqflite.dart';
 
 class UnivDB {
   late Future<Database> _database;
-  String _orderBy = 'univName ASC';
+  String _orderBy = 'preference ASC';
+  //String _orderBy = 'univName DESC';
 
   static int lenght=0;
 
@@ -66,6 +67,22 @@ class UnivDB {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+Future<void> updateInfo(UnivInfo univ) async {
+  print('수정 됌');
+  await _setInstance();
+  final Database db = await _database;
+  // 주어진 Dog를 수정합니다.
+  await db.update(
+    'circles',
+    univ.toMap(),
+    // Dog의 id가 일치하는 지 확인합니다.
+    where: "id = ?",
+    // Dog의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
+    whereArgs: [univ.id],
+  );
+}
+
 }
 
 class UnivInfo {

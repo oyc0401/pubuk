@@ -124,82 +124,10 @@ class _UnivWebState extends State<UnivWeb> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey,
-      appBar: AppBar(
-        toolbarHeight: 140,
-        title: Column(
-          children: [
-            Text(
-              UnivName.getUnivName(nowUnivCode),
-              style: TextStyle(color: Colors.black),
-            ),
-            Row(
-              children: [
-                CupertinoButton(
-                    child: Text("학종"),
-                    onPressed: () {
-                      univWay = UnivWay.comprehensive;
-                      setUrl();
-                    }),
-                CupertinoButton(
-                  child: Text("교과"),
-                  onPressed: () {
-                    univWay = UnivWay.subject;
-                    setUrl();
-                  },
-                ),
-                CupertinoButton(
-                  child: Text("정시"),
-                  onPressed: () {
-                    univWay = UnivWay.sat;
-                    setUrl();
-                  },
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                CupertinoButton(
-                    child: Text(
-                      "<<",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    onPressed: () {
-                      nowYear--;
-                      setUrl();
-                      setState(() {});
-                    }),
-                Text(
-                  "${nowYear}",
-                  style: TextStyle(color: Colors.black),
-                ),
-                CupertinoButton(
-                  child: Text(
-                    ">>",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  onPressed: () {
-                    nowYear++;
-                    setUrl();
-                    setState(() {});
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: NavigateUnivSearch,
-            icon: const Icon(
-              Icons.search,
-              size: 28,
-              color: Color(0xff191919),
-            ),
-          ),
-          //SampleMenu(_controller.future, widget.cookieManager),
-        ],
-      ),
+      appBar: buildAppBar(),
       body: InAppWebView(
+
+
         // contextMenu: contextMenu,
         initialUrlRequest: URLRequest(
           url: _uri,
@@ -212,6 +140,84 @@ class _UnivWebState extends State<UnivWeb> {
         },
       ),
       floatingActionButton: FavorateButton(),
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      toolbarHeight: 140,
+      title: Column(
+        children: [
+          Text(
+            UnivName.getUnivName(nowUnivCode),
+            style: TextStyle(color: Colors.black),
+          ),
+          Row(
+            children: [
+              CupertinoButton(
+                  child: Text("학종"),
+                  onPressed: () {
+                    univWay = UnivWay.comprehensive;
+                    setUrl();
+                  }),
+              CupertinoButton(
+                child: Text("교과"),
+                onPressed: () {
+                  univWay = UnivWay.subject;
+                  setUrl();
+                },
+              ),
+              CupertinoButton(
+                child: Text("정시"),
+                onPressed: () {
+                  univWay = UnivWay.sat;
+                  setUrl();
+                },
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              CupertinoButton(
+                  child: Text(
+                    "<<",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  onPressed: () {
+                    nowYear--;
+                    setUrl();
+                    setState(() {});
+                  }),
+              Text(
+                "${nowYear}",
+                style: TextStyle(color: Colors.black),
+              ),
+              CupertinoButton(
+                child: Text(
+                  ">>",
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () {
+                  nowYear++;
+                  setUrl();
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        IconButton(
+          onPressed: NavigateUnivSearch,
+          icon: const Icon(
+            Icons.search,
+            size: 28,
+            color: Color(0xff191919),
+          ),
+        ),
+        //SampleMenu(_controller.future, widget.cookieManager),
+      ],
     );
   }
 }

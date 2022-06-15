@@ -48,10 +48,6 @@ class _UnivState extends State<Univ> {
         builder: (context) => UnivSearch(),
       ),
     );
-
-    // 다른데 가버려서 안댐
-    // print("setState 북마크 대학 다시");
-    // setState(() {});
   }
 
   Future<List<UnivInfo>> getUiv() async {
@@ -84,15 +80,42 @@ class _UnivState extends State<Univ> {
   }
 
   Widget succeed(List<UnivInfo> unives) {
-    return ListView.builder(
-      itemCount: unives.length,
-      itemBuilder: (context, index) {
-        UnivInfo univ = unives[index];
-        return UnivCard(
-          text: univ.univName,
-          deleteUniv: () => deleteUniv(univ.id),
-          navigate: () => NavigateUnivWeb(univ.univCode),
-        );
+    return ReorderableListView(
+      children: <Widget>[
+        for (int index = 0; index < unives.length; index++)
+          ListTile(
+            key: Key('$index'),
+            title: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                color: Colors.white,
+                child: UnivCard(
+                  text: unives[index].univName,
+                  deleteUniv: () => deleteUniv(unives[index].id),
+                  navigate: () => NavigateUnivWeb(unives[index].univCode),
+                )),
+          ),
+      ],
+      onReorder: (int oldIndex, int newIndex) {
+        setState(() {
+          if (oldIndex < newIndex) {
+            newIndex -= 1;
+          }
+
+          // 배열 설정
+          UnivInfo univInfo = unives.removeAt(oldIndex);
+          unives.insert(newIndex, univInfo);
+
+          // preference 다시 설정
+          UnivDB univ = UnivDB();
+
+          int smallIndex = oldIndex <= newIndex ? oldIndex : newIndex;
+          int bigIndex = oldIndex <= newIndex ? newIndex : oldIndex;
+
+          for (int i = smallIndex; i <= bigIndex; i++) {
+            unives[i].preference = i;
+            univ.updateInfo(unives[i]);
+          }
+        });
       },
     );
   }
