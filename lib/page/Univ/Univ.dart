@@ -125,7 +125,7 @@ class _UnivState extends State<Univ> {
   }
 
   void NavigateUnivSearch() async {
-    String selectedUnivCode = await Navigator.push(
+  await Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) => UnivSearch(),

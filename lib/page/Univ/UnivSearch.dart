@@ -13,17 +13,18 @@ class UnivSearch extends StatefulWidget {
 }
 
 class _UnivSearchState extends State<UnivSearch> {
+  List list=UnivName.UnivCodeList();
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(),
       body: Container(
         child: ListView.builder(
-          itemCount: 3,
+          itemCount: list.length,
           itemBuilder: (context, index) {
-            print(UnivName.UnivList().length);
-            // return UnivName.UnivList()[i]
-            return UnivSelection(univInfo: UnivInfo(id: "0000004",univCode: "0000004", univName: "강원대학교"),);
+            //print(UnivName.getUnivName(list[index]));
+            return UnivSelection(univInfo: UnivInfo(id: list[index],univCode: list[index], univName: UnivName.getUnivName(list[index])),);
           },
         ),
       ),
