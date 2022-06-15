@@ -21,47 +21,24 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   UserProfile userProfile = UserProfile.currentUser;
 
+  void NavigateProfile() async {
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const profile(),
+      ),
+    );
+
+    setState(() {
+      print(
+          "회원 정보가 바뀌었을 수도 있어서 setState 합니다. userProfile: ${UserProfile.currentUser}");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 80,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              userProfile.schoolName,
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                  fontWeight: FontWeight.normal),
-            ),
-            Text(
-              '${userProfile.grade}학년 ${userProfile.Class}반',
-              style: const TextStyle(
-                  color: Colors.blue,
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal),
-            ),
-          ],
-        ),
-        //backgroundColor: Colors.blue,
-        centerTitle: false,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(top: 24,right: 8),
-            child: IconButton(
-              onPressed: NavigateProfile,
-              icon: const Icon(
-                Icons.person_outlined,
-                size: 28,
-                color: Color(0xff191919),
-
-              ),
-            ),
-          ),
-        ],
-      ),
+      appBar: buildAppBar(),
       body: ListView(
         children: [
           Padding(
@@ -84,19 +61,47 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void NavigateProfile() async {
-    await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => const profile(),
+  AppBar buildAppBar() {
+    return AppBar(
+      toolbarHeight: 80,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            userProfile.schoolName,
+            style: const TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.normal),
+          ),
+          Text(
+            '${userProfile.grade}학년 ${userProfile.Class}반',
+            style: const TextStyle(
+                color: Colors.blue,
+                fontSize: 14,
+                fontWeight: FontWeight.normal),
+          ),
+        ],
       ),
-    );
+      //backgroundColor: Colors.blue,
+      centerTitle: false,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(top: 24,right: 8),
+          child: IconButton(
+            onPressed: NavigateProfile,
+            icon: const Icon(
+              Icons.person_outlined,
+              size: 28,
+              color: Color(0xff191919),
 
-    setState(() {
-      print(
-          "회원 정보가 바뀌었을 수도 있어서 setState 합니다. userProfile: ${UserProfile.currentUser}");
-    });
+            ),
+          ),
+        ),
+      ],
+    );
   }
+
 }
 
 class UserWidget extends StatefulWidget {

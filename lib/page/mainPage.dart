@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'Home/home.dart';
+import 'Univ/Univ.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -40,8 +41,12 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       items: const [
         BottomNavigationBarItem(
-          label: "home",
+          label: "Home",
           icon: Icon(Icons.home),
+        ),
+        BottomNavigationBarItem(
+          label: "Univ",
+          icon: Icon(Icons.library_books),
         ),
         BottomNavigationBarItem(
           label: "Music",
@@ -51,10 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
           label: "Places",
           icon: Icon(Icons.location_on),
         ),
-        BottomNavigationBarItem(
-          label: "News",
-          icon: Icon(Icons.library_books),
-        ),
+
       ],
     );
   }
@@ -62,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List _widgetOptions() {
     return [
       const Home(),
+      const Univ(),
       const Text(
         'Music',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
@@ -70,10 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'Places',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
       ),
-      const Text(
-        'News',
-        style: const TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
-      ),
+
     ];
   }
 

@@ -43,6 +43,13 @@
 				</array>
 			</dict>
 		</array>
+		<key>NSAppTransportSecurity</key>
+        <dict>
+          <key>NSAllowsArbitraryLoads</key>
+          <true/>
+          <key>NSAllowsArbitraryLoadsInWebContent</key>
+          <true/>
+        </dict>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
 		<key>LSRequiresIPhoneOS</key>
