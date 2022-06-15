@@ -8,6 +8,7 @@ import '../../DB/UnivDB.dart';
 import '../../DB/userProfile.dart';
 
 import '../Profile/profile.dart';
+import 'UnivSearch.dart';
 
 class Univ extends StatefulWidget {
   const Univ({Key? key}) : super(key: key);
@@ -111,7 +112,7 @@ class _UnivState extends State<Univ> {
         Padding(
           padding: const EdgeInsets.only(top: 24, right: 8),
           child: IconButton(
-            onPressed: NavigateUnivWeb,
+            onPressed: NavigateUnivSearch,
             icon: const Icon(
               Icons.search,
               size: 28,
@@ -122,17 +123,23 @@ class _UnivState extends State<Univ> {
       ],
     );
   }
-  void NavigateUnivWeb() async {
-    await Navigator.push(
+
+  void NavigateUnivSearch() async {
+    String selectedUnivCode = await Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) =>  UnivWeb(
-          year: 2023,
-          univCode: "0000169",
-        ),
+        builder: (context) => UnivSearch(),
       ),
     );
+
+    // await Navigator.push(
+    //   context,
+    //   CupertinoPageRoute(
+    //     builder: (context) => UnivWeb(year: 2023, univCode: selectedUnivCode),
+    //   ),
+    // );
   }
+
 }
 
 class UnivCard extends StatefulWidget {
@@ -186,7 +193,7 @@ class _UnivCardState extends State<UnivCard> {
   }
 
   void NavigateUnivWeb() async {
-    await Navigator.push(
+     Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) => UnivWeb(

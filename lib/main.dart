@@ -78,12 +78,12 @@ class MyApp extends StatelessWidget {
     print("main widget is built");
 
     return MaterialApp(
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-          child: child!,
-        );
-      },
+      // builder: (context, child) {
+      //   return MediaQuery(
+      //     data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      //     child: child!,
+      //   );
+      // },
       title: 'Flutter Demo',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
