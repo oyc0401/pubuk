@@ -7,8 +7,11 @@ import 'package:flutterschool/Server/FireTool.dart';
 
 import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
 import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
+import 'package:flutterschool/page/Univ/UnivWeb.dart';
+
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../DB/UnivDB.dart';
 import '../../DB/userProfile.dart';
 import '../Home/lunch.dart';
 import '../Home/timetable.dart';
@@ -34,12 +37,43 @@ class _UnivState extends State<Univ> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(),
-      body: WebView(
-javascriptMode: JavascriptMode.unrestricted,
-        zoomEnabled: true,
-        initialUrl: //"https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&chkUnivList=0000046&sch_year=2023#con20",
-         'https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?sch_year=2022&univ_cd=0000046&iem_cd=26',
+        appBar: buildAppBar(),
+        body: Column(
+          children: [
+            CupertinoButton(child: Text("이동"), onPressed: NavigateUnivWeb),
+            CupertinoButton(child: Text("얻기"), onPressed: getUiv),
+            CupertinoButton(child: Text("저장"), onPressed: insertUniv),
+            CupertinoButton(child: Text("삭제"), onPressed: deleteUniv),
+          ],
+        ));
+  }
+
+  getUiv() async {
+    UnivDB univ = UnivDB();
+    List<UnivInfo> li = await univ.getInfo();
+
+    for (UnivInfo element in li) {
+      print(element.toMap());
+    }
+  }
+
+  insertUniv() async {
+    UnivInfo univInfo =
+        UnivInfo(id: "4321", univName: "가무슨 대", univCode: "123456");
+    UnivDB univ = UnivDB();
+    univ.insertInfo(univInfo);
+  }
+
+  deleteUniv() async {
+    UnivDB univ = UnivDB();
+    univ.deleteInfo("000001");
+  }
+
+  NavigateUnivWeb() async {
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => const UnivWeb(year: 2023,univCode: "0000004",),
       ),
     );
   }
@@ -98,3 +132,6 @@ javascriptMode: JavascriptMode.unrestricted,
     });
   }
 }
+
+
+
