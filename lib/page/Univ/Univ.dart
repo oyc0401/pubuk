@@ -1,20 +1,12 @@
-import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/Server/FireTool.dart';
 
-import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
-import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
-
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:skeletons/skeletons.dart';
 
 import '../../DB/UnivDB.dart';
 import '../../DB/userProfile.dart';
-import '../Home/lunch.dart';
-import '../Home/timetable.dart';
+
 import '../Profile/profile.dart';
 
 class Univ extends StatefulWidget {
@@ -30,52 +22,65 @@ class _UnivState extends State<Univ> {
   @override
   void initState() {
     super.initState();
-    // Enable virtual display.
-    if (Platform.isAndroid) WebView.platform = AndroidWebView();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: buildAppBar(),
-        body: Column(
-          children: [
-            CupertinoButton(child: Text("이동"), onPressed: NavigateUnivWeb),
-            CupertinoButton(child: Text("얻기"), onPressed: getUiv),
-            CupertinoButton(child: Text("저장"), onPressed: insertUniv),
-            CupertinoButton(child: Text("삭제"), onPressed: deleteUniv),
-          ],
+        body: FutureBuilder(
+          future: getUiv(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData == false) {
+              return waiting();
+            } else if (snapshot.hasError) {
+              return error(snapshot);
+            } else {
+              List<UnivInfo> unives = snapshot.data;
+              return succeed(unives);
+            }
+          },
         ));
   }
 
-  getUiv() async {
+  Widget succeed(List<UnivInfo> unives) {
+    return ListView.builder(
+      itemCount: unives.length,
+      itemBuilder: (context, index) {
+        return UnivCard(
+          univInfo: unives[index],
+        );
+      },
+    );
+  }
+
+  Widget error(AsyncSnapshot<dynamic> snapshot) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        'Error: ${snapshot.error}',
+        style: TextStyle(fontSize: 15),
+      ),
+    );
+  }
+
+  Widget waiting() {
+    return Skeleton(
+      isLoading: true,
+      skeleton: const SkeletonAvatar(
+          style: SkeletonAvatarStyle(width: 480, height: 450)),
+      child: Container(),
+    );
+  }
+
+  Future<List<UnivInfo>> getUiv() async {
     UnivDB univ = UnivDB();
     List<UnivInfo> li = await univ.getInfo();
 
     for (UnivInfo element in li) {
       print(element.toMap());
     }
-  }
-
-  insertUniv() async {
-    UnivInfo univInfo =
-        UnivInfo(id: "4321", univName: "가무슨 대", univCode: "123456");
-    UnivDB univ = UnivDB();
-    univ.insertInfo(univInfo);
-  }
-
-  deleteUniv() async {
-    UnivDB univ = UnivDB();
-    univ.deleteInfo("000001");
-  }
-
-  NavigateUnivWeb() async {
-    await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => const UnivWeb(year: 2023,univCode: "0000004",),
-      ),
-    );
+    return li;
   }
 
   AppBar buildAppBar() {
@@ -106,9 +111,9 @@ class _UnivState extends State<Univ> {
         Padding(
           padding: const EdgeInsets.only(top: 24, right: 8),
           child: IconButton(
-            onPressed: NavigateProfile,
+            onPressed: NavigateUnivWeb,
             icon: const Icon(
-              Icons.person_outlined,
+              Icons.search,
               size: 28,
               color: Color(0xff191919),
             ),
@@ -117,21 +122,79 @@ class _UnivState extends State<Univ> {
       ],
     );
   }
-
-  void NavigateProfile() async {
+  void NavigateUnivWeb() async {
     await Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => const profile(),
+        builder: (context) =>  UnivWeb(
+          year: 2023,
+          univCode: "0000169",
+        ),
       ),
     );
-
-    setState(() {
-      print(
-          "회원 정보가 바뀌었을 수도 있어서 setState 합니다. userProfile: ${UserProfile.currentUser}");
-    });
   }
 }
 
+class UnivCard extends StatefulWidget {
+  UnivCard({
+    Key? key,
+    required this.univInfo,
+  }) : super(key: key);
+  UnivInfo univInfo;
 
+  @override
+  State<UnivCard> createState() => _UnivCardState();
+}
 
+class _UnivCardState extends State<UnivCard> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(border: Border.all()),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              widget.univInfo.univName,
+              style: TextStyle(fontSize: 24),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              CupertinoButton(
+                //color: Colors.red,
+                child: Text("이동하기"),
+                onPressed: NavigateUnivWeb,
+              ),
+              CupertinoButton(
+                child: Text("삭제하기"),
+                onPressed: deleteUniv,
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  deleteUniv() async {
+    UnivDB univ = UnivDB();
+    univ.deleteInfo(widget.univInfo.id);
+  }
+
+  void NavigateUnivWeb() async {
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => UnivWeb(
+          year: 2023,
+          univCode: widget.univInfo.univCode,
+        ),
+      ),
+    );
+  }
+// setState((){});
+}

@@ -16,10 +16,15 @@ import 'package:flutterschool/page/Univ/UnivName.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-String univCode = "000001";
+String nowUnivCode = "000001";
 
 class UnivWeb extends StatefulWidget {
-  const UnivWeb({Key? key, this.cookieManager,required this.year,required this.univCode}) : super(key: key);
+  UnivWeb(
+      {Key? key,
+      this.cookieManager,
+      required this.year,
+      required this.univCode})
+      : super(key: key);
 
   final CookieManager? cookieManager;
   final int year;
@@ -31,11 +36,12 @@ class UnivWeb extends StatefulWidget {
 
 class _UnivWebState extends State<UnivWeb> {
   final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+      Completer<WebViewController>();
 
   @override
   void initState() {
     super.initState();
+    nowUnivCode = widget.univCode;
     if (Platform.isAndroid) {
       WebView.platform = SurfaceAndroidWebView();
     }
@@ -44,22 +50,22 @@ class _UnivWebState extends State<UnivWeb> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.grey,
       appBar: AppBar(
-        title: const Text('Flutter WebView example'),
+        title: Text(
+          //"${nowUnivCode}",
+          UnivName.getUnivName(nowUnivCode),
+          style: TextStyle(color: Colors.black),
+        ),
         actions: <Widget>[
           //NavigationControls(_controller.future),
           SampleMenu(_controller.future, widget.cookieManager),
-          CupertinoButton(
-              child: Text("현재 univCode"),
-              onPressed: () {
-                print(univCode);
-              })
         ],
       ),
       body: WebView(
         initialUrl:
-        "https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&chkUnivList=${widget.univCode}&sch_year=${widget.year}#con20",
+            "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?sch_year=2022&univ_cd=0000046&iem_cd=26",
+            //"https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&chkUnivList=${widget.univCode}&sch_year=${widget.year}#con20",
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _controller.complete(webViewController);
@@ -99,8 +105,8 @@ class _UnivWebState extends State<UnivWeb> {
     if (url.contains("eipStdGenSlcIemWebView.do?sch_year=")) {
       int index = url.lastIndexOf('univ_cd=');
 
-      univCode = url.substring(index + 8, index + 8 + 7);
-      print("대학 코드: ${univCode}");
+      nowUnivCode = url.substring(index + 8, index + 8 + 7);
+      print("대학 코드: ${nowUnivCode}");
 
       setState(() {});
     }
@@ -125,11 +131,17 @@ class FavorateButton extends StatefulWidget {
 }
 
 class _FavorateButtonState extends State<FavorateButton> {
-  Color get _color {
+  Icon get _icon {
     if (isFavorate) {
-      return Colors.redAccent;
+      return const Icon(
+        Icons.favorite,
+        color: Colors.redAccent,
+      );
     } else {
-      return Colors.grey;
+      return const Icon(
+        Icons.favorite_border,
+        color: Color(0xff191919),
+      );
     }
   }
 
@@ -140,7 +152,7 @@ class _FavorateButtonState extends State<FavorateButton> {
     List<UnivInfo> univList = await univDB.getInfo();
     for (UnivInfo univ in univList) {
       // 이미 즐겨찾기를 했으면
-      if (univ.univCode == univCode) {
+      if (univ.univCode == nowUnivCode) {
         isFavorate = true;
         print("즐겨찾기 O");
         return;
@@ -158,11 +170,9 @@ class _FavorateButtonState extends State<FavorateButton> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         print("re build");
         return FloatingActionButton(
+          backgroundColor: Colors.white,
           onPressed: addFavorite,
-          child: Icon(
-            Icons.favorite,
-            color: _color,
-          ),
+          child: _icon,
         );
       },
     );
@@ -182,9 +192,9 @@ class _FavorateButtonState extends State<FavorateButton> {
   insertUniv() {
     UnivDB univDB = UnivDB();
     univDB.insertInfo(UnivInfo(
-      id: univCode,
-      univName: UnivName.getUnivName(univCode),
-      univCode: univCode,
+      id: nowUnivCode,
+      univName: UnivName.getUnivName(nowUnivCode),
+      univCode: nowUnivCode,
     ));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -195,7 +205,7 @@ class _FavorateButtonState extends State<FavorateButton> {
 
   deleteUniv() {
     UnivDB univDB = UnivDB();
-    univDB.deleteInfo(univCode);
+    univDB.deleteInfo(nowUnivCode);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("북마크에서 삭제했습니다."),
@@ -406,7 +416,7 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onListCookies(
       WebViewController controller, BuildContext context) async {
     final String cookies =
-    await controller.runJavascriptReturningResult('document.cookie');
+        await controller.runJavascriptReturningResult('document.cookie');
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -431,7 +441,7 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onListCache(
       WebViewController controller, BuildContext context) async {
     await controller.runJavascript('caches.keys()'
-    // ignore: missing_whitespace_between_adjacent_strings
+        // ignore: missing_whitespace_between_adjacent_strings
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Toaster.postMessage(caches))');
   }
@@ -458,7 +468,7 @@ class SampleMenu extends StatelessWidget {
   Future<void> _onNavigationDelegateExample(
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
-    base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
+        base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
@@ -510,7 +520,7 @@ class SampleMenu extends StatelessWidget {
     }
     final List<String> cookieList = cookies.split(';');
     final Iterable<Text> cookieWidgets =
-    cookieList.map((String cookie) => Text(cookie));
+        cookieList.map((String cookie) => Text(cookie));
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -553,39 +563,39 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller!.canGoBack()) {
-                  await controller.goBack();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('No back history item')),
-                  );
-                  return;
-                }
-              },
+                      if (await controller!.canGoBack()) {
+                        await controller.goBack();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('No back history item')),
+                        );
+                        return;
+                      }
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward_ios),
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller!.canGoForward()) {
-                  await controller.goForward();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('No forward history item')),
-                  );
-                  return;
-                }
-              },
+                      if (await controller!.canGoForward()) {
+                        await controller.goForward();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('No forward history item')),
+                        );
+                        return;
+                      }
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.replay),
               onPressed: !webViewReady
                   ? null
                   : () {
-                controller!.reload();
-              },
+                      controller!.reload();
+                    },
             ),
           ],
         );
