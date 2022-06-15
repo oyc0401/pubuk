@@ -20,9 +20,48 @@ class Univ extends StatefulWidget {
 class _UnivState extends State<Univ> {
   UserProfile userProfile = UserProfile.currentUser;
 
-  @override
-  void initState() {
-    super.initState();
+  void deleteUniv(String univId) async {
+    UnivDB univ = UnivDB();
+    await univ.deleteInfo(univId);
+    print("setState 북마크 대학 다시");
+    setState(() {});
+  }
+
+  void NavigateUnivWeb(String univCode) async {
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => UnivWeb(
+          year: 2023,
+          univCode: univCode,
+        ),
+      ),
+    );
+    print("setState 북마크 대학 다시");
+    setState(() {});
+  }
+
+  void NavigateUnivSearch() async {
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => UnivSearch(),
+      ),
+    );
+
+    // 다른데 가버려서 안댐
+    // print("setState 북마크 대학 다시");
+    // setState(() {});
+  }
+
+  Future<List<UnivInfo>> getUiv() async {
+    UnivDB univ = UnivDB();
+    List<UnivInfo> li = await univ.getInfo();
+
+    for (UnivInfo element in li) {
+      print(element.toMap());
+    }
+    return li;
   }
 
   @override
@@ -48,8 +87,11 @@ class _UnivState extends State<Univ> {
     return ListView.builder(
       itemCount: unives.length,
       itemBuilder: (context, index) {
+        UnivInfo univ = unives[index];
         return UnivCard(
-          univInfo: unives[index],
+          text: univ.univName,
+          deleteUniv: () => deleteUniv(univ.id),
+          navigate: () => NavigateUnivWeb(univ.univCode),
         );
       },
     );
@@ -72,16 +114,6 @@ class _UnivState extends State<Univ> {
           style: SkeletonAvatarStyle(width: 480, height: 450)),
       child: Container(),
     );
-  }
-
-  Future<List<UnivInfo>> getUiv() async {
-    UnivDB univ = UnivDB();
-    List<UnivInfo> li = await univ.getInfo();
-
-    for (UnivInfo element in li) {
-      print(element.toMap());
-    }
-    return li;
   }
 
   AppBar buildAppBar() {
@@ -123,37 +155,19 @@ class _UnivState extends State<Univ> {
       ],
     );
   }
-
-  void NavigateUnivSearch() async {
-  await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => UnivSearch(),
-      ),
-    );
-
-    // await Navigator.push(
-    //   context,
-    //   CupertinoPageRoute(
-    //     builder: (context) => UnivWeb(year: 2023, univCode: selectedUnivCode),
-    //   ),
-    // );
-  }
-
 }
 
-class UnivCard extends StatefulWidget {
+class UnivCard extends StatelessWidget {
   UnivCard({
     Key? key,
-    required this.univInfo,
+    required this.text,
+    required this.deleteUniv,
+    required this.navigate,
   }) : super(key: key);
-  UnivInfo univInfo;
+  String text;
+  Function deleteUniv;
+  Function navigate;
 
-  @override
-  State<UnivCard> createState() => _UnivCardState();
-}
-
-class _UnivCardState extends State<UnivCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -164,7 +178,7 @@ class _UnivCardState extends State<UnivCard> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              widget.univInfo.univName,
+              text,
               style: TextStyle(fontSize: 24),
             ),
           ),
@@ -174,11 +188,15 @@ class _UnivCardState extends State<UnivCard> {
               CupertinoButton(
                 //color: Colors.red,
                 child: Text("이동하기"),
-                onPressed: NavigateUnivWeb,
+                onPressed: () {
+                  navigate();
+                },
               ),
               CupertinoButton(
                 child: Text("삭제하기"),
-                onPressed: deleteUniv,
+                onPressed: () {
+                  deleteUniv();
+                },
               ),
             ],
           )
@@ -186,22 +204,4 @@ class _UnivCardState extends State<UnivCard> {
       ),
     );
   }
-
-  deleteUniv() async {
-    UnivDB univ = UnivDB();
-    univ.deleteInfo(widget.univInfo.id);
-  }
-
-  void NavigateUnivWeb() async {
-     Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => UnivWeb(
-          year: 2023,
-          univCode: widget.univInfo.univCode,
-        ),
-      ),
-    );
-  }
-// setState((){});
 }

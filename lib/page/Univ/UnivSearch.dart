@@ -13,18 +13,25 @@ class UnivSearch extends StatefulWidget {
 }
 
 class _UnivSearchState extends State<UnivSearch> {
-  List list=UnivName.UnivCodeList();
+  List codes = UnivName.univCodeList;
+  List names = UnivName.univNameList;
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(),
       body: Container(
         child: ListView.builder(
-          itemCount: list.length,
+          itemCount: codes.length,
           itemBuilder: (context, index) {
             //print(UnivName.getUnivName(list[index]));
-            return UnivSelection(univInfo: UnivInfo(id: list[index],univCode: list[index], univName: UnivName.getUnivName(list[index])),);
+            return UnivSelection(
+                univInfo: UnivInfo(
+              id: codes[index],
+              univCode: codes[index],
+              univName: names[index],
+              preference: UnivDB.lenght,
+            ));
           },
         ),
       ),
@@ -44,7 +51,7 @@ class _UnivSelectionState extends State<UnivSelection> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         NavigateUnivWeb();
       },
       child: Container(
@@ -55,7 +62,7 @@ class _UnivSelectionState extends State<UnivSelection> {
     );
   }
 
-  pop(){
+  pop() {
     Navigator.of(context).pop('complete');
   }
 

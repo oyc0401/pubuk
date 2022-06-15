@@ -294,6 +294,7 @@ class _FavorateButtonState extends State<FavorateButton> {
       id: nowUnivCode,
       univName: UnivName.getUnivName(nowUnivCode),
       univCode: nowUnivCode,
+      preference: UnivDB.lenght
     ));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
