@@ -34,8 +34,8 @@ class UnivWebView extends StatelessWidget {
         url: Provider.of<UnivModel>(context).uri,
       ),
       onWebViewCreated: (controller) {
-        Provider.of<UnivModel>(context, listen: false)
-            .setController(controller);
+        Provider.of<UnivModel>(context, listen: false).webViewController =
+            controller;
       },
       onLoadStart: (controller, url) {
         print(url);

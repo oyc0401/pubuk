@@ -19,32 +19,39 @@ class UnivModel with ChangeNotifier {
   int year;
   UnivWay univWay;
   bool isLike;
+
   InAppWebViewController? webViewController;
 
-  setController(InAppWebViewController inAppWebViewController) {
-    webViewController = inAppWebViewController;
-    notifyListeners();
-  }
-
-  plusYear() {
+  void plusYear() {
     year++;
-    setUrl();
+    _setUrl();
     notifyListeners();
   }
 
-  minusYear() {
+  void minusYear() {
     year--;
-    setUrl();
+    _setUrl();
     notifyListeners();
   }
 
-  changeUnivWay(UnivWay way) {
+  void changeUnivWay(UnivWay way) {
     univWay = way;
-    setUrl();
+    _setUrl();
     notifyListeners();
   }
 
-  Future<void> setUrl() async =>
+  Future<void> changeFavorate() async {
+    if (isLike) {
+      await _deleteUniv();
+      isLike = false;
+    } else {
+      await _insertUniv();
+      isLike = true;
+    }
+    notifyListeners();
+  }
+
+  Future<void> _setUrl() async =>
       await webViewController?.loadUrl(urlRequest: URLRequest(url: uri));
 
   Uri get uri {
@@ -97,7 +104,7 @@ class UnivModel with ChangeNotifier {
     }
   }
 
-  _getFavorate() async {
+  Future<void> _getFavorate() async {
     print("즐겨찾기를 했는지 확인중...");
     UnivDB univDB = UnivDB();
     List<UnivInfo> univList = await univDB.getInfo();
@@ -112,17 +119,6 @@ class UnivModel with ChangeNotifier {
     // 즐겨찾기를 안했으면
     isLike = false;
     print("즐겨찾기 X");
-  }
-
-  changeFavorate() async {
-    if (isLike) {
-      await _deleteUniv();
-      isLike = false;
-    } else {
-      await _insertUniv();
-      isLike = true;
-    }
-    notifyListeners();
   }
 
   Future<void> _insertUniv() async {

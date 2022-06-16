@@ -21,7 +21,7 @@ class Univ extends StatefulWidget {
 }
 
 class _UnivState extends State<Univ> {
-  UserProfile userProfile = UserProfile.currentUser;
+
 
   void NavigateUnivSearch() async {
     await Navigator.push(
@@ -41,17 +41,27 @@ class _UnivState extends State<Univ> {
       create: (context) => UnivModel(
           univCode: "0000046",
           year: 2023,
-          univWay: UnivWay.comprehensive,
+          univWay: UnivWay.subject,
           isLike: false),
       child: Scaffold(
-          appBar: buildAppBar(),
+          appBar: UnivAppBar(),
           body: Body()),
     );
   }
 
 
 
-  AppBar buildAppBar() {
+
+}
+
+class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
+  UnivAppBar({Key? key}) : super(key: key);
+
+  final double height = 80;
+  UserProfile userProfile = UserProfile.currentUser;
+
+  @override
+  Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: 80,
       title: Column(
@@ -90,7 +100,21 @@ class _UnivState extends State<Univ> {
       ],
     );
   }
+
+  @override
+  Size get preferredSize => Size.fromHeight(height);
+
+  void NavigateUnivSearch() async {
+    // await Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => UnivSearch(),
+    //   ),
+    // );
+  }
 }
+
+
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -183,27 +207,27 @@ class _BodyState extends State<Body> {
 }
 
 
-class UnivCard extends StatefulWidget {
+
+class UnivCard extends StatelessWidget {
   UnivCard({
     Key? key,
     required this.univ,
   }) : super(key: key);
   UnivInfo univ;
 
-  @override
-  State<UnivCard> createState() => _UnivCardState();
-}
 
-class _UnivCardState extends State<UnivCard> {
+
+
   @override
   Widget build(BuildContext context) {
+    final viewModel = Provider.of<UnivModel>(context);
     return Card(
       child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              widget.univ.univName,
+              univ.univName,
               style: TextStyle(fontSize: 24),
             ),
           ),
@@ -213,7 +237,12 @@ class _UnivCardState extends State<UnivCard> {
               CupertinoButton(
                 //color: Colors.red,
                 child: Text("이동하기"),
-                onPressed: NavigateUnivWeb,
+                onPressed: (){
+
+
+                  NavigateUnivWeb(context, viewModel);
+
+                },
               ),
               CupertinoButton(
                 child: Text("삭제하기"),
@@ -226,21 +255,17 @@ class _UnivCardState extends State<UnivCard> {
     );
   }
 
-  void NavigateUnivWeb() async {
+  void NavigateUnivWeb(BuildContext context, UnivModel viewModel) {
+    Provider.of<UnivModel>(context, listen: false).univCode=univ.univCode;
 
-    print(Provider.of<UnivModel>(context,listen: false).univCode);
-
-    await Navigator.push(
+    Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) {
-          // return UnivProWeb(
-          //   univCode: univ.univCode,
-          // );
           return ChangeNotifierProvider.value(
-            value: Provider.of<UnivModel>(context),
+            value:viewModel,
             child: UnivProWeb(
-              univCode: widget.univ.univCode,
+              univCode: univ.univCode,
             ),
           );
         },
@@ -250,6 +275,6 @@ class _UnivCardState extends State<UnivCard> {
 
   void deleteUniv() async {
     UnivDB univdb = UnivDB();
-    await univdb.deleteInfo(widget.univ.id);
+    await univdb.deleteInfo(univ.id);
   }
 }
