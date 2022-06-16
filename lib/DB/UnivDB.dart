@@ -4,9 +4,10 @@ import 'package:sqflite/sqflite.dart';
 class UnivDB {
   late Future<Database> _database;
   String _orderBy = 'preference ASC';
+
   //String _orderBy = 'univName DESC';
 
-  static int lenght=0;
+  static int lenght = 0;
 
   _setInstance() async {
     _database = openDatabase(
@@ -29,7 +30,7 @@ class UnivDB {
     final Database db = await _database;
     final List<Map<String, dynamic>> maps =
         await db.query('circles', orderBy: _orderBy);
-    lenght=maps.length;
+    lenght = maps.length;
 
     return List.generate(maps.length, (i) {
       return UnivInfo(
@@ -42,10 +43,12 @@ class UnivDB {
   }
 
   Future<void> deleteInfo(String id) async {
+    lenght--;
+    print('id: ${id} 삭제됌');
     await _setInstance();
     // 데이터베이스 reference를 얻습니다.
     final db = await _database;
-    lenght--;
+
     // 데이터베이스에서 Dog를 삭제합니다.
     await db.delete(
       'circles',
@@ -58,7 +61,7 @@ class UnivDB {
 
   Future<void> insertInfo(UnivInfo univ) async {
     lenght++;
-    print('추가됌');
+    print('id: ${univ.id} 추가됌');
     await _setInstance();
     final Database db = await _database;
     await db.insert(
@@ -68,21 +71,20 @@ class UnivDB {
     );
   }
 
-Future<void> updateInfo(UnivInfo univ) async {
-  print('수정 됌');
-  await _setInstance();
-  final Database db = await _database;
-  // 주어진 Dog를 수정합니다.
-  await db.update(
-    'circles',
-    univ.toMap(),
-    // Dog의 id가 일치하는 지 확인합니다.
-    where: "id = ?",
-    // Dog의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
-    whereArgs: [univ.id],
-  );
-}
-
+  Future<void> updateInfo(UnivInfo univ) async {
+    print('수정 됌');
+    await _setInstance();
+    final Database db = await _database;
+    // 주어진 Dog를 수정합니다.
+    await db.update(
+      'circles',
+      univ.toMap(),
+      // Dog의 id가 일치하는 지 확인합니다.
+      where: "id = ?",
+      // Dog의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
+      whereArgs: [univ.id],
+    );
+  }
 }
 
 class UnivInfo {

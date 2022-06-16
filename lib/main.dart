@@ -11,6 +11,7 @@ import 'package:flutterschool/page/mainPage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 
 import 'firebase_options.dart';
+import 'page/Univ/providerWeb.dart';
 
 Future<void> main() async {
   print("start");
@@ -102,8 +103,8 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       //home: const SignIn(),
-      //home: const SwitchPage(),
-      home: initialWidget,
+      home:  UnivProWeb(univCode: "0000046",),
+     // home: initialWidget,
     );
   }
 }

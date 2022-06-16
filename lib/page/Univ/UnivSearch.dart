@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/UnivDB.dart';
 import 'package:flutterschool/page/Univ/UnivName.dart';
+import 'package:flutterschool/page/Univ/providerWeb.dart';
 
 import 'UnivWeb.dart';
 
@@ -70,8 +71,7 @@ class _UnivSelectionState extends State<UnivSelection> {
     await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => UnivWeb(
-          year: 2023,
+        builder: (context) => UnivProWeb(
           univCode: widget.univInfo.univCode,
         ),
       ),

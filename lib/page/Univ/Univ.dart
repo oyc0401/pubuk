@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
+import 'package:flutterschool/page/Univ/providerWeb.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../DB/UnivDB.dart';
@@ -31,8 +32,7 @@ class _UnivState extends State<Univ> {
     await Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => UnivWeb(
-          year: 2023,
+        builder: (context) => UnivProWeb(
           univCode: univCode,
         ),
       ),
@@ -84,12 +84,12 @@ class _UnivState extends State<Univ> {
       padding: EdgeInsets.symmetric(horizontal: 40),
       children: <Widget>[
         for (int index = 0; index < unives.length; index++)
-        UnivCard(
-          key: Key('$index'),
-          text: unives[index].univName,
-          deleteUniv: () => deleteUniv(unives[index].id),
-          navigate: () => NavigateUnivWeb(unives[index].univCode),
-        ),
+          UnivCard(
+            key: Key('$index'),
+            text: unives[index].univName,
+            deleteUniv: () => deleteUniv(unives[index].id),
+            navigate: () => NavigateUnivWeb(unives[index].univCode),
+          ),
       ],
       onReorder: (int oldIndex, int newIndex) {
         setState(() {
@@ -189,34 +189,36 @@ class UnivCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(child: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 24),
+    return Card(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 24),
+            ),
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            CupertinoButton(
-              //color: Colors.red,
-              child: Text("이동하기"),
-              onPressed: () {
-                navigate();
-              },
-            ),
-            CupertinoButton(
-              child: Text("삭제하기"),
-              onPressed: () {
-                deleteUniv();
-              },
-            ),
-          ],
-        )
-      ],
-    ),);
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              CupertinoButton(
+                //color: Colors.red,
+                child: Text("이동하기"),
+                onPressed: () {
+                  navigate();
+                },
+              ),
+              CupertinoButton(
+                child: Text("삭제하기"),
+                onPressed: () {
+                  deleteUniv();
+                },
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
