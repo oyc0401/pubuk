@@ -13,17 +13,10 @@ class UnivProWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => UnivModel(
-          univCode: univCode,
-          year: 2023,
-          univWay: UnivWay.comprehensive,
-          isLike: false),
-      child: Scaffold(
-        appBar: SearchAppBar(),
-        body: UnivWebView(),
-        floatingActionButton: LikeButton(),
-      ),
+    return Scaffold(
+      appBar: SearchAppBar(),
+      body: UnivWebView(),
+      floatingActionButton: LikeButton(),
     );
   }
 }
