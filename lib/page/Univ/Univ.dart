@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
 import 'package:flutterschool/page/Univ/providerWeb.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../DB/UnivDB.dart';
 import '../../DB/userProfile.dart';
 
 import '../Profile/profile.dart';
+import 'UnivModel.dart';
 import 'UnivSearch.dart';
 
 class Univ extends StatefulWidget {
@@ -21,35 +23,83 @@ class Univ extends StatefulWidget {
 class _UnivState extends State<Univ> {
   UserProfile userProfile = UserProfile.currentUser;
 
-  void deleteUniv(String univId) async {
-    UnivDB univ = UnivDB();
-    await univ.deleteInfo(univId);
-    print("setState 북마크 대학 다시");
-    setState(() {});
-  }
-
-  void NavigateUnivWeb(String univCode) async {
-    await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => UnivProWeb(
-          univCode: univCode,
-        ),
-      ),
-    );
-    print("setState 북마크 대학 다시");
-    setState(() {});
-  }
-
   void NavigateUnivSearch() async {
     await Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => UnivSearch(),
+        builder: (context) {
+          return UnivSearch();
+        },
       ),
     );
   }
 
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => UnivModel(
+          univCode: "0000046",
+          year: 2023,
+          univWay: UnivWay.comprehensive,
+          isLike: false),
+      child: Scaffold(
+          appBar: buildAppBar(),
+          body: Body()),
+    );
+  }
+
+
+
+  AppBar buildAppBar() {
+    return AppBar(
+      toolbarHeight: 80,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            userProfile.schoolName,
+            style: const TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.normal),
+          ),
+          Text(
+            '${userProfile.grade}학년 ${userProfile.Class}반',
+            style: const TextStyle(
+                color: Colors.blue,
+                fontSize: 14,
+                fontWeight: FontWeight.normal),
+          ),
+        ],
+      ),
+      //backgroundColor: Colors.blue,
+      centerTitle: false,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(top: 24, right: 8),
+          child: IconButton(
+            onPressed: NavigateUnivSearch,
+            icon: const Icon(
+              Icons.search,
+              size: 28,
+              color: Color(0xff191919),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Body extends StatefulWidget {
+  const Body({Key? key}) : super(key: key);
+
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
   Future<List<UnivInfo>> getUiv() async {
     UnivDB univ = UnivDB();
     List<UnivInfo> li = await univ.getInfo();
@@ -62,21 +112,19 @@ class _UnivState extends State<Univ> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: buildAppBar(),
-        body: FutureBuilder(
-          future: getUiv(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData == false) {
-              return waiting();
-            } else if (snapshot.hasError) {
-              return error(snapshot);
-            } else {
-              List<UnivInfo> unives = snapshot.data;
-              return succeed(unives);
-            }
-          },
-        ));
+    return FutureBuilder(
+      future: getUiv(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData == false) {
+          return waiting();
+        } else if (snapshot.hasError) {
+          return error(snapshot);
+        } else {
+          List<UnivInfo> unives = snapshot.data;
+          return succeed(unives);
+        }
+      },
+    );
   }
 
   Widget succeed(List<UnivInfo> unives) {
@@ -86,9 +134,7 @@ class _UnivState extends State<Univ> {
         for (int index = 0; index < unives.length; index++)
           UnivCard(
             key: Key('$index'),
-            text: unives[index].univName,
-            deleteUniv: () => deleteUniv(unives[index].id),
-            navigate: () => NavigateUnivWeb(unives[index].univCode),
+            univ: unives[index],
           ),
       ],
       onReorder: (int oldIndex, int newIndex) {
@@ -134,59 +180,21 @@ class _UnivState extends State<Univ> {
       child: Container(),
     );
   }
-
-  AppBar buildAppBar() {
-    return AppBar(
-      toolbarHeight: 80,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            userProfile.schoolName,
-            style: const TextStyle(
-                color: Colors.black,
-                fontSize: 24,
-                fontWeight: FontWeight.normal),
-          ),
-          Text(
-            '${userProfile.grade}학년 ${userProfile.Class}반',
-            style: const TextStyle(
-                color: Colors.blue,
-                fontSize: 14,
-                fontWeight: FontWeight.normal),
-          ),
-        ],
-      ),
-      //backgroundColor: Colors.blue,
-      centerTitle: false,
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(top: 24, right: 8),
-          child: IconButton(
-            onPressed: NavigateUnivSearch,
-            icon: const Icon(
-              Icons.search,
-              size: 28,
-              color: Color(0xff191919),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
-class UnivCard extends StatelessWidget {
+
+class UnivCard extends StatefulWidget {
   UnivCard({
     Key? key,
-    required this.text,
-    required this.deleteUniv,
-    required this.navigate,
+    required this.univ,
   }) : super(key: key);
-  String text;
-  Function deleteUniv;
-  Function navigate;
+  UnivInfo univ;
 
+  @override
+  State<UnivCard> createState() => _UnivCardState();
+}
+
+class _UnivCardState extends State<UnivCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -195,7 +203,7 @@ class UnivCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              text,
+              widget.univ.univName,
               style: TextStyle(fontSize: 24),
             ),
           ),
@@ -205,20 +213,43 @@ class UnivCard extends StatelessWidget {
               CupertinoButton(
                 //color: Colors.red,
                 child: Text("이동하기"),
-                onPressed: () {
-                  navigate();
-                },
+                onPressed: NavigateUnivWeb,
               ),
               CupertinoButton(
                 child: Text("삭제하기"),
-                onPressed: () {
-                  deleteUniv();
-                },
+                onPressed: deleteUniv,
               ),
             ],
           )
         ],
       ),
     );
+  }
+
+  void NavigateUnivWeb() async {
+
+    print(Provider.of<UnivModel>(context,listen: false).univCode);
+
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) {
+          // return UnivProWeb(
+          //   univCode: univ.univCode,
+          // );
+          return ChangeNotifierProvider.value(
+            value: Provider.of<UnivModel>(context),
+            child: UnivProWeb(
+              univCode: widget.univ.univCode,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void deleteUniv() async {
+    UnivDB univdb = UnivDB();
+    await univdb.deleteInfo(widget.univ.id);
   }
 }
