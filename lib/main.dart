@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,13 +5,13 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/SignIn/register.dart';
-import 'package:flutterschool/page/Univ/Univ.dart';
+import 'package:flutterschool/page/Univ/UnivModel.dart';
 
 import 'package:flutterschool/page/mainPage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
+import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
-import 'page/Univ/providerWeb.dart';
 
 Future<void> main() async {
   print("start");
@@ -61,7 +60,7 @@ Run_App() async {
     print("회원가입 중 입니다. 회원가입 이동...");
     runApp(MyApp(
         initialWidget:
-            register(uid: localUser.uid, provider: localUser.provider)));
+        register(uid: localUser.uid, provider: localUser.provider)));
   } else {
     // 저장소가 있고 로그인을 했다고 판단.
     print("현재 uid: ${localUser.uid} 홈 화면 이동...");
@@ -75,37 +74,48 @@ class MyApp extends StatelessWidget {
   Widget initialWidget;
 
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     print("main widget is built");
-
-    return MaterialApp(
-      // builder: (context, child) {
-      //   return MediaQuery(
-      //     data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-      //     child: child!,
-      //   );
-      // },
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
-          // 2
-
-          centerTitle: true,
-          elevation: 0,
-          scrolledUnderElevation: 3,
-          shadowColor: Color(0x67FFFFFF),
-          toolbarTextStyle: TextStyle(color: Colors.black),
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => UnivModel(
+              univCode: "0000046",
+              year: 2023,
+              univWay: UnivWay.subject,
+              isLike: false),
         ),
+      ],
+      child: MaterialApp(
+        // builder: (context, child) {
+        //   return MediaQuery(
+        //     data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+        //     child: child!,
+        //   );
+        // },
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(
+            systemOverlayStyle: SystemUiOverlayStyle.dark,
+            // 2
+
+            centerTitle: true,
+            elevation: 0,
+            scrolledUnderElevation: 3,
+            shadowColor: Color(0x67FFFFFF),
+            toolbarTextStyle: TextStyle(color: Colors.black),
+            backgroundColor: Colors.white,
+            iconTheme: IconThemeData(color: Colors.black),
+          ),
+        ),
+        debugShowCheckedModeBanner: false,
+        //home: const SignIn(),
+        //home:  Univ(),
+        home: initialWidget,
       ),
-      debugShowCheckedModeBanner: false,
-      //home: const SignIn(),
-      home:  Univ(),
-     // home: initialWidget,
     );
   }
 }

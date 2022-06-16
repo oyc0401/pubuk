@@ -23,94 +23,12 @@ class Univ extends StatefulWidget {
 class _UnivState extends State<Univ> {
 
 
-  void NavigateUnivSearch() async {
-    await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) {
-          return UnivSearch();
-        },
-      ),
-    );
-  }
-
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => UnivModel(
-          univCode: "0000046",
-          year: 2023,
-          univWay: UnivWay.subject,
-          isLike: false),
-      child: Scaffold(
-          appBar: UnivAppBar(),
-          body: Body()),
+    return Scaffold(
+      appBar: UnivAppBar(),
+      body: Body(),
     );
-  }
-
-
-
-
-}
-
-class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
-  UnivAppBar({Key? key}) : super(key: key);
-
-  final double height = 80;
-  UserProfile userProfile = UserProfile.currentUser;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      toolbarHeight: 80,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            userProfile.schoolName,
-            style: const TextStyle(
-                color: Colors.black,
-                fontSize: 24,
-                fontWeight: FontWeight.normal),
-          ),
-          Text(
-            '${userProfile.grade}학년 ${userProfile.Class}반',
-            style: const TextStyle(
-                color: Colors.blue,
-                fontSize: 14,
-                fontWeight: FontWeight.normal),
-          ),
-        ],
-      ),
-      //backgroundColor: Colors.blue,
-      centerTitle: false,
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(top: 24, right: 8),
-          child: IconButton(
-            onPressed: NavigateUnivSearch,
-            icon: const Icon(
-              Icons.search,
-              size: 28,
-              color: Color(0xff191919),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(height);
-
-  void NavigateUnivSearch() async {
-    // await Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => UnivSearch(),
-    //   ),
-    // );
   }
 }
 
@@ -206,17 +124,12 @@ class _BodyState extends State<Body> {
   }
 }
 
-
-
 class UnivCard extends StatelessWidget {
   UnivCard({
     Key? key,
     required this.univ,
   }) : super(key: key);
   UnivInfo univ;
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -237,11 +150,8 @@ class UnivCard extends StatelessWidget {
               CupertinoButton(
                 //color: Colors.red,
                 child: Text("이동하기"),
-                onPressed: (){
-
-
+                onPressed: () {
                   NavigateUnivWeb(context, viewModel);
-
                 },
               ),
               CupertinoButton(
@@ -256,14 +166,14 @@ class UnivCard extends StatelessWidget {
   }
 
   void NavigateUnivWeb(BuildContext context, UnivModel viewModel) {
-    Provider.of<UnivModel>(context, listen: false).univCode=univ.univCode;
+    Provider.of<UnivModel>(context, listen: false).univCode = univ.univCode;
 
     Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) {
           return ChangeNotifierProvider.value(
-            value:viewModel,
+            value: viewModel,
             child: UnivProWeb(
               univCode: univ.univCode,
             ),
@@ -277,4 +187,69 @@ class UnivCard extends StatelessWidget {
     UnivDB univdb = UnivDB();
     await univdb.deleteInfo(univ.id);
   }
+}
+
+
+class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
+  UnivAppBar({Key? key}) : super(key: key);
+
+  final double height = 80;
+  UserProfile userProfile = UserProfile.currentUser;
+
+  @override
+  Widget build(BuildContext context) {
+    void NavigateUnivSearch() async {
+      await Navigator.push(
+        context,
+        CupertinoPageRoute(
+          builder: (context) {
+            return UnivSearch();
+          },
+        ),
+      );
+    }
+
+    return AppBar(
+      toolbarHeight: 80,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            userProfile.schoolName,
+            style: const TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.normal),
+          ),
+          Text(
+            '${userProfile.grade}학년 ${userProfile.Class}반',
+            style: const TextStyle(
+                color: Colors.blue,
+                fontSize: 14,
+                fontWeight: FontWeight.normal),
+          ),
+        ],
+      ),
+      //backgroundColor: Colors.blue,
+      centerTitle: false,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(top: 24, right: 8),
+          child: IconButton(
+            onPressed: NavigateUnivSearch,
+            icon: const Icon(
+              Icons.search,
+              size: 28,
+              color: Color(0xff191919),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(height);
+
+
 }
