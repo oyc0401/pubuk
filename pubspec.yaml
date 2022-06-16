@@ -65,6 +65,7 @@ dependencies:
 #  webview_flutter: ^3.0.4
   path_provider: ^2.0.11
   flutter_inappwebview: ^5.4.3+7
+  provider: ^6.0.3
 
 
 

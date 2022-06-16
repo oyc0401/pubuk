@@ -81,19 +81,15 @@ class _UnivState extends State<Univ> {
 
   Widget succeed(List<UnivInfo> unives) {
     return ReorderableListView(
+      padding: EdgeInsets.symmetric(horizontal: 40),
       children: <Widget>[
         for (int index = 0; index < unives.length; index++)
-          ListTile(
-            key: Key('$index'),
-            title: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                color: Colors.white,
-                child: UnivCard(
-                  text: unives[index].univName,
-                  deleteUniv: () => deleteUniv(unives[index].id),
-                  navigate: () => NavigateUnivWeb(unives[index].univCode),
-                )),
-          ),
+        UnivCard(
+          key: Key('$index'),
+          text: unives[index].univName,
+          deleteUniv: () => deleteUniv(unives[index].id),
+          navigate: () => NavigateUnivWeb(unives[index].univCode),
+        ),
       ],
       onReorder: (int oldIndex, int newIndex) {
         setState(() {
@@ -193,38 +189,34 @@ class UnivCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(border: Border.all()),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              text,
-              style: TextStyle(fontSize: 24),
-            ),
+    return Card(child: Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            text,
+            style: TextStyle(fontSize: 24),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              CupertinoButton(
-                //color: Colors.red,
-                child: Text("이동하기"),
-                onPressed: () {
-                  navigate();
-                },
-              ),
-              CupertinoButton(
-                child: Text("삭제하기"),
-                onPressed: () {
-                  deleteUniv();
-                },
-              ),
-            ],
-          )
-        ],
-      ),
-    );
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            CupertinoButton(
+              //color: Colors.red,
+              child: Text("이동하기"),
+              onPressed: () {
+                navigate();
+              },
+            ),
+            CupertinoButton(
+              child: Text("삭제하기"),
+              onPressed: () {
+                deleteUniv();
+              },
+            ),
+          ],
+        )
+      ],
+    ),);
   }
 }
