@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'UnivModel.dart';
 import 'UnivName.dart';
+import 'UnivSearch.dart';
 
 class UnivProWeb extends StatelessWidget {
   UnivProWeb({Key? key, required this.univCode}) : super(key: key);
@@ -80,6 +81,14 @@ class SearchAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    void NavigateUnivSearch() async {
+      await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UnivSearch(),
+        ),
+      );
+    }
     return AppBar(
       toolbarHeight: height,
       title: Column(
@@ -176,12 +185,5 @@ class SearchAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(height);
 
-  void NavigateUnivSearch() async {
-    // await Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => UnivSearch(),
-    //   ),
-    // );
-  }
+
 }

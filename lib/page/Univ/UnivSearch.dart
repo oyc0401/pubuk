@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/UnivDB.dart';
 import 'package:flutterschool/page/Univ/UnivName.dart';
 import 'package:flutterschool/page/Univ/providerWeb.dart';
+import 'package:provider/provider.dart';
 
+import 'UnivModel.dart';
 import 'UnivWeb.dart';
 
 class UnivSearch extends StatefulWidget {
@@ -68,6 +70,8 @@ class _UnivSelectionState extends State<UnivSelection> {
   }
 
   void NavigateUnivWeb() async {
+    Provider.of<UnivModel>(context, listen: false)
+        .changeUnivCode(widget.univInfo.univCode);
     await Navigator.pushReplacement(
       context,
       MaterialPageRoute(

@@ -40,6 +40,12 @@ class UnivModel with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> changeUnivCode(String code) async {
+    univCode=code;
+    await _getFavorate();
+    notifyListeners();
+  }
+
   Future<void> changeFavorate() async {
     if (isLike) {
       await _deleteUniv();
