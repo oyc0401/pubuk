@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
-import 'package:flutterschool/page/Home/MainModel.dart';
+import 'package:flutterschool/page/Home/HomeModel.dart';
 import 'package:flutterschool/page/SignIn/register.dart';
 import 'package:flutterschool/page/Univ/UnivModel.dart';
 
@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  print("start");
+  print("앱 시작");
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   // 스플래시 화면 켜기
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -28,15 +28,15 @@ Future<void> main() async {
   // 유저 가져오기
   await UserProfile.initializeUser();
 
-  print("runApp");
+  print("초기설정 완료");
 
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     //systemNavigationBarColor: Colors.white, // navigation bar color
     statusBarColor: Colors.transparent, // status bar color
   ));
 
   await Run_App();
-  print("splash 끄기");
+  //print("splash 끄기");
   FlutterNativeSplash.remove();
 }
 
@@ -46,7 +46,7 @@ Run_App() async {
 
   // 로그인 provider가 없으면 로그인을 하지 않은것으로 판단.
   if (localUser.provider == "") {
-    print("로그인을 하지 않았습니다. 홈 화면 이동...");
+    print("로그인을 하지 않았습니다. 홈 화면 이동!");
     runApp(MyApp(initialWidget: const MyHomePage()));
     return;
   }
@@ -58,13 +58,13 @@ Run_App() async {
 
   // 저장소가 없으면 로그인은 했지만 회원가입을 하지 않은것으로 판단.
   if (serverUser == null) {
-    print("회원가입 중 입니다. 회원가입 이동...");
+    print("회원가입 중 입니다. 회원가입 이동!");
     runApp(MyApp(
         initialWidget:
         register(uid: localUser.uid, provider: localUser.provider)));
   } else {
     // 저장소가 있고 로그인을 했다고 판단.
-    print("현재 uid: ${localUser.uid} 홈 화면 이동...");
+    print("현재 uid: ${localUser.uid} 홈 화면 이동!");
     await UserProfile.save(serverUser);
     runApp(MyApp(initialWidget: const MyHomePage()));
   }
@@ -74,11 +74,8 @@ class MyApp extends StatelessWidget {
   MyApp({Key? key, required this.initialWidget}) : super(key: key);
   Widget initialWidget;
 
-  // This widget is the root of your application.
-
   @override
   Widget build(BuildContext context) {
-    print("main widget is built");
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -91,12 +88,12 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        // builder: (context, child) {
-        //   return MediaQuery(
-        //     data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-        //     child: child!,
-        //   );
-        // },
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: child!,
+          );
+        },
         title: 'Flutter Demo',
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,

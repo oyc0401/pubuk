@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/Profile/findschool.dart';
@@ -9,8 +8,7 @@ import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/userProfile.dart';
 import '../../Server/FireTool.dart';
-import '../Home/MainModel.dart';
-import '../mainPage.dart';
+import '../Home/HomeModel.dart';
 
 class setting extends StatefulWidget {
   const setting({Key? key}) : super(key: key);
@@ -43,7 +41,7 @@ class _settingState extends State<setting> {
         );
         break;
     }
-    Provider.of<HomeModel>(context,listen: false).setClass(myUserData);
+    Provider.of<HomeModel>(context, listen: false).setClass(myUserData);
     // 나가기
     Navigator.of(context).pop('complete');
   }
@@ -86,8 +84,6 @@ class _settingState extends State<setting> {
       ),
     );
   }
-
-
 
   Widget schoolSection() {
     return RoundButton(

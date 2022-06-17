@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:skeletons/skeletons.dart';
 
-import 'MainModel.dart';
+import 'HomeModel.dart';
 
 
 class MyTimeTable extends StatelessWidget {

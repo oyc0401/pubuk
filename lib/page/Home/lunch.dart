@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutterschool/page/Home/MainModel.dart';
+import 'package:flutterschool/page/Home/HomeModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
@@ -29,7 +29,7 @@ class LunchScroll extends StatelessWidget {
 
   List<Lunch> lunches;
 
-  LunchScroll({
+   LunchScroll({
     Key? key,
     required this.lunches,
   }) : super(key: key);

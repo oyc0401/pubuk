@@ -1,17 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutterschool/page/Home/MainModel.dart';
 
-import 'package:flutterschool/page/Univ/UnivWeb.dart';
 import 'package:flutterschool/page/Univ/providerWeb.dart';
 import 'package:provider/provider.dart';
-import 'package:skeletons/skeletons.dart';
+
 
 import '../../DB/UnivDB.dart';
 import '../../DB/userProfile.dart';
 
-import '../Profile/profile.dart';
 import 'UnivModel.dart';
 import 'UnivSearch.dart';
 

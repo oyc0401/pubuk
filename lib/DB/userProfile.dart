@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfile {
@@ -44,12 +43,8 @@ class UserProfile {
   }
 
   static UserProfile get currentUser {
-    if (_current != null) {
-      return _current!;
-    } else {
-      print("Warning: 유저 초기화가 필요합니다.");
-      return _current!;
-    }
+    assert(_current != null, "Warning: 유저 초기화가 필요합니다.");
+    return _current!;
   }
 
   static Future<void> save(UserProfile userProfile) async {
@@ -59,7 +54,7 @@ class UserProfile {
     savePro.setUserProfile(userProfile);
   }
 
-  factory UserProfile.guest() {
+  static UserProfile guest() {
     UserProfile userProfile = UserProfile.currentUser;
 
     return UserProfile(
@@ -71,7 +66,7 @@ class UserProfile {
     );
   }
 
-  factory UserProfile.fromMap(Map map) {
+  static UserProfile fromMap(Map map) {
     UserProfile user = UserProfile();
     return UserProfile(
       uid: map['uid'] ?? user.uid,

@@ -16,6 +16,7 @@ class HomeModel with ChangeNotifier {
   ClassData? classData;
 
   Future<void> setClass(UserProfile userProfile) async {
+    print("${userProfile.grade}학년 ${userProfile.Class}반 시간표 불러오는중...");
     TableDownloader tabledown = TableDownloader(
       Grade: userProfile.grade,
       Class: userProfile.Class,
@@ -25,10 +26,12 @@ class HomeModel with ChangeNotifier {
     await tabledown.downLoad();
 
     classData = tabledown.getData();
+
     notifyListeners();
   }
 
   Future<void> setLunch(UserProfile userProfile) async {
+    print("${userProfile.schoolName} 급식 불러오는중...");
     LunchDownloader lunchDownloader = LunchDownloader(
       SchoolCode: userProfile.schoolCode,
       CityCode: userProfile.schoolLocalCode,
