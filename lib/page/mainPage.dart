@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import 'Home/home.dart';
 import 'Univ/Univ.dart';
+import 'Univ/UnivModel.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -56,7 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
           label: "Places",
           icon: Icon(Icons.location_on),
         ),
-
       ],
     );
   }
@@ -64,7 +66,30 @@ class _MyHomePageState extends State<MyHomePage> {
   List _widgetOptions() {
     return [
       const Home(),
-      const Univ(),
+      ChangeNotifierProvider(
+        create: (context) => UnivModel(
+            univCode: "0000046",
+            year: 2023,
+            univWay: UnivWay.subject,
+            isLike: false),
+        child: MaterialApp(
+          theme: ThemeData(
+            scaffoldBackgroundColor: Colors.white,
+            appBarTheme: const AppBarTheme(
+              systemOverlayStyle: SystemUiOverlayStyle.dark,
+              centerTitle: true,
+              elevation: 0,
+              scrolledUnderElevation: 3,
+              shadowColor: Color(0x67FFFFFF),
+              toolbarTextStyle: TextStyle(color: Colors.black),
+              backgroundColor: Colors.white,
+              iconTheme: IconThemeData(color: Colors.black),
+            ),
+          ),
+          home: const Univ(),
+        ),
+      ),
+
       const Text(
         'Music',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
@@ -73,8 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
         'Places',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
       ),
-
     ];
   }
-
 }

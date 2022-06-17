@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutterschool/page/MainModel.dart';
 
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
 import 'package:flutterschool/page/Univ/providerWeb.dart';
@@ -21,18 +23,14 @@ class Univ extends StatefulWidget {
 }
 
 class _UnivState extends State<Univ> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: UnivAppBar(),
-      body: Body(),
+      body: const Body(),
     );
   }
 }
-
-
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -70,6 +68,11 @@ class _BodyState extends State<Body> {
   }
 
   Widget succeed(List<UnivInfo> unives) {
+
+    if(unives.length==0){
+      return Text("북마크한 대학이 없습니다.",style: TextStyle(color: Colors.black),);
+    }
+
     return ReorderableListView(
       padding: EdgeInsets.symmetric(horizontal: 40),
       children: <Widget>[
@@ -189,7 +192,6 @@ class UnivCard extends StatelessWidget {
   }
 }
 
-
 class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
   UnivAppBar({Key? key}) : super(key: key);
 
@@ -250,6 +252,4 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(height);
-
-
 }

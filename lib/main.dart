@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
+import 'package:flutterschool/page/MainModel.dart';
 import 'package:flutterschool/page/SignIn/register.dart';
 import 'package:flutterschool/page/Univ/UnivModel.dart';
 
@@ -80,12 +81,15 @@ class MyApp extends StatelessWidget {
     print("main widget is built");
     return MultiProvider(
       providers: [
+        // ChangeNotifierProvider(
+        // create: (context) => UnivModel(
+        // univCode: "0000046",
+        // year: 2023,
+        // univWay: UnivWay.subject,
+        // isLike: false)),
+
         ChangeNotifierProvider(
-          create: (context) => UnivModel(
-              univCode: "0000046",
-              year: 2023,
-              univWay: UnivWay.subject,
-              isLike: false),
+          create: (context) => MainModel(name: 'dodo'),
         ),
       ],
       child: MaterialApp(
