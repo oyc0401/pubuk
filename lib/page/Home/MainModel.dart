@@ -6,19 +6,16 @@ import 'lunch.dart';
 
 class HomeModel with ChangeNotifier {
   HomeModel() {
-    init();
-  }
-
-  init() async {
-
-    classData=await getData();
-    lunches=await getLunch();
-    notifyListeners();
-  }
-
-  Future<ClassData> getData() async {
     UserProfile userProfile = UserProfile.currentUser;
 
+    setClass(userProfile);
+    setLunch(userProfile);
+  }
+
+  List<Lunch>? lunches;
+  ClassData? classData;
+
+  Future<void> setClass(UserProfile userProfile) async {
     TableDownloader tabledown = TableDownloader(
       Grade: userProfile.grade,
       Class: userProfile.Class,
@@ -27,26 +24,18 @@ class HomeModel with ChangeNotifier {
     );
     await tabledown.downLoad();
 
-    ClassData dataBox = tabledown.getData();
-
-    return dataBox;
+    classData = tabledown.getData();
+    notifyListeners();
   }
 
-  Future<List<Lunch>> getLunch() async {
-    UserProfile userData = UserProfile.currentUser;
-    int schoolCode = userData.schoolCode;
-    String cityCode = userData.schoolLocalCode;
-
-    LunchDownloader lunchDownloader =
-    LunchDownloader(SchoolCode: schoolCode, CityCode: cityCode);
+  Future<void> setLunch(UserProfile userProfile) async {
+    LunchDownloader lunchDownloader = LunchDownloader(
+      SchoolCode: userProfile.schoolCode,
+      CityCode: userProfile.schoolLocalCode,
+    );
     await lunchDownloader.downLoad();
-    return lunchDownloader.getLunches();
+
+    lunches = lunchDownloader.getLunches();
+    notifyListeners();
   }
-
-
-
-  List<Lunch>? lunches;
-  ClassData? classData;
-
-
 }

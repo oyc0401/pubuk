@@ -45,7 +45,7 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.all(12.0),
             child: MyTimeTable(),
           ),
-          const Padding(
+           const Padding(
             padding: EdgeInsets.only(top: 12, bottom: 12),
             child: LunchBuilder(),
           ),

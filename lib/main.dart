@@ -86,7 +86,6 @@ class MyApp extends StatelessWidget {
         univCode: "0000046",
         year: 2023,
         univWay: UnivWay.subject,)),
-
         ChangeNotifierProvider(
           create: (context) => HomeModel(),
         ),

@@ -54,9 +54,10 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     List<UnivInfo>? favorateUnives =
         Provider.of<UnivModel>(context).favorateUnives;
-
     if (favorateUnives == null) {
-      return loading();
+      return Container(
+        color: Colors.white,
+      );
     } else {
       return succeed(favorateUnives);
     }
@@ -69,7 +70,6 @@ class _BodyState extends State<Body> {
         style: TextStyle(color: Colors.black),
       );
     }
-
     return ReorderableListView(
       padding: EdgeInsets.symmetric(horizontal: 40),
       children: <Widget>[
@@ -86,12 +86,6 @@ class _BodyState extends State<Body> {
         Provider.of<UnivModel>(context, listen: false)
             .changePrefer(oldIndex, newIndex);
       },
-    );
-  }
-
-  Widget loading() {
-    return Container(
-      color: Colors.grey,
     );
   }
 }
@@ -128,7 +122,7 @@ class UnivCard extends StatelessWidget {
               CupertinoButton(
                 child: Text("삭제하기"),
                 onPressed: () => Provider.of<UnivModel>(context, listen: false)
-                      .delete(univ.univCode),
+                    .delete(univ.univCode),
               ),
             ],
           )
@@ -138,7 +132,6 @@ class UnivCard extends StatelessWidget {
   }
 
   void NavigateUnivWeb(BuildContext context) {
-
     /// webview code 변경, 시작 할 땐 2023년 으로
     Provider.of<UnivModel>(context, listen: false).univCode = univ.univCode;
     Provider.of<UnivModel>(context, listen: false).year = 2023;

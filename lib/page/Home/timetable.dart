@@ -5,98 +5,36 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../../DB/userProfile.dart';
+import 'MainModel.dart';
 
-class MyTimeTable extends StatefulWidget {
-  MyTimeTable({Key? key}) : super(key: key);
 
-  @override
-  State<MyTimeTable> createState() => _MyTimeTableState();
-}
-
-class _MyTimeTableState extends State<MyTimeTable> {
-  /// 이 화면은 [getInfo]에서 [UserProfile]를 얻어온다.
-  /// 여기서 유저의 학년, 반, 학교코드를 얻어낸다.
-  /// 이 값을 사용해 나이스 오픈 데이터 포털에서 시간표 정보를 json 형식으로 가져와 화면을 만들게 된다.
-  /// [timetableSection]에 매개변수로 [TableDownloader]에서 가져온 정리된 데이터를 매개변수로 넣게 되면 시간표 위젯을 반환한다.
-
-  UserProfile userProfile = UserProfile.currentUser;
-
-  Future<ClassData> getData() async {
-    TableDownloader tabledown = TableDownloader(
-      Grade: userProfile.grade,
-      Class: userProfile.Class,
-      SchoolCode: userProfile.schoolCode,
-      CityCode: userProfile.schoolLocalCode,
-    );
-    await tabledown.downLoad();
-
-    ClassData dataBox = tabledown.getData();
-
-    return dataBox;
-  }
+class MyTimeTable extends StatelessWidget {
+  const MyTimeTable({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        FutureBuilder(
-          future: getData(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData == false) {
-              return waiting();
-            } else if (snapshot.hasError) {
-              return error(snapshot);
-            } else {
-              ClassData dataBox = snapshot.data;
-              return succeed(dataBox);
-            }
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget succeed(ClassData data) {
-    return TimeTable(
-      height: 450,
-      percent: 0.4,
-      monday: data.Mon,
-      tuesday: data.Tue,
-      wednesday: data.Wed,
-      thursday: data.Thu,
-      friday: data.Fri,
-    );
-  }
-
-  Widget error(AsyncSnapshot<dynamic> snapshot) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        'Error: ${snapshot.error}',
-        style: TextStyle(fontSize: 15),
-      ),
-    );
-  }
-
-  Widget waiting() {
-    return Skeleton(
-      isLoading: true,
-      skeleton: const SkeletonAvatar(
-          style: SkeletonAvatarStyle(width: 480, height: 450)),
-      child: Container(),
-    );
-  }
-
-  Widget infoSection() {
-    return SizedBox(
-      height: 30,
-      child: Row(
-        children: [Text('${userProfile.grade}학년 ${userProfile.Class}반')],
-      ),
-    );
+    ClassData? classData = Provider.of<HomeModel>(context).classData;
+    if(classData==null){
+       return Skeleton(
+        isLoading: true,
+        skeleton: const SkeletonAvatar(
+            style: SkeletonAvatarStyle(width: 480, height: 450)),
+        child: Container(),
+      );
+    }else{
+      return TimeTable(
+        height: 450,
+        percent: 0.4,
+        monday: classData.Mon,
+        tuesday: classData.Tue,
+        wednesday: classData.Wed,
+        thursday: classData.Thu,
+        friday: classData.Fri,
+      );
+    }
   }
 }
 

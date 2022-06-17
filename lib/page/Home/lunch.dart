@@ -1,70 +1,26 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/Home/MainModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../../DB/userProfile.dart';
-
-class LunchBuilder extends StatefulWidget {
+class LunchBuilder extends StatelessWidget {
   const LunchBuilder({Key? key}) : super(key: key);
 
   @override
-  _LunchBuilderState createState() => _LunchBuilderState();
-}
-
-class _LunchBuilderState extends State<LunchBuilder> {
-  /// [getLunch]로 나이스 오픈 데이터 포털에서 급식 정보를 가져온다.
-
-  Future<List<Lunch>> getLunch() async {
-    UserProfile userData = UserProfile.currentUser;
-    int schoolCode = userData.schoolCode;
-    String cityCode = userData.schoolLocalCode;
-
-    LunchDownloader lunchDownloader =
-        LunchDownloader(SchoolCode: schoolCode, CityCode: cityCode);
-    await lunchDownloader.downLoad();
-    return lunchDownloader.getLunches();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getLunch(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData == false) {
-          return waiting();
-        } else if (snapshot.hasError) {
-          return error(snapshot);
-        } else {
-          //return waiting();
-          return succeed(snapshot);
-          //  return waiting();
-        }
-      },
-    );
-  }
+    List<Lunch>? lunches = Provider.of<HomeModel>(context).lunches;
 
-  Widget succeed(AsyncSnapshot<dynamic> snapshot) {
-    List<Lunch> lunches = snapshot.data;
-    return LunchScroll(lunches: lunches);
-  }
-
-  Widget error(AsyncSnapshot<dynamic> snapshot) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        'Error: ${snapshot.error}',
-        style: TextStyle(fontSize: 15),
-      ),
-    );
-  }
-
-  Widget waiting() {
-    return const SkeletonScroll();
+    if (lunches == null) {
+      return const SkeletonScroll();
+    } else {
+      return LunchScroll(lunches: lunches);
+    }
   }
 }
 
@@ -72,6 +28,7 @@ class LunchScroll extends StatelessWidget {
   /// Lunch 배열로 만드는 스크롤 위젯
 
   List<Lunch> lunches;
+
   LunchScroll({
     Key? key,
     required this.lunches,
@@ -158,7 +115,7 @@ class LunchContainer extends StatelessWidget {
       skeleton: const Padding(
         padding: EdgeInsets.all(3.0),
         child:
-        SkeletonAvatar(style: SkeletonAvatarStyle(width: 100, height: 14)),
+            SkeletonAvatar(style: SkeletonAvatarStyle(width: 100, height: 14)),
       ),
       child: Text(text, overflow: TextOverflow.ellipsis),
     );
@@ -194,7 +151,6 @@ class SkeletonScroll extends StatelessWidget {
         },
       ),
     );
-    
   }
 }
 
