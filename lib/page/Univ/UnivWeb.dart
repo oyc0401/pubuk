@@ -635,9 +635,7 @@
 // //             ),
 // //             IconButton(
 // //               icon: const Icon(Icons.replay),
-// //               onPressed: !webViewReady
-// //                   ? null
-// //                   : () {
+// //               onPressed: !webViewReady ? null: () {
 // //                       controller!.reload();
 // //                     },
 // //             ),

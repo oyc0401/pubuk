@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
-import 'package:flutterschool/page/MainModel.dart';
+import 'package:flutterschool/page/Home/MainModel.dart';
 import 'package:flutterschool/page/SignIn/register.dart';
 import 'package:flutterschool/page/Univ/UnivModel.dart';
 
@@ -81,15 +81,14 @@ class MyApp extends StatelessWidget {
     print("main widget is built");
     return MultiProvider(
       providers: [
-        // ChangeNotifierProvider(
-        // create: (context) => UnivModel(
-        // univCode: "0000046",
-        // year: 2023,
-        // univWay: UnivWay.subject,
-        // isLike: false)),
+        ChangeNotifierProvider(
+        create: (context) => UnivModel(
+        univCode: "0000046",
+        year: 2023,
+        univWay: UnivWay.subject,)),
 
         ChangeNotifierProvider(
-          create: (context) => MainModel(name: 'dodo'),
+          create: (context) => HomeModel(),
         ),
       ],
       child: MaterialApp(
@@ -102,7 +101,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
-          appBarTheme: AppBarTheme(
+          appBarTheme: const AppBarTheme(
             systemOverlayStyle: SystemUiOverlayStyle.dark,
             // 2
 

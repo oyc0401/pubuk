@@ -109,4 +109,9 @@ class UnivInfo {
       'preference': preference,
     };
   }
+
+  @override
+  String toString() {
+    return toMap().toString();
+  }
 }

@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'package:provider/provider.dart';
+import 'package:scroll_app_bar/scroll_app_bar.dart';
 
 import 'UnivModel.dart';
 import 'UnivName.dart';
@@ -12,8 +15,47 @@ class UnivProWeb extends StatelessWidget {
   UnivProWeb({Key? key, required this.univCode}) : super(key: key);
   String univCode;
 
+  final controller = ScrollController();
   @override
   Widget build(BuildContext context) {
+
+    // return Scaffold(
+    //   appBar: ScrollAppBar(
+    //     controller: controller, // Note the controller here
+    //     title: const Text("Pin/unpin"),
+    //   ),
+    //   body: ListView(
+    //     controller: controller, // Controller is also here
+    //     children: [
+    //       Container(
+    //         color: Colors.red,
+    //         child: SizedBox(
+    //           height: MediaQuery.of(context).size.height * 2,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    //   floatingActionButton: FloatingActionButton(
+    //     onPressed: () {
+    //       if (controller.appBar.isPinned) {
+    //         controller.appBar.setPinState(false);
+    //       } else {
+    //         controller.appBar.setPinState(true);
+    //       }
+    //     },
+    //     child: ValueListenableBuilder<bool>(
+    //       valueListenable: controller.appBar.pinNotifier,
+    //       child: const Icon(Icons.push_pin),
+    //       builder: (context, value, child) {
+    //         if (!value) return child!;
+    //         return Transform.rotate(angle: pi / 2, child: child);
+    //       },
+    //     ),
+    //   ),
+    // );
+
+
+
     return Scaffold(
       appBar: SearchAppBar(),
       body: UnivWebView(),
@@ -48,28 +90,18 @@ class UnivWebView extends StatelessWidget {
 class LikeButton extends StatelessWidget {
   const LikeButton({Key? key}) : super(key: key);
 
-  Icon _icon(bool isFavorate) {
-    if (isFavorate) {
-      return const Icon(
-        Icons.favorite,
-        color: Colors.redAccent,
-      );
-    } else {
-      return const Icon(
-        Icons.favorite_border,
-        color: Color(0xff191919),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
       backgroundColor: Colors.white,
-      onPressed: () {
-        Provider.of<UnivModel>(context, listen: false).changeFavorate();
-      },
-      child: _icon(Provider.of<UnivModel>(context).isLike),
+      onPressed: () =>
+          Provider.of<UnivModel>(context, listen: false).changeFavorate(),
+      child: Icon(
+        Icons.favorite,
+        color: Provider.of<UnivModel>(context).ifLikeIt
+            ? Colors.redAccent
+            : const Color(0xff191919),
+      ),
     );
   }
 }
@@ -89,13 +121,15 @@ class SearchAppBar extends StatelessWidget with PreferredSizeWidget {
         ),
       );
     }
+
     return AppBar(
       toolbarHeight: height,
+      elevation: 4,
       title: Column(
         children: [
           Text(
             UnivName.getUnivName(Provider.of<UnivModel>(context).univCode),
-            style: TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.black),
           ),
           Row(
             children: [
@@ -184,6 +218,4 @@ class SearchAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(height);
-
-
 }

@@ -10,28 +10,72 @@ class UnivModel with ChangeNotifier {
     required this.univCode,
     required this.year,
     required this.univWay,
-    required this.isLike,
   }) {
-    _getFavorate();
+    print("UnivModel 불러오는 중...");
+
+    setList().then((value) => print("UnivModel 불러오기 완료!"));
   }
 
+  List<UnivInfo>? favorateUnives;
   String univCode;
   int year;
   UnivWay univWay;
-  bool isLike;
-
   InAppWebViewController? webViewController;
 
-  void plusYear() {
-    year++;
-    _setUrl();
+  /// 처음 시작할 때
+  Future<void> setList() async {
+    UnivDB univ = UnivDB();
+
+    favorateUnives = await univ.getInfo();
+    for (UnivInfo element in favorateUnives!) {
+      print("불러오기: ${element.toMap()}");
+    }
     notifyListeners();
   }
 
-  void minusYear() {
-    year--;
-    _setUrl();
+  /// Univ에서 사용하는 함수
+
+  void changePrefer(int selectIndex, int targetIndex) {
+    print("selectIndex: $selectIndex, targetIndex: $targetIndex");
+
+    /// DB에 저장
+    // preference 다시 설정
+    UnivDB univ = UnivDB();
+    UnivInfo selectUniv = favorateUnives![selectIndex];
+    UnivInfo targetUniv = favorateUnives![targetIndex];
+
+    // 둘이 pre 바꾸기
+    int target=selectUniv.preference;
+
+    selectUniv.preference=targetUniv.preference;
+    targetUniv.preference=target;
+    // 저장
+    univ.updateInfo(selectUniv);
+    univ.updateInfo(targetUniv);
+
+    /// 배열 설정
+    UnivInfo univInfo = favorateUnives!.removeAt(selectIndex);
+    favorateUnives!.insert(targetIndex, univInfo);
+
     notifyListeners();
+  }
+
+  /// web view 에서 사용하는 함수
+  void plusYear() {
+    if(year<2023){
+      year++;
+      _setUrl();
+      notifyListeners();
+    }
+  }
+
+  void minusYear() {
+    if(2019<year){
+      year--;
+      _setUrl();
+      notifyListeners();
+    }
+
   }
 
   void changeUnivWay(UnivWay way) {
@@ -40,65 +84,45 @@ class UnivModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> changeUnivCode(String code) async {
-    univCode=code;
-    await _getFavorate();
-    notifyListeners();
-  }
-
-  Future<void> changeFavorate() async {
-    if (isLike) {
-      await _deleteUniv();
-      isLike = false;
-    } else {
-      await _insertUniv();
-      isLike = true;
-    }
-    notifyListeners();
-  }
-
-  Future<void> _setUrl() async =>
-      await webViewController?.loadUrl(urlRequest: URLRequest(url: uri));
-
   Uri get uri {
     if (2022 <= year && year <= 2023) {
       switch (univWay) {
         case UnivWay.comprehensive:
           return Uri.parse(
               "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=${year}&univ_cd=${univCode}&iem_cd=${26}");
+              "sch_year=$year&univ_cd=$univCode&iem_cd=${26}");
         case UnivWay.subject:
           return Uri.parse(
               "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=${year}&univ_cd=${univCode}&iem_cd=${31}");
+              "sch_year=$year&univ_cd=$univCode&iem_cd=${31}");
 
         case UnivWay.sat:
           return Uri.parse(
               "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=${year}&univ_cd=${univCode}&iem_cd=${41}");
+              "sch_year=$year&univ_cd=$univCode&iem_cd=${41}");
       }
     } else if (year == 2021) {
       switch (univWay) {
         case UnivWay.comprehensive:
           return Uri.parse(
               "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=${year}&univ_cd=${univCode}&iem_cd=${30}");
+              "sch_year=$year&univ_cd=$univCode&iem_cd=${30}");
         case UnivWay.subject:
           return Uri.parse(
               "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=${year}&univ_cd=${univCode}&iem_cd=${31}");
+              "sch_year=$year&univ_cd=$univCode&iem_cd=${31}");
 
         case UnivWay.sat:
           return Uri.parse(
               "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=${year}&univ_cd=${univCode}&iem_cd=${32}");
+              "sch_year=$year&univ_cd=$univCode&iem_cd=${32}");
       }
-    } else if (year == 2020) {
+    } else if (year <= 2020) {
       switch (univWay) {
         case UnivWay.comprehensive:
           return Uri.parse(
               "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=${year}&univ_cd=${univCode}&iem_cd=${13}");
+              "sch_year=$year&univ_cd=$univCode&iem_cd=${13}");
         case UnivWay.subject:
           return Uri.parse("https://www.google.co.kr/");
 
@@ -110,35 +134,76 @@ class UnivModel with ChangeNotifier {
     }
   }
 
-  Future<void> _getFavorate() async {
-    print("즐겨찾기를 했는지 확인중...");
-    UnivDB univDB = UnivDB();
-    List<UnivInfo> univList = await univDB.getInfo();
-    for (UnivInfo univ in univList) {
+  Future<void> _setUrl() async =>
+      await webViewController?.loadUrl(urlRequest: URLRequest(url: uri));
+
+  /// floatButton 에서 사용하는 함수
+  bool get ifLikeIt {
+    for (UnivInfo univ in favorateUnives!) {
       // 이미 즐겨찾기를 했으면
       if (univ.univCode == univCode) {
-        isLike = true;
-        print("즐겨찾기 O");
-        return;
+        print("${UnivName.getUnivName(univCode)}: 즐겨찾기 O");
+        return true;
       }
     }
     // 즐겨찾기를 안했으면
-    isLike = false;
-    print("즐겨찾기 X");
+    print("${UnivName.getUnivName(univCode)}: 즐겨찾기 X");
+    return false;
   }
 
-  Future<void> _insertUniv() async {
-    UnivDB univDB = UnivDB();
-    univDB.insertInfo(UnivInfo(
-        id: univCode,
-        univName: UnivName.getUnivName(univCode),
-        univCode: univCode,
-        preference: UnivDB.lenght));
+  Future<void> changeFavorate() async {
+    if (ifLikeIt) {
+      await delete(univCode);
+    } else {
+      await insert(univCode);
+    }
+    notifyListeners();
   }
 
-  Future<void> _deleteUniv() async {
+  Future<void> insert(String code) async {
+    // 뒤에서 삽입 구조
+
     UnivDB univDB = UnivDB();
-    univDB.deleteInfo(univCode);
+
+    /// 추가해야 할 prefer 구하기
+    int prefer = favorateUnives!.last.preference;
+    prefer++;
+
+    /// 추가해야 할 univ 설정
+    UnivInfo univ = UnivInfo(
+        id: code,
+        univName: UnivName.getUnivName(code),
+        univCode: code,
+        preference: prefer);
+
+    /// db에 추가
+    univDB.insertInfo(univ);
+
+    /// 배열에 추가
+    favorateUnives!.add(univ);
+  }
+
+  Future<void> delete(String code) async {
+    // 뒤에서 삽입 구조
+
+    UnivDB univDB = UnivDB();
+
+    /// db에서 삭제
+    univDB.deleteInfo(code);
+
+    /// 배열에서 삭제
+    for (int index = 0; index <= favorateUnives!.length; index++) {
+      if (favorateUnives![index].univCode == code) {
+        favorateUnives!.removeAt(index);
+        break;
+      }
+    }
+  }
+
+  /// search 에서 사용하는 함수
+  Future<void> changeUnivCode(String code) async {
+    univCode = code;
+    notifyListeners();
   }
 }
 

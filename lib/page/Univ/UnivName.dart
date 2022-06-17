@@ -24,7 +24,7 @@ class UnivName {
 
 
 // 2022.6.16 대학들
-Map universities = {
+final Map universities = {
   "0002748": "가야대학교(김해)[본교]",
   "0000063": "가천대학교[본교]",
   "0000072": "가톨릭관동대학교[본교]",

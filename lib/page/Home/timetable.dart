@@ -42,7 +42,6 @@ class _MyTimeTableState extends State<MyTimeTable> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        //infoSection(),
         FutureBuilder(
           future: getData(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {

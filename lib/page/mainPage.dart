@@ -66,30 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List _widgetOptions() {
     return [
       const Home(),
-      ChangeNotifierProvider(
-        create: (context) => UnivModel(
-            univCode: "0000046",
-            year: 2023,
-            univWay: UnivWay.subject,
-            isLike: false),
-        child: MaterialApp(
-          theme: ThemeData(
-            scaffoldBackgroundColor: Colors.white,
-            appBarTheme: const AppBarTheme(
-              systemOverlayStyle: SystemUiOverlayStyle.dark,
-              centerTitle: true,
-              elevation: 0,
-              scrolledUnderElevation: 3,
-              shadowColor: Color(0x67FFFFFF),
-              toolbarTextStyle: TextStyle(color: Colors.black),
-              backgroundColor: Colors.white,
-              iconTheme: IconThemeData(color: Colors.black),
-            ),
-          ),
-          home: const Univ(),
-        ),
-      ),
-
+      const Univ(),
       const Text(
         'Music',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),

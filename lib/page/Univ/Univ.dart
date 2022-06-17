@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterschool/page/MainModel.dart';
+import 'package:flutterschool/page/Home/MainModel.dart';
 
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
 import 'package:flutterschool/page/Univ/providerWeb.dart';
@@ -52,25 +52,22 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getUiv(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData == false) {
-          return waiting();
-        } else if (snapshot.hasError) {
-          return error(snapshot);
-        } else {
-          List<UnivInfo> unives = snapshot.data;
-          return succeed(unives);
-        }
-      },
-    );
+    List<UnivInfo>? favorateUnives =
+        Provider.of<UnivModel>(context).favorateUnives;
+
+    if (favorateUnives == null) {
+      return loading();
+    } else {
+      return succeed(favorateUnives);
+    }
   }
 
   Widget succeed(List<UnivInfo> unives) {
-
-    if(unives.length==0){
-      return Text("북마크한 대학이 없습니다.",style: TextStyle(color: Colors.black),);
+    if (unives.isEmpty) {
+      return const Text(
+        "북마크한 대학이 없습니다.",
+        style: TextStyle(color: Colors.black),
+      );
     }
 
     return ReorderableListView(
@@ -83,46 +80,18 @@ class _BodyState extends State<Body> {
           ),
       ],
       onReorder: (int oldIndex, int newIndex) {
-        setState(() {
-          if (oldIndex < newIndex) {
-            newIndex -= 1;
-          }
-
-          // 배열 설정
-          UnivInfo univInfo = unives.removeAt(oldIndex);
-          unives.insert(newIndex, univInfo);
-
-          // preference 다시 설정
-          UnivDB univ = UnivDB();
-
-          int smallIndex = oldIndex <= newIndex ? oldIndex : newIndex;
-          int bigIndex = oldIndex <= newIndex ? newIndex : oldIndex;
-
-          for (int i = smallIndex; i <= bigIndex; i++) {
-            unives[i].preference = i;
-            univ.updateInfo(unives[i]);
-          }
-        });
+        if (oldIndex < newIndex) {
+          newIndex -= 1;
+        }
+        Provider.of<UnivModel>(context, listen: false)
+            .changePrefer(oldIndex, newIndex);
       },
     );
   }
 
-  Widget error(AsyncSnapshot<dynamic> snapshot) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        'Error: ${snapshot.error}',
-        style: TextStyle(fontSize: 15),
-      ),
-    );
-  }
-
-  Widget waiting() {
-    return Skeleton(
-      isLoading: true,
-      skeleton: const SkeletonAvatar(
-          style: SkeletonAvatarStyle(width: 480, height: 450)),
-      child: Container(),
+  Widget loading() {
+    return Container(
+      color: Colors.grey,
     );
   }
 }
@@ -136,7 +105,6 @@ class UnivCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<UnivModel>(context);
     return Card(
       child: Column(
         children: [
@@ -154,12 +122,13 @@ class UnivCard extends StatelessWidget {
                 //color: Colors.red,
                 child: Text("이동하기"),
                 onPressed: () {
-                  NavigateUnivWeb(context, viewModel);
+                  NavigateUnivWeb(context);
                 },
               ),
               CupertinoButton(
                 child: Text("삭제하기"),
-                onPressed: deleteUniv,
+                onPressed: () => Provider.of<UnivModel>(context, listen: false)
+                      .delete(univ.univCode),
               ),
             ],
           )
@@ -168,15 +137,18 @@ class UnivCard extends StatelessWidget {
     );
   }
 
-  void NavigateUnivWeb(BuildContext context, UnivModel viewModel) {
+  void NavigateUnivWeb(BuildContext context) {
+
+    /// webview code 변경, 시작 할 땐 2023년 으로
     Provider.of<UnivModel>(context, listen: false).univCode = univ.univCode;
+    Provider.of<UnivModel>(context, listen: false).year = 2023;
 
     Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) {
           return ChangeNotifierProvider.value(
-            value: viewModel,
+            value: Provider.of<UnivModel>(context),
             child: UnivProWeb(
               univCode: univ.univCode,
             ),
@@ -184,11 +156,6 @@ class UnivCard extends StatelessWidget {
         },
       ),
     );
-  }
-
-  void deleteUniv() async {
-    UnivDB univdb = UnivDB();
-    await univdb.deleteInfo(univ.id);
   }
 }
 
@@ -200,17 +167,6 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    void NavigateUnivSearch() async {
-      await Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) {
-            return UnivSearch();
-          },
-        ),
-      );
-    }
-
     return AppBar(
       toolbarHeight: 80,
       title: Column(
@@ -238,7 +194,9 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
         Padding(
           padding: const EdgeInsets.only(top: 24, right: 8),
           child: IconButton(
-            onPressed: NavigateUnivSearch,
+            onPressed: () {
+              NavigateUnivSearch(context);
+            },
             icon: const Icon(
               Icons.search,
               size: 28,
@@ -247,6 +205,18 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void NavigateUnivSearch(BuildContext context) async {
+    Provider.of<UnivModel>(context, listen: false).year = 2023;
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) {
+          return UnivSearch();
+        },
+      ),
     );
   }
 
