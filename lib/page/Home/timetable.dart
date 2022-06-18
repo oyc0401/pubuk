@@ -10,21 +10,20 @@ import 'package:skeletons/skeletons.dart';
 
 import 'HomeModel.dart';
 
-
 class MyTimeTable extends StatelessWidget {
   const MyTimeTable({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     ClassData? classData = Provider.of<HomeModel>(context).classData;
-    if(classData==null){
-       return Skeleton(
+    if (classData == null) {
+      return Skeleton(
         isLoading: true,
         skeleton: const SkeletonAvatar(
             style: SkeletonAvatarStyle(width: 480, height: 450)),
         child: Container(),
       );
-    }else{
+    } else {
       return TimeTable(
         height: 450,
         percent: 0.4,
@@ -218,7 +217,7 @@ class TableDownloader {
 
   Future<void> downLoad() async => Json = await _getJson();
 
-  ClassData getData() => _Data(Json);
+  ClassData getData() => classDataFromJson(Json);
 
   Uri _MyUri() {
     var now = DateTime.now();
@@ -249,11 +248,10 @@ class TableDownloader {
     }
   }
 
-  ClassData _Data(Map<String, dynamic> json) {
+  ClassData classDataFromJson(Map<String, dynamic> json) {
     // 각 요일의 날짜를 구하기
     final DateTime now = DateTime.now();
-
-    List<String> dates = [];
+    List<String> dates = [];  // dates: [20220613, 20220614, 20220615, 20220616, 20220617]
     for (int i = 1; i <= 5; i++) {
       dates.add(DateFormat('yyyyMMdd')
           .format(now.add(Duration(days: -1 * now.weekday + i))));
@@ -266,19 +264,20 @@ class TableDownloader {
         arrThu = [],
         arrFri = [];
 
-    if (json['hisTimetable'] == null) {
-      String message = "데이터가 없습니다.";
-      arrMon.add(message);
-      arrTue.add(message);
-      arrWed.add(message);
-      arrThu.add(message);
-      arrFri.add(message);
-    } else if (json['hisTimetable'][0]['head'][1]['RESULT']['MESSAGE'] ==
-        "정상 처리되었습니다.") {
-      // List에 요일별로 저장하기
+    // 이 리스트는 시간 맵이 모두 들어있는 리스트
+    List? TimeList = json['hisTimetable']?[1]?['row'];
 
-      // 이 리스트는 시간 맵이 모두 들어있는 리스트
-      List TimeList = json['hisTimetable'][1]['row'];
+    if (TimeList == null) {
+      assert(json["RESULT"]?["MESSAGE"] == "해당하는 데이터가 없습니다.", "시간표 url을 불러오는 과정에서 예상치 못한 오류가 발생했습니다.");
+      String message = "데이터가 없습니다.";
+        arrMon.add(message);
+        arrTue.add(message);
+        arrWed.add(message);
+        arrThu.add(message);
+        arrFri.add(message);
+    } else {
+      assert(json['hisTimetable']?[0]?['head']?[1]?['RESULT']?['MESSAGE'] ==
+          "정상 처리되었습니다.");
 
       for (int i = 0; i < TimeList.length; i++) {
         final String date = TimeList[i]['ALL_TI_YMD'];

@@ -6,15 +6,17 @@ import 'package:flutterschool/MyWidget/button.dart';
 import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/SignIn/AppleLogin.dart';
 import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
+import 'package:provider/provider.dart';
 
 import 'dart:async';
 
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../Home/HomeModel.dart';
 import '../mainPage.dart';
 import 'GoogleLogin.dart';
 import 'SignInButton.dart';
-import 'register.dart';
+import 'Register.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -84,6 +86,7 @@ class _SignInState extends State<SignIn> {
     } else {
       print("서버 DB에 동일한 유저 정보가 있습니다. 홈 화면 이동...");
       await UserProfile.save(userProfile);
+      Provider.of<HomeModel>(context, listen: false).setClass();
       NavigateHome();
     }
   }
@@ -93,7 +96,7 @@ class _SignInState extends State<SignIn> {
     Navigator.pushAndRemoveUntil(
       context,
       CupertinoPageRoute(
-        builder: (context) => register(uid: uid, provider: provider),
+        builder: (context) => Register(uid: uid, provider: provider),
       ),
       (route) => false,
     );

@@ -10,7 +10,7 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
   ],
 );
 
-class GoogleLogin implements Login {
+class GoogleLogin {
   @override
   String? uid;
 

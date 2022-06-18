@@ -4,7 +4,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 import 'Login.dart';
 
-class KakaoLogin implements Login {
+class KakaoLogin {
   @override
   String? uid;
 

@@ -41,7 +41,7 @@ class _settingState extends State<setting> {
         );
         break;
     }
-    Provider.of<HomeModel>(context, listen: false).setClass(myUserData);
+    Provider.of<HomeModel>(context, listen: false).setClass();
     // 나가기
     Navigator.of(context).pop('complete');
   }

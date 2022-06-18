@@ -5,7 +5,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/Home/HomeModel.dart';
-import 'package:flutterschool/page/SignIn/register.dart';
+import 'package:flutterschool/page/SignIn/Register.dart';
 import 'package:flutterschool/page/Univ/UnivModel.dart';
 
 import 'package:flutterschool/page/mainPage.dart';
@@ -61,7 +61,7 @@ Run_App() async {
     print("회원가입 중 입니다. 회원가입 이동!");
     runApp(MyApp(
         initialWidget:
-        register(uid: localUser.uid, provider: localUser.provider)));
+        Register(uid: localUser.uid, provider: localUser.provider)));
   } else {
     // 저장소가 있고 로그인을 했다고 판단.
     print("현재 uid: ${localUser.uid} 홈 화면 이동!");

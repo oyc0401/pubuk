@@ -9,6 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletons/skeletons.dart';
 
+const int FROM_TERM = -30;
+const int TO_TERM = 30;
+
 class LunchBuilder extends StatelessWidget {
   const LunchBuilder({Key? key}) : super(key: key);
 
@@ -29,7 +32,7 @@ class LunchScroll extends StatelessWidget {
 
   List<Lunch> lunches;
 
-   LunchScroll({
+  LunchScroll({
     Key? key,
     required this.lunches,
   }) : super(key: key);
@@ -39,12 +42,12 @@ class LunchScroll extends StatelessWidget {
     return SizedBox(
       height: 220,
       child: ScrollablePositionedList.builder(
-        initialScrollIndex: 30, // 0 ~ 29, 30, 31~60 <= 총 61개
+        initialScrollIndex: -FROM_TERM, // 0 ~ 29, 30, 31~60 <= 총 61개
         scrollDirection: Axis.horizontal,
-        itemCount: 61,
+        itemCount: -FROM_TERM + 1 + TO_TERM,
         itemBuilder: (context, index) {
           Color color = Colors.black;
-          if (index == 30) {
+          if (index == -FROM_TERM) {
             color = Colors.blue;
           }
           return LunchContainer(
@@ -169,23 +172,25 @@ class Lunch {
 class LunchDownloader {
   /// 급식 사진 다운로드
 
-  int SchoolCode;
-  String CityCode;
-  final int FROM_TERM = -30;
-  final int TO_TERM = 30;
+  int schoolCode;
+  String cityCode;
 
   LunchDownloader({
-    required this.CityCode,
-    required this.SchoolCode,
+    required this.cityCode,
+    required this.schoolCode,
   });
 
   late Map<String, dynamic> Json;
 
+
+  /// 실행 함수
   Future<void> downLoad() async => Json = await _getJson();
 
-  List<Lunch> getLunches() => _cleanLunch(_washMap(Json));
+  List<Lunch> getLunches() => _addBlankLunch(_lunches(Json));
 
-  Uri _getUri(int SchoolCode, String CityCode) {
+
+  /// json 얻기
+  Uri get _uri {
     DateTime now = DateTime.now();
     String firstday =
         DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
@@ -194,137 +199,121 @@ class LunchDownloader {
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
-        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&"
+        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$cityCode&SD_SCHUL_CODE=$schoolCode&"
         "MLSV_FROM_YMD=$firstday&MLSV_TO_YMD=$lastday");
+
+    print("$firstday ~ $lastday 급식메뉴: $uri");
     return uri;
   }
 
   Future<Map<String, dynamic>> _getJson() async {
-    // 날짜 프린트
-    DateTime now = DateTime.now();
-    String firstday =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
-    String lastday =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
-
-    // uri값 얻고
-    Uri uri = _getUri(SchoolCode, CityCode);
-
     // 요청하기
-    final Response response = await http.get(uri);
+    final Response response = await http.get(_uri);
 
     // 요청 성공하면 리턴
     if (response.statusCode == 200) {
-      print("$firstday ~ $lastday 급식메뉴: $uri");
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load post');
     }
   }
 
-  Map<String, List<String>> _washMap(Map<String, dynamic> json) {
-    Map<String, List<String>> cleanMap = {}; // ["20211204"][2]= 12월 4일 2번째 급식이름
 
-    List<String> foodsWashing(Map map) {
-      // 문자열 나누기
-      List<String> foods = map["DDISH_NM"].split("<br/>");
+  /// Lunch로 포장
+  List<String> _lunchStringToList(String lunchMenus) {
+    // 문자열 나누기
+    List<String> foods = lunchMenus.split("<br/>");
 
-      // 코딱지 떼기
-      for (int i = 0; i < foods.length; i++) {
-        String cleanedData = foods[i].replaceAll("북고", "");
+    // 코딱지 떼기
+    for (int i = 0; i < foods.length; i++) {
+      String cleanedData = foods[i].replaceAll("북고", "");
 
-        for (int k = 20; k > 0; k--) {
-          cleanedData = cleanedData.replaceAll("$k.", "");
-        }
-
-        cleanedData = cleanedData.replaceAll("-", "");
-        cleanedData = cleanedData.replaceAll("_", "");
-        cleanedData = cleanedData.replaceAll("()", "");
-        cleanedData = cleanedData.replaceAll(" ", "");
-
-        foods[i] = cleanedData;
+      for (int k = 20; k > 0; k--) {
+        cleanedData = cleanedData.replaceAll("$k.", "");
       }
 
-      return foods;
+      cleanedData = cleanedData.replaceAll("-", "");
+      cleanedData = cleanedData.replaceAll("_", "");
+      cleanedData = cleanedData.replaceAll("()", "");
+      cleanedData = cleanedData.replaceAll(" ", "");
+
+      foods[i] = cleanedData;
     }
 
-    List jsonlist = json["mealServiceDietInfo"][1]["row"];
-
-    jsonlist.forEach((element) {
-      String date = element["MLSV_YMD"];
-      List<String> foods = foodsWashing(element);
-      cleanMap[date] = foods;
-    });
-
-    return cleanMap;
+    return foods;
   }
 
-  List<Lunch> _cleanLunch(Map<String, List<String>> washedMap) {
-    //맵을 받으면 급식 2차원 배열을 리턴한다. [index][11월 22일 월요일, 오므라이스, 쑥갓어묵국, 치즈떡볶이, 수제야채튀김, 배추김치, 사과]
+  Map<String, Lunch> _lunches(Map<String, dynamic> json) {
+    Map<String, Lunch> lunches = {}; // cleanMap["20211204"]= ["밥", "된장국", "딸기"]
 
-    //print(cleanedMap);
+    List? lunchMaps = json["mealServiceDietInfo"]?[1]?["row"];
+
+    if (lunchMaps == null) {
+      print("불러오지 못했습니다.");
+    } else {
+      for (Map map in lunchMaps) {
+        String date = map["MLSV_YMD"];
+        List<String> foods = _lunchStringToList(map["DDISH_NM"]);
+
+        lunches[date] = Lunch(
+          date: date,
+          menu: foods,
+        );
+      }
+    }
+
+    return lunches;
+  }
+
+
+  /// 빈 곳 채워주기
+  List<Lunch> _addBlankLunch(Map<String, Lunch> lunches) {
+    // 빈자리를 채워주고 이름을 월, 일, 요일로 만들어준다.
     List<Lunch> boxes = [];
 
-    List<String> foodList(String date) {
-      // 날짜(yyyyMMdd)를 입력하면 그 날짜의 급식을 담은 1차원 배열을 리턴한다.
+    final DateTime nowDateTime = DateTime.now();
+    for (int index = FROM_TERM; index <= TO_TERM; index++) {
+      // 날짜 구하기
+      DateTime plusDateTime = nowDateTime.add(Duration(days: index));
+      String day = DateFormat('yyyyMMdd').format(plusDateTime);
 
-      List<String>? list = washedMap[date];
-      list ??= ["급식정보가 없습니다."];
-      return list;
-    }
-
-    String weekdayEng2Kor(String weekEng) {
-      // 영어 요일을 한국어로 변환
-
-      String weekKor = "";
-
-      if (weekEng == 'Sun') {
-        weekKor = '일';
-      } else if (weekEng == 'Mon') {
-        weekKor = '월';
-      } else if (weekEng == 'Tue') {
-        weekKor = '화';
-      } else if (weekEng == 'Wed') {
-        weekKor = '수';
-      } else if (weekEng == 'Thu') {
-        weekKor = '목';
-      } else if (weekEng == 'Fri') {
-        weekKor = '금';
-      } else if (weekEng == 'Sat') {
-        weekKor = '토';
-      }
-      weekKor = "$weekKor요일";
-      return weekKor;
-    }
-
-    final DateTime now = DateTime.now();
-    final String goleYMD = DateFormat('yyyyMMdd').format(now.add(Duration(
-        days: TO_TERM +
-            1))); //+1 해주는 이유는 while문에서 -30~+30까지 가야하는데 -30~+29까지 가서 하나 더 붙여준거임 나중에 좋은 방법 나오면 고쳐야함
-
-    // 목표 날짜 구하기
-    DateTime plusDateTime = now.add(Duration(days: FROM_TERM));
-    String plusYMD = DateFormat('yyyyMMdd').format(plusDateTime);
-
-    // 더한 날짜가 마지막 날짜가 될 때 까지
-    while (plusYMD != goleYMD) {
-      // 박스 안 제목 설정하기
+      // 이름 구하기
       String date = DateFormat('MM월 dd일 ').format(plusDateTime);
-      String weekday = weekdayEng2Kor(DateFormat('E').format(plusDateTime));
+      String weekday = _weekdayEng2Kor(DateFormat('E').format(plusDateTime));
       String title = "$date $weekday";
 
-      // 배열에 메뉴 추가
-      boxes.add(Lunch(date: title, menu: foodList(plusYMD)));
+      // 이름 바꾸기
+      Lunch lunch = lunches[day] ?? Lunch(date: date, menu: ["급식정보가 없습니다."]);
+      lunch.date = title;
 
-      // 추가하고 날짜 하나 올리기
-      plusDateTime = plusDateTime.add(Duration(days: 1));
-      plusYMD = DateFormat('yyyyMMdd').format(plusDateTime);
+      // 배열에 추가
+      boxes.add(lunch);
     }
 
     return boxes;
   }
 
-// json은 원본상태
-// wash는 불순물 제거
-// clean은 사용하기 좋게 변환
+  String _weekdayEng2Kor(String weekEng) {
+    // 영어 요일을 한국어로 변환
+
+    String weekKor = "";
+
+    if (weekEng == 'Sun') {
+      weekKor = '일';
+    } else if (weekEng == 'Mon') {
+      weekKor = '월';
+    } else if (weekEng == 'Tue') {
+      weekKor = '화';
+    } else if (weekEng == 'Wed') {
+      weekKor = '수';
+    } else if (weekEng == 'Thu') {
+      weekKor = '목';
+    } else if (weekEng == 'Fri') {
+      weekKor = '금';
+    } else if (weekEng == 'Sat') {
+      weekKor = '토';
+    }
+    weekKor = "$weekKor요일";
+    return weekKor;
+  }
 }

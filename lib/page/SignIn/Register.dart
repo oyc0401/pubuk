@@ -5,25 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/page/Home/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import 'package:select_dialog/select_dialog.dart';
 
 import '../../MyWidget/button.dart';
 import '../../Server/FireTool.dart';
+import '../Home/HomeModel.dart';
 import '../mainPage.dart';
 
-class register extends StatefulWidget {
-  register({Key? key, required String uid, required String provider})
+class Register extends StatefulWidget {
+  Register({Key? key, required String uid, required String provider})
       : userProfile = UserProfile(uid: uid, provider: provider),
         super(key: key);
 
   UserProfile userProfile;
 
   @override
-  State<register> createState() => _registerState();
+  State<Register> createState() => _RegisterState();
 }
 
-class _registerState extends State<register> {
+class _RegisterState extends State<Register> {
 
+  @override
   initState(){
     super.initState();
     widget.userProfile.authId=FirebaseAuth.instance.currentUser?.uid??"";
@@ -38,7 +41,7 @@ class _registerState extends State<register> {
     /// 로컬 DB에 저장
     await UserProfile.save(widget.userProfile);
 
-
+    Provider.of<HomeModel>(context, listen: false).setClass();
 
     navigateHome();
   }
