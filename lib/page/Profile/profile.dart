@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,8 @@ import 'package:flutterschool/page/Profile/editProfile.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
 
 import '../../DB/userProfile.dart';
+import '../../MyWidget/button.dart';
+import 'WebViewSetting.dart';
 
 class profile extends StatefulWidget {
   const profile({Key? key}) : super(key: key);
@@ -32,6 +33,7 @@ class _profileState extends State<profile> {
         children: [
           goSetting(),
           Logined(),
+          // webviewSetting(),
         ],
       ),
     );
@@ -92,6 +94,17 @@ class _profileState extends State<profile> {
     );
   }
 
+  // Widget webviewSetting() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 20),
+  //     child: RoundButton(
+  //       onclick: navigateWebviewSetting,
+  //       text: "웹뷰설정",
+  //       color: Colors.lightBlueAccent,
+  //     ),
+  //   );
+  // }
+
   void navigateAccountInfo() {
     Navigator.push(
       context,
@@ -109,9 +122,11 @@ class _profileState extends State<profile> {
   void navigateSetting() async {
     await Navigator.push(
       context,
-      CupertinoPageRoute(builder: (context) => const setting()),
+      CupertinoPageRoute(builder: (context) => const EditProfile()),
     );
 
     setState(() {});
   }
+
+
 }

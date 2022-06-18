@@ -16,7 +16,7 @@ class UnivModel with ChangeNotifier {
     setList().then((value) => print("UnivModel 불러오기 완료!"));
   }
 
-  List<UnivInfo>? favorateUnives;
+  List<UnivInfo> favorateUnives=[];
   String univCode;
   int year;
   UnivWay univWay;
@@ -27,7 +27,7 @@ class UnivModel with ChangeNotifier {
     UnivDB univ = UnivDB();
 
     favorateUnives = await univ.getInfo();
-    for (UnivInfo element in favorateUnives!) {
+    for (UnivInfo element in favorateUnives) {
       print("불러오기: ${element.toMap()}");
     }
     notifyListeners();
@@ -41,28 +41,28 @@ class UnivModel with ChangeNotifier {
     /// DB에 저장
     // preference 다시 설정
     UnivDB univ = UnivDB();
-    UnivInfo selectUniv = favorateUnives![selectIndex];
-    UnivInfo targetUniv = favorateUnives![targetIndex];
+    UnivInfo selectUniv = favorateUnives[selectIndex];
+    UnivInfo targetUniv = favorateUnives[targetIndex];
 
     // 둘이 pre 바꾸기
-    int target=selectUniv.preference;
+    int target = selectUniv.preference;
 
-    selectUniv.preference=targetUniv.preference;
-    targetUniv.preference=target;
+    selectUniv.preference = targetUniv.preference;
+    targetUniv.preference = target;
     // 저장
     univ.updateInfo(selectUniv);
     univ.updateInfo(targetUniv);
 
     /// 배열 설정
-    UnivInfo univInfo = favorateUnives!.removeAt(selectIndex);
-    favorateUnives!.insert(targetIndex, univInfo);
+    UnivInfo univInfo = favorateUnives.removeAt(selectIndex);
+    favorateUnives.insert(targetIndex, univInfo);
 
     notifyListeners();
   }
 
   /// web view 에서 사용하는 함수
   void plusYear() {
-    if(year<2023){
+    if (year < 2023) {
       year++;
       _setUrl();
       notifyListeners();
@@ -70,12 +70,11 @@ class UnivModel with ChangeNotifier {
   }
 
   void minusYear() {
-    if(2019<year){
+    if (2019 < year) {
       year--;
       _setUrl();
       notifyListeners();
     }
-
   }
 
   void changeUnivWay(UnivWay way) {
@@ -139,7 +138,7 @@ class UnivModel with ChangeNotifier {
 
   /// floatButton 에서 사용하는 함수
   bool get ifLikeIt {
-    for (UnivInfo univ in favorateUnives!) {
+    for (UnivInfo univ in favorateUnives) {
       // 이미 즐겨찾기를 했으면
       if (univ.univCode == univCode) {
         print("${UnivName.getUnivName(univCode)}: 즐겨찾기 O");
@@ -163,11 +162,12 @@ class UnivModel with ChangeNotifier {
   Future<void> insert(String code) async {
     // 뒤에서 삽입 구조
 
-    UnivDB univDB = UnivDB();
-
     /// 추가해야 할 prefer 구하기
-    int prefer = favorateUnives!.last.preference;
-    prefer++;
+    int prefer = 0;
+    if (favorateUnives.isNotEmpty) {
+      prefer = favorateUnives.last.preference;
+      prefer++;
+    }
 
     /// 추가해야 할 univ 설정
     UnivInfo univ = UnivInfo(
@@ -177,10 +177,11 @@ class UnivModel with ChangeNotifier {
         preference: prefer);
 
     /// db에 추가
+    UnivDB univDB = UnivDB();
     univDB.insertInfo(univ);
 
     /// 배열에 추가
-    favorateUnives!.add(univ);
+    favorateUnives.add(univ);
   }
 
   Future<void> delete(String code) async {
@@ -192,12 +193,13 @@ class UnivModel with ChangeNotifier {
     univDB.deleteInfo(code);
 
     /// 배열에서 삭제
-    for (int index = 0; index <= favorateUnives!.length; index++) {
-      if (favorateUnives![index].univCode == code) {
-        favorateUnives!.removeAt(index);
+    for (int index = 0; index <= favorateUnives.length; index++) {
+      if (favorateUnives[index].univCode == code) {
+        favorateUnives.removeAt(index);
         break;
       }
     }
+    notifyListeners();
   }
 
   /// search 에서 사용하는 함수

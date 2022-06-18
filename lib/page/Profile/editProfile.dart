@@ -10,14 +10,14 @@ import '../../DB/userProfile.dart';
 import '../../Server/FireTool.dart';
 import '../Home/HomeModel.dart';
 
-class setting extends StatefulWidget {
-  const setting({Key? key}) : super(key: key);
+class EditProfile extends StatefulWidget {
+  const EditProfile({Key? key}) : super(key: key);
 
   @override
-  _settingState createState() => _settingState();
+  _EditProfileState createState() => _EditProfileState();
 }
 
-class _settingState extends State<setting> {
+class _EditProfileState extends State<EditProfile> {
   /// 닉네임, 학년, 반을 바꾸면 [userData] 내부 값을 변화시킨다.
   /// 저장 버튼을 누르면 [userData]에 있는 값을 저장하고 화면을 종료한다.
   /// 로그인 상태라면 파이어베이스에도 저장한다.

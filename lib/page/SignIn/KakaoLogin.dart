@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart' as fire;
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
-import 'Login.dart';
 
 class KakaoLogin {
   @override

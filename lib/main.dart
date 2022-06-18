@@ -12,6 +12,7 @@ import 'package:flutterschool/page/mainPage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 import 'package:provider/provider.dart';
 
+import 'DB/SettingDB.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -25,8 +26,10 @@ Future<void> main() async {
   );
   // 카카오 sdk 시작
   kakao.KakaoSdk.init(nativeAppKey: '3e345bcd63a5df82971a7d52cabb73a2');
-  // 유저 가져오기
+
+  // DB 불러오기
   await UserProfile.initializeUser();
+  await Setting.initializeSetting();
 
   print("초기설정 완료");
 
