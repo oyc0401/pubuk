@@ -27,13 +27,46 @@ class UnivProWeb extends StatelessWidget {
   Widget build(BuildContext context) {
     maincontext = context;
     return Scaffold(
-      appBar: SearchAppBar(),
+      appBar: AppBar(
+        centerTitle: false,
+        elevation: 4,
+        title: Text(
+          UnivName.getUnivName(Provider.of<UnivModel>(context).univCode),
+          style: const TextStyle(color: Colors.black),
+        ),
+        actions: <Widget>[
+          IconButton(
+            onPressed: NavigateUnivSearch,
+            icon: const Icon(
+              Icons.search,
+              size: 28,
+              color: Color(0xff191919),
+            ),
+          ),
+          IconButton(onPressed: (){Provider.of<UnivModel>(context, listen: false).changeFavorate();}, icon: Icon(Icons.bookmark),color: Provider.of<UnivModel>(context).ifLikeIt
+              ? Colors.redAccent
+              : const Color(0xff191919),),
+          menu(),
+        ],
+      ),
       body: UnivWebView(),
       floatingActionButton: RemoteButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       // bottomNavigationBar: NewWidget(),
     );
   }
+
+
+
+  void NavigateUnivSearch() async {
+    await Navigator.pushReplacement(
+      maincontext!,
+      MaterialPageRoute(
+        builder: (context) => UnivSearch(),
+      ),
+    );
+  }
+
 }
 
 ///
@@ -317,197 +350,25 @@ class menu extends StatelessWidget {
       itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
         PopupMenuItem<MenuOptions>(
           value: MenuOptions.zoom,
-          child: const Text('Show user agent'),
+          child: const Text('텍스트 확대'),
         ),
         const PopupMenuItem<MenuOptions>(
           value: MenuOptions.moveOriginal,
-          child: Text('List cookies'),
+          child: Text('원본 url'),
         ),
       ],
     );
   }
 
-  _onclickZoom() {}
+  _onclickZoom() => navigateWebviewSetting();
 
   _onClickMove() {}
-}
-
-///
-///
-class SearchAppBar extends StatelessWidget with PreferredSizeWidget {
-  SearchAppBar({Key? key}) : super(key: key);
-
-  final double height = 90;
 
   void navigateWebviewSetting() async {
     await Navigator.push(
-      buildContext,
+      maincontext!,
       CupertinoPageRoute(builder: (context) => WebViewSetting()),
     );
   }
-
-  void NavigateUnivSearch() async {
-    await Navigator.pushReplacement(
-      buildContext,
-      MaterialPageRoute(
-        builder: (context) => UnivSearch(),
-      ),
-    );
-  }
-
-  late BuildContext buildContext;
-
-  @override
-  Widget build(BuildContext context) {
-    buildContext = context;
-
-    return AppBar(
-      toolbarHeight: height,
-      elevation: 4,
-      title: Column(
-        children: [
-          Text(
-            UnivName.getUnivName(Provider.of<UnivModel>(context).univCode),
-            style: const TextStyle(color: Colors.black),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: CupertinoButton(
-                  child: Text("Zoom"),
-                  onPressed: navigateWebviewSetting,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      actions: <Widget>[
-        IconButton(
-          onPressed: NavigateUnivSearch,
-          icon: const Icon(
-            Icons.search,
-            size: 28,
-            color: Color(0xff191919),
-          ),
-        ),
-        menu(),
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(height);
 }
 
-class LikeButton extends StatelessWidget {
-  const LikeButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // return Padding(
-    //     padding: const EdgeInsets.all(8.0),
-    //     child: Container(
-    //       width: 270,
-    //       height: 60,
-    //       decoration: BoxDecoration(
-    //         color: Colors.blueAccent,
-    //         borderRadius: BorderRadius.circular(100),
-    //       ),
-    //       child: Row(mainAxisAlignment: MainAxisAlignment.center,
-    //         children: [
-    //           click(),
-    //
-    //           Padding(
-    //             padding: const EdgeInsets.symmetric(horizontal: 30),
-    //             child: click(),
-    //           ),
-    //           click(),
-    //         ],
-    //       ),
-    //     )
-    // );
-
-    ///jj
-    ///
-    return FloatingActionButton(
-      backgroundColor: Colors.white,
-      onPressed: () =>
-          Provider.of<UnivModel>(context, listen: false).changeFavorate(),
-      child: Icon(
-        Icons.favorite,
-        color: Provider.of<UnivModel>(context).ifLikeIt
-            ? Colors.redAccent
-            : const Color(0xff191919),
-      ),
-    );
-  }
-}
-
-class NewWidget extends StatefulWidget {
-  const NewWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<NewWidget> createState() => _NewWidgetState();
-}
-
-class _NewWidgetState extends State<NewWidget> {
-  List _widgetOptions = [
-    Text(
-      'Favorites',
-      style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
-    ),
-    Text(
-      'Music',
-      style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
-    ),
-    Text(
-      'Places',
-      style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
-    ),
-    Text(
-      'News',
-      style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
-    ),
-  ];
-  int _selectedIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.grey,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.white.withOpacity(.60),
-      selectedFontSize: 14,
-      unselectedFontSize: 14,
-      currentIndex: _selectedIndex,
-      //현재 선택된 Index
-      onTap: (int index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      items: [
-        BottomNavigationBarItem(
-          label: 'Favorites',
-          icon: Icon(Icons.favorite),
-        ),
-        BottomNavigationBarItem(
-          label: 'Music',
-          icon: Icon(Icons.music_note),
-        ),
-        BottomNavigationBarItem(
-          label: 'Places',
-          icon: Icon(Icons.location_on),
-        ),
-        BottomNavigationBarItem(
-          label: 'News',
-          icon: Icon(Icons.library_books),
-        ),
-      ],
-    );
-  }
-}
