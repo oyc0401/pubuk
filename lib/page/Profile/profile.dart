@@ -8,7 +8,7 @@ import 'package:flutterschool/page/SignIn/SignIn.dart';
 
 import '../../DB/userProfile.dart';
 import '../../MyWidget/button.dart';
-import 'WebViewSetting.dart';
+import '../Univ/WebViewSetting.dart';
 
 class profile extends StatefulWidget {
   const profile({Key? key}) : super(key: key);

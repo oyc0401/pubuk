@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutterschool/page/Univ/providerWeb.dart';
+import 'package:flutterschool/page/Univ/UnivWeb.dart';
 import 'package:provider/provider.dart';
 
 
@@ -132,15 +132,13 @@ class UnivCard extends StatelessWidget {
     Provider.of<UnivModel>(context, listen: false).univCode = univ.univCode;
     Provider.of<UnivModel>(context, listen: false).year = 2023;
 
-    Navigator.push(
+     Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) {
           return ChangeNotifierProvider.value(
             value: Provider.of<UnivModel>(context),
-            child: UnivProWeb(
-              univCode: univ.univCode,
-            ),
+            child: UnivWeb(),
           );
         },
       ),
@@ -203,7 +201,7 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
       context,
       CupertinoPageRoute(
         builder: (context) {
-          return UnivSearch();
+          return UnivSearch(whereClick: WhereClick.main,);
         },
       ),
     );

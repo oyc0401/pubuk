@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
+import '../../DB/SettingDB.dart';
 import '../../DB/UnivDB.dart';
 import 'UnivName.dart';
 
@@ -16,20 +17,24 @@ class UnivModel with ChangeNotifier {
     setList().then((value) => print("UnivModel 불러오기 완료!"));
   }
 
+  // 즐겨찾기한 대학들
   List<UnivInfo> favorateUnives=[];
+  // 현재 선택한 대학, 전형, 년도
   String univCode;
-  int year;
   UnivWay univWay;
+  int year;
+  // 웹뷰 컨트롤러
   InAppWebViewController? webViewController;
+  bool onFloating=true;
 
   /// 플로팅 버튼
-  bool onFloating=true;
-  dissmissFloating(){
+
+  void hideFloating(){
     onFloating=false;
     notifyListeners();
   }
 
-  showFloating(){
+  void showFloating(){
     onFloating=true;
     notifyListeners();
   }
@@ -148,6 +153,26 @@ class UnivModel with ChangeNotifier {
   Future<void> _setUrl() async =>
       await webViewController?.loadUrl(urlRequest: URLRequest(url: uri));
 
+  void reSetOption(){
+
+    InAppWebViewGroupOptions options=InAppWebViewGroupOptions(
+        crossPlatform: InAppWebViewOptions(
+          useShouldOverrideUrlLoading: true,
+          mediaPlaybackRequiresUserGesture: false,
+        ),
+        android: AndroidInAppWebViewOptions(
+          useHybridComposition: true,
+          textZoom: (Setting.currentSetting.webScale * 100).toInt(),
+        ),
+        ios: IOSInAppWebViewOptions(
+          allowsInlineMediaPlayback: true,
+          pageZoom: (Setting.currentSetting.webScale),
+        ));
+
+
+    webViewController?.setOptions(options: options);
+  }
+
   /// floatButton 에서 사용하는 함수
   bool get ifLikeIt {
     for (UnivInfo univ in favorateUnives) {
@@ -166,12 +191,12 @@ class UnivModel with ChangeNotifier {
     if (ifLikeIt) {
       await delete(univCode);
     } else {
-      await insert(univCode);
+      await _insert(univCode);
     }
     notifyListeners();
   }
 
-  Future<void> insert(String code) async {
+  Future<void> _insert(String code) async {
     // 뒤에서 삽입 구조
 
     /// 추가해야 할 prefer 구하기
@@ -217,6 +242,7 @@ class UnivModel with ChangeNotifier {
   /// search 에서 사용하는 함수
   Future<void> changeUnivCode(String code) async {
     univCode = code;
+    _setUrl();
     notifyListeners();
   }
 }

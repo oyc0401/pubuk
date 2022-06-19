@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../DB/SettingDB.dart';
+import 'UnivModel.dart';
 
 class WebViewSetting extends StatefulWidget {
   WebViewSetting({
@@ -17,6 +19,7 @@ class _WebViewSettingState extends State<WebViewSetting> {
 
   _save() async {
     Setting.save(setting);
+    Provider.of<UnivModel>(context, listen: false).reSetOption();
     Navigator.of(context).pop(true);
   }
 

@@ -2,15 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/UnivDB.dart';
 import 'package:flutterschool/page/Univ/UnivName.dart';
-import 'package:flutterschool/page/Univ/providerWeb.dart';
+import 'package:flutterschool/page/Univ/UnivWeb.dart';
 import 'package:provider/provider.dart';
 
 import 'UnivModel.dart';
-import 'UnivWeb.dart';
+import 'beforeWeb.dart';
 
+enum WhereClick{
+  main,
+    web
+}
+
+WhereClick where=WhereClick.main;
 class UnivSearch extends StatefulWidget {
-  const UnivSearch({Key? key}) : super(key: key);
+   UnivSearch({Key? key,required this.whereClick}) : super(key: key);
 
+  WhereClick whereClick;
   @override
   State<UnivSearch> createState() => _UnivSearchState();
 }
@@ -21,6 +28,7 @@ class _UnivSearchState extends State<UnivSearch> {
 
   @override
   Widget build(BuildContext context) {
+    where=widget.whereClick;
     return Scaffold(
       appBar: AppBar(),
       body: Container(
@@ -65,20 +73,26 @@ class _UnivSelectionState extends State<UnivSelection> {
     );
   }
 
-  pop() {
-    Navigator.of(context).pop('complete');
-  }
-
   void NavigateUnivWeb() async {
     Provider.of<UnivModel>(context, listen: false)
         .changeUnivCode(widget.univInfo.univCode);
-    await Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UnivProWeb(
-          univCode: widget.univInfo.univCode,
-        ),
-      ),
-    );
+
+
+    switch(where){
+      case WhereClick.main:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UnivWeb(),
+          ),
+        );
+        break;
+      case WhereClick.web:
+        Navigator.of(context).pop(true);
+        break;
+    }
+
+
+
   }
 }
