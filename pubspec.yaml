@@ -67,6 +67,7 @@ dependencies:
   flutter_inappwebview: ^5.4.3+7
   provider: ^6.0.3
   scroll_app_bar: ^2.0.0
+  fluttertoast: ^8.0.9
 
 
 

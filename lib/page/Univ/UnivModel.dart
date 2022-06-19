@@ -22,6 +22,18 @@ class UnivModel with ChangeNotifier {
   UnivWay univWay;
   InAppWebViewController? webViewController;
 
+  /// 플로팅 버튼
+  bool onFloating=true;
+  dissmissFloating(){
+    onFloating=false;
+    notifyListeners();
+  }
+
+  showFloating(){
+    onFloating=true;
+    notifyListeners();
+  }
+
   /// 처음 시작할 때
   Future<void> setList() async {
     UnivDB univ = UnivDB();
