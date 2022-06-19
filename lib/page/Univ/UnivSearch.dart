@@ -6,29 +6,18 @@ import 'package:flutterschool/page/Univ/UnivWeb.dart';
 import 'package:provider/provider.dart';
 
 import 'UnivModel.dart';
-import 'beforeWeb.dart';
 
-enum WhereClick{
-  main,
-    web
-}
+enum WhereClick { main, web }
 
-WhereClick where=WhereClick.main;
-class UnivSearch extends StatefulWidget {
-   UnivSearch({Key? key,required this.whereClick}) : super(key: key);
-
-  WhereClick whereClick;
-  @override
-  State<UnivSearch> createState() => _UnivSearchState();
-}
-
-class _UnivSearchState extends State<UnivSearch> {
+class UnivSearch extends StatelessWidget {
   List codes = UnivName.univCodeList;
   List names = UnivName.univNameList;
 
+  UnivSearch({Key? key, required this.whereClick}) : super(key: key);
+  WhereClick whereClick;
+
   @override
   Widget build(BuildContext context) {
-    where=widget.whereClick;
     return Scaffold(
       appBar: AppBar(),
       body: Container(
@@ -37,12 +26,14 @@ class _UnivSearchState extends State<UnivSearch> {
           itemBuilder: (context, index) {
             //print(UnivName.getUnivName(list[index]));
             return UnivSelection(
-                univInfo: UnivInfo(
-              id: codes[index],
-              univCode: codes[index],
-              univName: names[index],
-              preference: UnivDB.lenght,
-            ));
+              univInfo: UnivInfo(
+                id: codes[index],
+                univCode: codes[index],
+                univName: names[index],
+                preference: UnivDB.lenght,
+              ),
+              whereClick: whereClick,
+            );
           },
         ),
       ),
@@ -50,35 +41,29 @@ class _UnivSearchState extends State<UnivSearch> {
   }
 }
 
-class UnivSelection extends StatefulWidget {
-  UnivSelection({Key? key, required this.univInfo}) : super(key: key);
+class UnivSelection extends StatelessWidget {
+  UnivSelection({Key? key, required this.univInfo, required this.whereClick})
+      : super(key: key);
   UnivInfo univInfo;
+  WhereClick whereClick;
 
-  @override
-  State<UnivSelection> createState() => _UnivSelectionState();
-}
-
-class _UnivSelectionState extends State<UnivSelection> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        NavigateUnivWeb();
-      },
+      onTap: () => NavigateUnivWeb(context),
       child: Container(
         height: 60,
         decoration: BoxDecoration(border: Border.all()),
-        child: Center(child: Text(widget.univInfo.univName)),
+        child: Center(child: Text(univInfo.univName)),
       ),
     );
   }
 
-  void NavigateUnivWeb() async {
+  void NavigateUnivWeb(BuildContext context) async {
     Provider.of<UnivModel>(context, listen: false)
-        .changeUnivCode(widget.univInfo.univCode);
+        .changeUnivCode(univInfo.univCode);
 
-
-    switch(where){
+    switch (whereClick) {
       case WhereClick.main:
         Navigator.pushReplacement(
           context,
@@ -91,8 +76,5 @@ class _UnivSelectionState extends State<UnivSelection> {
         Navigator.of(context).pop(true);
         break;
     }
-
-
-
   }
 }

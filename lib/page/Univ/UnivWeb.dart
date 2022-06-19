@@ -15,8 +15,18 @@ import 'UnivModel.dart';
 import 'UnivName.dart';
 import 'UnivSearch.dart';
 
+
+
+
 class UnivWeb extends StatelessWidget {
   UnivWeb({Key? key}) : super(key: key);
+  static InAppWebViewController? controller;
+
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +68,7 @@ class UnivWeb extends StatelessWidget {
                     color: Color(0xff191919),
                   ),
           ),
-          menu(),
+          UnivMenu(),
         ],
       ),
       body: UnivWebView(),
@@ -149,21 +159,10 @@ class UnivWebView extends StatelessWidget {
   }
 }
 
-class RemoteButton extends StatefulWidget {
-  const RemoteButton({Key? key}) : super(key: key);
+class RemoteButton extends StatelessWidget {
+  RemoteButton({Key? key}) : super(key: key);
 
-  @override
-  State<RemoteButton> createState() => _RemoteButtonState();
-}
-
-class _RemoteButtonState extends State<RemoteButton> {
-  FToast fToast = FToast();
-
-  @override
-  void initState() {
-    super.initState();
-    fToast.init(context);
-  }
+  final FToast fToast = FToast();
 
   _showToast(String message) {
     fToast.removeCustomToast();
@@ -185,6 +184,7 @@ class _RemoteButtonState extends State<RemoteButton> {
 
   @override
   Widget build(BuildContext context) {
+    fToast.init(context);
     bool onFloating = Provider.of<UnivModel>(context).onFloating;
     if (onFloating == false) {
       return Container();
@@ -308,13 +308,11 @@ enum MenuOptions {
   moveOriginal,
 }
 
-class menu extends StatelessWidget {
-  menu({Key? key}) : super(key: key);
-  BuildContext? nowcontext;
+class UnivMenu extends StatelessWidget {
+  const UnivMenu({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    nowcontext = context;
     return PopupMenuButton<MenuOptions>(
       key: const ValueKey<String>('ShowPopupMenu'),
       onSelected: (MenuOptions value) {
