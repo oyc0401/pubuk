@@ -25,19 +25,7 @@ class UnivModel with ChangeNotifier {
   int year;
   // 웹뷰 컨트롤러
   InAppWebViewController? webViewController;
-  bool onFloating=true;
 
-  /// 플로팅 버튼
-
-  void hideFloating(){
-    onFloating=false;
-    notifyListeners();
-  }
-
-  void showFloating(){
-    onFloating=true;
-    notifyListeners();
-  }
 
   /// 처음 시작할 때
   Future<void> setList() async {
@@ -51,7 +39,6 @@ class UnivModel with ChangeNotifier {
   }
 
   /// Univ에서 사용하는 함수
-
   void changePrefer(int selectIndex, int targetIndex) {
     print("selectIndex: $selectIndex, targetIndex: $targetIndex");
 
@@ -87,8 +74,14 @@ class UnivModel with ChangeNotifier {
   }
 
   void minusYear() {
-    if (2019 < year) {
+
+
+    if (2018 < year) {
       year--;
+      if(year<=2020){
+        univWay=UnivWay.comprehensive;
+      }
+
       _setUrl();
       notifyListeners();
     }
@@ -100,60 +93,12 @@ class UnivModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Uri get uri {
-    if (2022 <= year && year <= 2023) {
-      switch (univWay) {
-        case UnivWay.comprehensive:
-          return Uri.parse(
-              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=$year&univ_cd=$univCode&iem_cd=${26}");
-        case UnivWay.subject:
-          return Uri.parse(
-              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=$year&univ_cd=$univCode&iem_cd=${31}");
 
-        case UnivWay.sat:
-          return Uri.parse(
-              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=$year&univ_cd=$univCode&iem_cd=${41}");
-      }
-    } else if (year == 2021) {
-      switch (univWay) {
-        case UnivWay.comprehensive:
-          return Uri.parse(
-              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=$year&univ_cd=$univCode&iem_cd=${30}");
-        case UnivWay.subject:
-          return Uri.parse(
-              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=$year&univ_cd=$univCode&iem_cd=${31}");
-
-        case UnivWay.sat:
-          return Uri.parse(
-              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=$year&univ_cd=$univCode&iem_cd=${32}");
-      }
-    } else if (year <= 2020) {
-      switch (univWay) {
-        case UnivWay.comprehensive:
-          return Uri.parse(
-              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
-              "sch_year=$year&univ_cd=$univCode&iem_cd=${13}");
-        case UnivWay.subject:
-          return Uri.parse("https://www.google.co.kr/");
-
-        case UnivWay.sat:
-          return Uri.parse("https://www.google.co.kr/");
-      }
-    } else {
-      return Uri.parse("https://www.google.co.kr/");
-    }
-  }
 
   Future<void> _setUrl() async =>
       await webViewController?.loadUrl(urlRequest: URLRequest(url: uri));
 
-  void reSetOption(){
+  void setScale(double scale){
 
     InAppWebViewGroupOptions options=InAppWebViewGroupOptions(
         crossPlatform: InAppWebViewOptions(
@@ -162,18 +107,17 @@ class UnivModel with ChangeNotifier {
         ),
         android: AndroidInAppWebViewOptions(
           useHybridComposition: true,
-          textZoom: (Setting.currentSetting.webScale * 100).toInt(),
+          textZoom: (scale * 100).toInt(),
         ),
         ios: IOSInAppWebViewOptions(
           allowsInlineMediaPlayback: true,
-          pageZoom: (Setting.currentSetting.webScale),
+          pageZoom: (scale),
         ));
-
 
     webViewController?.setOptions(options: options);
   }
 
-  /// floatButton 에서 사용하는 함수
+  /// 북마크에서 사용하는 함수
   bool get ifLikeIt {
     for (UnivInfo univ in favorateUnives) {
       // 이미 즐겨찾기를 했으면
@@ -187,13 +131,12 @@ class UnivModel with ChangeNotifier {
     return false;
   }
 
-  Future<void> changeFavorate() async {
+  void changeFavorate() {
     if (ifLikeIt) {
-      await delete(univCode);
+       delete(univCode);
     } else {
-      await _insert(univCode);
+       _insert(univCode);
     }
-    notifyListeners();
   }
 
   Future<void> _insert(String code) async {
@@ -219,6 +162,8 @@ class UnivModel with ChangeNotifier {
 
     /// 배열에 추가
     favorateUnives.add(univ);
+
+    notifyListeners();
   }
 
   Future<void> delete(String code) async {
@@ -244,6 +189,109 @@ class UnivModel with ChangeNotifier {
     univCode = code;
     _setUrl();
     notifyListeners();
+  }
+
+
+  /// url
+  Uri get uri {
+    if (2022 <= year && year <= 2023) {
+      switch (univWay) {
+        case UnivWay.comprehensive:
+          return Uri.parse(
+              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
+                  "sch_year=$year&univ_cd=$univCode&iem_cd=${26}");
+        case UnivWay.subject:
+          return Uri.parse(
+              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
+                  "sch_year=$year&univ_cd=$univCode&iem_cd=${31}");
+
+        case UnivWay.sat:
+          return Uri.parse(
+              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
+                  "sch_year=$year&univ_cd=$univCode&iem_cd=${41}");
+      }
+    } else if (year == 2021) {
+      switch (univWay) {
+        case UnivWay.comprehensive:
+          return Uri.parse(
+              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
+                  "sch_year=$year&univ_cd=$univCode&iem_cd=${30}");
+        case UnivWay.subject:
+          return Uri.parse(
+              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
+                  "sch_year=$year&univ_cd=$univCode&iem_cd=${31}");
+
+        case UnivWay.sat:
+          return Uri.parse(
+              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
+                  "sch_year=$year&univ_cd=$univCode&iem_cd=${32}");
+      }
+    } else if (year <= 2020) {
+      switch (univWay) {
+        case UnivWay.comprehensive:
+          return Uri.parse(
+              "https://adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemWebView.do?"
+                  "sch_year=$year&univ_cd=$univCode&iem_cd=${13}");
+        case UnivWay.subject:
+          return Uri.parse("https://www.google.co.kr/");
+
+        case UnivWay.sat:
+          return Uri.parse("https://www.google.co.kr/");
+      }
+    } else {
+      return Uri.parse("https://www.google.co.kr/");
+    }
+  }
+
+  Uri get originalUri {
+    if (2022 <= year && year <= 2023) {
+      switch (univWay) {
+        case UnivWay.comprehensive:
+          return Uri.parse(
+            "https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&"
+                "chkUnivList=$univCode&sch_year=$year#con${20}");
+
+        case UnivWay.subject:
+          return Uri.parse(
+              "https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&"
+                  "chkUnivList=$univCode&sch_year=$year#con${30}");
+
+        case UnivWay.sat:
+          return Uri.parse(
+              "https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&"
+                  "chkUnivList=$univCode&sch_year=$year#con${40}");
+      }
+    } else if (year == 2021) {
+      switch (univWay) {
+        case UnivWay.comprehensive:
+          return Uri.parse(
+              "https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&"
+                  "chkUnivList=$univCode&sch_year=$year#con${10}");
+        case UnivWay.subject:
+          return Uri.parse(
+              "https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&"
+                  "chkUnivList=$univCode&sch_year=$year#con${20}");
+
+        case UnivWay.sat:
+          return Uri.parse(
+              "https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&"
+                  "chkUnivList=$univCode&sch_year=$year#con${30}");
+      }
+    } else if (year <= 2020) {
+      switch (univWay) {
+        case UnivWay.comprehensive:
+          return Uri.parse(
+              "https://www.adiga.kr/kcue/ast/eip/eis/inf/stdptselctn/eipStdGenSlcIemCmprGnrl2.do?p_menu_id=PG-EIP-16001&"
+                  "chkUnivList=$univCode&sch_year=$year#con${20}");
+        case UnivWay.subject:
+          return Uri.parse("https://www.google.co.kr/");
+
+        case UnivWay.sat:
+          return Uri.parse("https://www.google.co.kr/");
+      }
+    } else {
+      return Uri.parse("https://www.google.co.kr/");
+    }
   }
 }
 

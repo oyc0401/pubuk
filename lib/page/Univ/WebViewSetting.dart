@@ -19,7 +19,7 @@ class _WebViewSettingState extends State<WebViewSetting> {
 
   _save() async {
     Setting.save(setting);
-    Provider.of<UnivModel>(context, listen: false).reSetOption();
+    Provider.of<UnivModel>(context, listen: false).setScale(setting.webScale);
     Navigator.of(context).pop(true);
   }
 
