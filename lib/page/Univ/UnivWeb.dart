@@ -5,6 +5,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../DB/SettingDB.dart';
 
@@ -371,6 +372,7 @@ class UnivMenu extends StatelessWidget {
 
   _onClickMove(BuildContext context) {
     print(Provider.of<UnivModel>(context, listen: false).originalUri);
+    launchUrl(Provider.of<UnivModel>(context, listen: false).originalUri);
   }
 
   void navigateWebviewSetting(BuildContext context) async {

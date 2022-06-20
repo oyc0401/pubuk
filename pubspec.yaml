@@ -68,6 +68,7 @@ dependencies:
   provider: ^6.0.3
   scroll_app_bar: ^2.0.0
   fluttertoast: ^8.0.9
+  url_launcher: ^6.1.3
 
 
 
