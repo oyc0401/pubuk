@@ -370,9 +370,10 @@ class UnivMenu extends StatelessWidget {
     );
   }
 
-  _onClickMove(BuildContext context) {
-    print(Provider.of<UnivModel>(context, listen: false).originalUri);
-    launchUrl(Provider.of<UnivModel>(context, listen: false).originalUri);
+  void _onClickMove(BuildContext context) {
+    Uri uri = Provider.of<UnivModel>(context, listen: false).originalUri;
+    print(uri);
+    launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   void navigateWebviewSetting(BuildContext context) async {

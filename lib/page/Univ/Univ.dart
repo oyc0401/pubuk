@@ -1,15 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/Univ/UnivPreference.dart';
 
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
-
 
 import '../../DB/UnivDB.dart';
 import '../../DB/userProfile.dart';
 
 import 'UnivModel.dart';
 import 'UnivSearch.dart';
+import 'package:http/http.dart' as http;
 
 class Univ extends StatefulWidget {
   const Univ({Key? key}) : super(key: key);
@@ -20,30 +24,19 @@ class Univ extends StatefulWidget {
 
 class _UnivState extends State<Univ> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: UnivAppBar(),
-      body: const Body(),
-    );
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    init();
   }
-}
 
-class Body extends StatefulWidget {
-  const Body({Key? key}) : super(key: key);
-
-  @override
-  State<Body> createState() => _BodyState();
-}
-
-class _BodyState extends State<Body> {
-  Future<List<UnivInfo>> getUiv() async {
-    UnivDB univ = UnivDB();
-    List<UnivInfo> li = await univ.getInfo();
-
-    for (UnivInfo element in li) {
-      print(element.toMap());
-    }
-    return li;
+  init() async {
+    UnivDownloader univDownloader =
+        UnivDownloader(univName: "인하", univType: UnivType.main);
+    await univDownloader.downLoad();
+    UnivData univData = univDownloader.getData();
+    print(univDownloader.Json);
+    print(univData);
   }
 
   @override
@@ -54,40 +47,30 @@ class _BodyState extends State<Body> {
       return Container(
         color: Colors.white,
       );
-    } else {
-      return succeed(favorateUnives);
     }
-  }
 
-  Widget succeed(List<UnivInfo> unives) {
-    if (unives.isEmpty) {
-      return const Text(
-        "북마크한 대학이 없습니다.",
-        style: TextStyle(color: Colors.black),
-      );
-    }
-    return ReorderableListView(
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      children: <Widget>[
-        for (int index = 0; index < unives.length; index++)
-          UnivCard(
-            key: Key('$index'),
-            univ: unives[index],
+    return Scaffold(
+      appBar: UnivAppBar(),
+      body: Column(
+        children: [
+          CupertinoButton(
+            child: Text("위치 수정"),
+            onPressed: () {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => UnivPreference()),
+              );
+            },
           ),
-      ],
-      onReorder: (int oldIndex, int newIndex) {
-        if (oldIndex < newIndex) {
-          newIndex -= 1;
-        }
-        Provider.of<UnivModel>(context, listen: false)
-            .changePrefer(oldIndex, newIndex);
-      },
+          for (UnivInfo univ in favorateUnives) UnivBar(univ: univ)
+        ],
+      ),
     );
   }
 }
 
-class UnivCard extends StatelessWidget {
-  UnivCard({
+class UnivBar extends StatelessWidget {
+  UnivBar({
     Key? key,
     required this.univ,
   }) : super(key: key);
@@ -96,33 +79,67 @@ class UnivCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              univ.univName,
-              style: TextStyle(fontSize: 24),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: Colors.white,
+          radius: 24,
+          backgroundImage: NetworkImage(
+              "https://upload.wikimedia.org/wikipedia/commons/6/67/InhaUniversity_Emblem.jpg"),
+        ),
+        title: Text(
+          univ.univName,
+          style: TextStyle(fontSize: 24),
+        ),
+        trailing: IconButton(
+            icon: Icon(Icons.more_vert),
+            onPressed: () => showSelectDialog(context)),
+        onTap: () => NavigateUnivWeb(context),
+        subtitle: Text("24km"),
+        //onLongPress: ()=> showSelectDialog(context),
+      ),
+    );
+  }
+
+  void showSelectDialog(BuildContext context) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CupertinoButton(
+              onPressed: () {
+                Provider.of<UnivModel>(context, listen: false)
+                    .delete(univ.univCode);
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "삭제",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w100),
+              ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              CupertinoButton(
-                //color: Colors.red,
-                child: Text("이동하기"),
-                onPressed: () {
-                  NavigateUnivWeb(context);
-                },
+            CupertinoButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (context) => UnivPreference()),
+                );
+              },
+              child: Text(
+                "순서 변경",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w100),
               ),
-              CupertinoButton(
-                child: Text("삭제하기"),
-                onPressed: () => Provider.of<UnivModel>(context, listen: false)
-                    .delete(univ.univCode),
-              ),
-            ],
-          )
-        ],
+            ),
+          ],
+        ),
+        titlePadding: EdgeInsets.all(8.0),
       ),
     );
   }
@@ -132,7 +149,7 @@ class UnivCard extends StatelessWidget {
     Provider.of<UnivModel>(context, listen: false).univCode = univ.univCode;
     Provider.of<UnivModel>(context, listen: false).year = 2023;
 
-     Navigator.push(
+    Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) {
@@ -201,7 +218,9 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
       context,
       CupertinoPageRoute(
         builder: (context) {
-          return UnivSearch(whereClick: WhereClick.main,);
+          return UnivSearch(
+            whereClick: WhereClick.main,
+          );
         },
       ),
     );
@@ -210,3 +229,157 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(height);
 }
+
+class UnivDownloader {
+  String univName;
+  UnivType univType;
+
+  UnivDownloader({
+    required this.univName,
+    required this.univType,
+  });
+
+  late Map<String, dynamic> Json;
+
+  Future<void> downLoad() async => Json = await _getJson();
+
+  UnivData getData() => univDataFromJson(Json);
+
+  Uri _MyUri() {
+    Uri uri = Uri.parse(
+        "https://www.career.go.kr/cnet/openapi/getOpenApi?apiKey=42a1daf5ceb9674aa3e23b4f44b83335"
+        "&svcType=api&svcCode=SCHOOL&contentType=json&gubun=univ_list&sch1=100323&sch2=100328"
+        "&searchSchulNm=인하대");
+    return uri;
+  }
+
+  Future<Map<String, dynamic>> _getJson() async {
+    // uri값 얻고
+    Uri uri = _MyUri();
+
+    // 요청하기
+    final Response response = await http.get(uri);
+
+    // 요청 성공하면 리턴
+    if (response.statusCode == 200) {
+      print("대학정보 url: $uri");
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load post');
+    }
+  }
+
+  UnivData univDataFromJson(Map<String, dynamic> json) {
+    String link = "error";
+    String location = "error";
+    String univName = "error";
+
+    List? list = json['dataSearch']?['content'];
+
+
+    if (list == null) {
+      print("불러오지 못했습니다.");
+    } else {
+      int lenght=list.length;
+      print("감지된 대학 수: $lenght");
+
+      assert(lenght<3, "대학 이름을 더 정확히 적어야합니다.");
+
+      switch (univType) {
+        case UnivType.main:
+          for (Map map in list) {
+            if (map['campusName'] == "본교") {
+              univName = map['schoolName'];
+              link = map['link'];
+              location = map['adres'];
+              break;
+            }
+          }
+          break;
+        case UnivType.branch:
+          for (Map map in list) {
+            if (map['campusName'] != "본교") {
+              univName = map['schoolName'];
+              link = map['link'];
+              location = map['adres'];
+              break;
+            }
+          }
+          break;
+      }
+    }
+
+    return UnivData(
+      univname: univName,
+      link: link,
+      location: location,
+    );
+  }
+}
+
+enum UnivType { main, branch }
+
+class UnivData {
+  UnivData({
+    required this.univname,
+    required this.link,
+    required this.location,
+  });
+
+  String univname;
+  String link;
+  String location;
+
+  @override
+  String toString() {
+    return "univname: $univname, link: $link, location: $location";
+  }
+}
+
+// // 각 요일의 날짜를 구하기
+// final DateTime now = DateTime.now();
+// List<String> dates = [];  // dates: [20220613, 20220614, 20220615, 20220616, 20220617]
+// for (int i = 1; i <= 5; i++) {
+//   dates.add(DateFormat('yyyyMMdd')
+//       .format(now.add(Duration(days: -1 * now.weekday + i))));
+// }
+//
+// // 과목이 담길 리스트를 만든다
+// List<String> arrMon = [],
+//     arrTue = [],
+//     arrWed = [],
+//     arrThu = [],
+//     arrFri = [];
+//
+// // 이 리스트는 시간 맵이 모두 들어있는 리스트
+// List? TimeList = json['hisTimetable']?[1]?['row'];
+//
+// if (TimeList == null) {
+//   assert(json["RESULT"]?["MESSAGE"] == "해당하는 데이터가 없습니다.", "시간표 url을 불러오는 과정에서 예상치 못한 오류가 발생했습니다.");
+//   String message = "데이터가 없습니다.";
+//   arrMon.add(message);
+//   arrTue.add(message);
+//   arrWed.add(message);
+//   arrThu.add(message);
+//   arrFri.add(message);
+// } else {
+//   assert(json['hisTimetable']?[0]?['head']?[1]?['RESULT']?['MESSAGE'] ==
+//       "정상 처리되었습니다.");
+//
+//   for (int i = 0; i < TimeList.length; i++) {
+//     final String date = TimeList[i]['ALL_TI_YMD'];
+//     final String subject = TimeList[i]['ITRT_CNTNT'];
+//
+//     if (date == dates[0]) {
+//       arrMon.add(subject);
+//     } else if (date == dates[1]) {
+//       arrTue.add(subject);
+//     } else if (date == dates[2]) {
+//       arrWed.add(subject);
+//     } else if (date == dates[3]) {
+//       arrThu.add(subject);
+//     } else if (date == dates[4]) {
+//       arrFri.add(subject);
+//     }
+//   }
+// }
