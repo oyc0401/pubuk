@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutterschool/page/Univ/UnivDownLoad.dart';
 import 'package:provider/provider.dart';
 
 import 'Home/home.dart';
@@ -67,10 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return [
       const Home(),
       const Univ(),
-      const Text(
-        'Music',
-        style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
-      ),
+      const DownLoad(),
       const Text(
         'Places',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
