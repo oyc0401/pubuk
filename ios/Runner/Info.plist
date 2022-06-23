@@ -43,17 +43,21 @@
 				</array>
 			</dict>
 		</array>
-		 <key>LSApplicationQueriesSchemes</key>
-          <array>
+		<key>LSApplicationQueriesSchemes</key>
+        <array>
             <string>https</string>
             <string>http</string>
-          </array>
+        </array>
+        <key>NSLocationAlwaysUsageDescription</key>
+        <string>Your location is required for xyz benefits for you</string>
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>Your location is required for xyz benefits for you</string>
 		<key>NSAppTransportSecurity</key>
         <dict>
-          <key>NSAllowsArbitraryLoads</key>
-          <true/>
-          <key>NSAllowsArbitraryLoadsInWebContent</key>
-          <true/>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+            <key>NSAllowsArbitraryLoadsInWebContent</key>
+            <true/>
         </dict>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>

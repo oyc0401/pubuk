@@ -68,7 +68,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return [
       const Home(),
       const Univ(),
-      const DownLoad(),
+       const DownLoad(),
+      // const Text(
+      //   'Music',
+      //   style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
+      // ),
       const Text(
         'Places',
         style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
