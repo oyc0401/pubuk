@@ -165,3 +165,130 @@
 // }
 //
 // enum UnivType { main, branch }
+
+// @override
+// Widget build(BuildContext context) {
+//   return Scaffold(
+//     appBar: AppBar(),
+//     body: Center(
+//       child: SelectableText(
+//         text,
+//         scrollPhysics: ClampingScrollPhysics(),
+//         toolbarOptions:
+//         ToolbarOptions(copy: true, selectAll: true, cut: true),
+//       ),
+//     ),
+//   );
+// }
+//
+// class LocateDownloader {
+//   String address;
+//   double longitude;
+//   double latitude;
+//
+//   LocateDownloader({
+//     required this.address,
+//     required this.longitude,
+//     required this.latitude,
+//   });
+//
+//   late Map<String, dynamic> Json;
+//
+//   Future<void> downLoad() async => Json = await _getJson();
+//
+//   double getDistance() => distanceFromJson(Json);
+//
+//   Uri _MyUri() {
+//     Uri uri = Uri.parse(
+//         "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?"
+//             "query=$address&coordinate=$longitude,$latitude");
+//     return uri;
+//   }
+//
+//   Future<Map<String, dynamic>> _getJson() async {
+//     Uri uri = _MyUri();
+//
+//     Map<String, String> headerss = {
+//       "X-NCP-APIGW-API-KEY-ID": "n4pidoepsw",
+//       // 개인 클라이언트 아이디
+//       "X-NCP-APIGW-API-KEY": "eHPmzXVvSyo6nroN43Kk3jUCguAMf8tVFti2IgmX"
+//       // 개인 시크릿 키
+//     };
+//
+//     // 요청하기
+//     final Response response = await http.get(uri, headers: headerss);
+//
+//     // 요청 성공하면 리턴
+//     if (response.statusCode == 200) {
+//       //print("url: $uri");
+//       return json.decode(response.body);
+//     } else {
+//       throw Exception('Failed to load post');
+//     }
+//   }
+//
+//   double distanceFromJson(Map<String, dynamic> json) {
+//     List list = json["addresses"];
+//
+//     if (list.isEmpty) {
+//       print("수정 필요");
+//       return 0;
+//     }
+//
+//     double distance = list[0]?["distance"];
+//
+//     return distance;
+//   }
+//   double longitudeFromJson(Map<String, dynamic> json) {
+//     List list = json["addresses"];
+//     String longStr = list[0]?["x"];
+//     double longitude=double.parse(longStr);
+//     return longitude;
+//
+//   }
+//
+//   double latitudeFromJson(Map<String, dynamic> json) {
+//     List list = json["addresses"];
+//     String latiStr = list[0]?["y"];
+//     double latitude=double.parse(latiStr);
+//     return latitude;
+//   }
+//
+//   double getlong() => longitudeFromJson(Json);
+//
+//   double getlat() => latitudeFromJson(Json);
+// }
+//
+// Future<UnivData> getDatabox(
+//     {required UnivData univData,
+//       required double longitude,
+//       required double latitude}) async {
+//   LocateDownloader locateDownloader = LocateDownloader(
+//     address: univData.location,
+//     longitude: longitude,
+//     latitude: latitude,
+//   );
+//   await locateDownloader.downLoad();
+//   double distance = locateDownloader.getDistance();
+//
+//   double long=locateDownloader.getlong();
+//   double lati=locateDownloader.getlat();
+//
+//   univData.distance = distance;
+//   univData.longitude=long;
+//   univData.latitude=lati;
+//
+//   print("${univData.name}: ${distance / 1000}km, ${univData.location}");
+//   return univData;
+// }
+//
+//
+// List<Future<UnivData>> futures = [];
+//
+// for (UnivData data in list) {
+// futures.add(getDatabox(
+// univData: data, longitude: geo.longitude, latitude: geo.latitude));
+// }
+//
+// print("거리 불러오는중...");
+// List<UnivData> datas = await Future.wait(futures);
