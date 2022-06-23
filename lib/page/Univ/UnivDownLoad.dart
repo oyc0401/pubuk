@@ -23,29 +23,66 @@ class _DownLoadState extends State<DownLoad> {
   @override
   void initState() {
     super.initState();
+
     init();
 
-
-   // getlocate();
+    //getlocate("경기도 부천시 호현로489번길 52 (소사본동, 서울신학대학교)");
   }
 
+  init() async {
+    List<UnivData> list = UnivName.univDatas;
+    var geo = await _determinePosition();
+    print("현재위치: ${geo.longitude},${geo.latitude}");
+    List<Future<UnivData>> futures = [];
+
+    for (UnivData data in list) {
+      futures.add(getDatabox(
+          univData: data, longitude: geo.longitude, latitude: geo.latitude));
+    }
+
+    print("거리 불러오는중...");
+    List<UnivData> datas = await Future.wait(futures);
+
+    print("결과:");
+    datas.sort((UnivData a,UnivData  b) {
+      return a.distance.compareTo(b.distance);
+    });
+
+    for (var value in datas) {
+      print(value);
+    }
 
 
+  }
 
+  Future<UnivData> getDatabox(
+      {required UnivData univData,
+      required double longitude,
+      required double latitude}) async {
+    LocateDownloader locateDownloader = LocateDownloader(
+      address: univData.location,
+      longitude: longitude,
+      latitude: latitude,
+    );
+    await locateDownloader.downLoad();
+    //print(locateDownloader.Json);
+    double dis = locateDownloader.getData();
+    univData.distance = dis;
 
+    print("${univData.name}: ${dis / 1000}km, ${univData.location}");
+    return univData;
+  }
 
   ///
   ///
   /// 위치
-  void getlocate() async {
+  void getlocate(String address) async {
     var geo = await _determinePosition();
     print("${geo.longitude},${geo.latitude}");
-    double dis=await getDistance(
-        address: "충청남도 아산시 배방읍 호서로79번길 20 (세출리, 호서대학교)",
-        longitude: geo.longitude,
-        latitude: geo.latitude);
+    double dis = await getDistance(
+        address: address, longitude: geo.longitude, latitude: geo.latitude);
 
-    print("${dis/1000}km");
+    print("${dis / 1000}km");
   }
 
   Future<Position> _determinePosition() async {
@@ -85,21 +122,25 @@ class _DownLoadState extends State<DownLoad> {
     return await Geolocator.getCurrentPosition();
   }
 
-  Future<double> getDistance({required String address, required double longitude, required double latitude}) async {
+  Future<double> getDistance(
+      {required String address,
+      required double longitude,
+      required double latitude}) async {
     LocateDownloader locateDownloader = LocateDownloader(
       address: address,
       longitude: longitude,
       latitude: latitude,
     );
     await locateDownloader.downLoad();
-    print(locateDownloader.Json);
+    //print(locateDownloader.Json);
     double dis = locateDownloader.getData();
-    print(dis);
+    //print(dis);
 
-    text = locateDownloader.Json.toString();
-    setState(() {});
+    // text = locateDownloader.Json.toString();
+    // setState(() {});
     return dis;
   }
+
   ///
   ///
   ///
@@ -125,8 +166,6 @@ class _DownLoadState extends State<DownLoad> {
     );
   }
 }
-
-
 
 class LocateDownloader {
   String address;
@@ -167,7 +206,7 @@ class LocateDownloader {
 
     // 요청 성공하면 리턴
     if (response.statusCode == 200) {
-      print("url: $uri");
+      //print("url: $uri");
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load post');
@@ -175,7 +214,15 @@ class LocateDownloader {
   }
 
   double distanceFromJson(Map<String, dynamic> json) {
-    double distance = json["addresses"]?[0]?["distance"];
+    List list = json["addresses"];
+
+    if (list.isEmpty) {
+      print("수정 필요");
+      return 0;
+    }
+
+    double distance = list[0]?["distance"];
+
     return distance;
   }
 }
