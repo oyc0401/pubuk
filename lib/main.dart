@@ -2,11 +2,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutterschool/DB/UserSettingDB.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/Home/HomeModel.dart';
 import 'package:flutterschool/page/SignIn/Register.dart';
 import 'package:flutterschool/page/Univ/UnivModel.dart';
+import 'package:flutterschool/page/Univ/UnivSearchModel.dart';
 
 import 'package:flutterschool/page/mainPage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
@@ -30,6 +32,7 @@ Future<void> main() async {
   // DB 불러오기
   await UserProfile.initializeUser();
   await Setting.initializeSetting();
+  await UserSetting.initializeUserSetting();
 
   print("초기설정 완료");
 
@@ -64,7 +67,7 @@ Run_App() async {
     print("회원가입 중 입니다. 회원가입 이동!");
     runApp(MyApp(
         initialWidget:
-        Register(uid: localUser.uid, provider: localUser.provider)));
+            Register(uid: localUser.uid, provider: localUser.provider)));
   } else {
     // 저장소가 있고 로그인을 했다고 판단.
     print("현재 uid: ${localUser.uid} 홈 화면 이동!");
@@ -82,12 +85,16 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-        create: (context) => UnivModel(
-        univCode: "0000046",
-        year: 2023,
-        univWay: UnivWay.subject,)),
+            create: (context) => UnivModel(
+                  univCode: "0000046",
+                  year: 2023,
+                  univWay: UnivWay.subject,
+                )),
         ChangeNotifierProvider(
           create: (context) => HomeModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UnivSearchModel(),
         ),
       ],
       child: MaterialApp(

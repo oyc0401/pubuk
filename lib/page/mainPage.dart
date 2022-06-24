@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutterschool/page/Univ/UnivDownLoad.dart';
+import 'package:flutterschool/page/Univ/UnivSearchModel.dart';
 import 'package:provider/provider.dart';
 
 import 'Home/home.dart';
@@ -39,6 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
       currentIndex: _selectedIndex,
       //현재 선택된 Index
       onTap: (int index) {
+        // switch(index){
+        //   case 1:
+        //     Provider.of<UnivSearchModel>(context,listen: false).InitUnivDatas();
+        // }
         setState(() {
           _selectedIndex = index;
         });

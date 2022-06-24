@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/UserSettingDB.dart';
 import 'package:flutterschool/page/Univ/UnivPreference.dart';
 
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
@@ -14,7 +15,7 @@ import 'UnivDownLoad.dart';
 import 'UnivModel.dart';
 import 'UnivName.dart';
 import 'UnivSearch.dart';
-
+import 'UnivSearchModel.dart';
 
 class Univ extends StatefulWidget {
   const Univ({Key? key}) : super(key: key);
@@ -50,20 +51,47 @@ class _UnivState extends State<Univ> {
       );
     }
 
+    UserSetting userSetting = UserSetting.current;
+    // Widget wi(){
+    //   List widgets=[];
+    //   UserSetting userSetting=UserSetting.current;
+    //   for (UnivInfo univ in favorateUnives) {
+    //     UnivData univData=UnivName.getUnivData(univCode: univ.univCode, longitude: userSetting.longitude, latitude: userSetting.latitude);
+    //
+    //     widgets.add(UnivBar(univData: univData,));
+    //   }
+    // }
+
     return Scaffold(
       appBar: UnivAppBar(),
       body: Column(
         children: [
-          CupertinoButton(
-            child: Text("위치 수정"),
-            onPressed: () {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => UnivPreference()),
-              );
-            },
+          Row(
+            children: [
+              CupertinoButton(
+                child: Text("선호도 수정"),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(builder: (context) => UnivPreference()),
+                  );
+                },
+              ),
+              CupertinoButton(
+                child: Text("위치 찾기"),
+                onPressed: () {
+                  UnivDistance.save();
+                },
+              ),
+            ],
           ),
-          for (UnivInfo univ in favorateUnives) UnivBar(univ: univ)
+          for (UnivInfo univ in favorateUnives)
+            UnivBar(
+              univData: UnivName.getUnivData(
+                  univCode: univ.univCode,
+                  longitude: userSetting.longitude,
+                  latitude: userSetting.latitude),
+            )
         ],
       ),
     );
@@ -73,29 +101,32 @@ class _UnivState extends State<Univ> {
 class UnivBar extends StatelessWidget {
   UnivBar({
     Key? key,
-    required this.univ,
+    required this.univData,
+    //required this.univ,
   }) : super(key: key);
-  UnivInfo univ;
+
+  //UnivInfo univ;
+  UnivData univData;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.white,
-          radius: 24,
-          backgroundImage: NetworkImage(
-              "https://upload.wikimedia.org/wikipedia/commons/6/67/InhaUniversity_Emblem.jpg"),
-        ),
+        // leading: CircleAvatar(
+        //   backgroundColor: Colors.white,
+        //   radius: 24,
+        //   backgroundImage: NetworkImage(
+        //       "https://upload.wikimedia.org/wikipedia/commons/6/67/InhaUniversity_Emblem.jpg"),
+        // ),
         title: Text(
-          univ.univName,
-          style: TextStyle(fontSize: 24),
+          univData.name,
+          //style: TextStyle(fontSize: 24),
         ),
         trailing: IconButton(
             icon: Icon(Icons.more_vert),
             onPressed: () => showSelectDialog(context)),
         onTap: () => NavigateUnivWeb(context),
-        subtitle: Text("24km"),
+        subtitle: Text("${univData.getKm()}km, ${univData.getAddress()}"),
         //onLongPress: ()=> showSelectDialog(context),
       ),
     );
@@ -111,7 +142,7 @@ class UnivBar extends StatelessWidget {
             CupertinoButton(
               onPressed: () {
                 Provider.of<UnivModel>(context, listen: false)
-                    .delete(univ.univCode);
+                    .delete(univData.code);
                 Navigator.of(context).pop();
               },
               child: Text(
@@ -147,7 +178,7 @@ class UnivBar extends StatelessWidget {
 
   void NavigateUnivWeb(BuildContext context) {
     /// webview code 변경, 시작 할 땐 2023년 으로
-    Provider.of<UnivModel>(context, listen: false).univCode = univ.univCode;
+    Provider.of<UnivModel>(context, listen: false).univCode = univData.code;
     Provider.of<UnivModel>(context, listen: false).year = 2023;
 
     Navigator.push(
@@ -230,8 +261,3 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(height);
 }
-
-
-
-
-
