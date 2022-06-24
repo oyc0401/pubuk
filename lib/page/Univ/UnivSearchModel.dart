@@ -31,9 +31,6 @@ class UnivSearchModel with ChangeNotifier {
   }
 
   void InitUnivDatas() async {
-    // 현재 위치 정보가 없으면 얻기
-    UnivDistance.save();
-
     UserSetting userSetting = UserSetting.current;
     _univDatas = UnivName.univDatasDistance(
         longitude: userSetting.longitude, latitude: userSetting.latitude);
@@ -79,6 +76,9 @@ class UnivDistance {
           await Geolocator.openAppSettings();
           break;
       }
+
+      print("현재위치가 북고로 설정되었습니다.");
+      UserSetting.save(UserSetting());
     }
   }
 
@@ -95,6 +95,7 @@ class UnivDistance {
     }
 
     permission = await geolocatorPlatform.checkPermission();
+    print("현재: $permission");
     if (permission == LocationPermission.denied) {
       print("현재 거절상태");
       permission = await geolocatorPlatform.requestPermission();
@@ -102,10 +103,15 @@ class UnivDistance {
         print("거절");
         throw Loca.denied;
       }
+      if (permission == LocationPermission.deniedForever) {
+        print("영원히 거절 방금 누름");
+        throw Loca.denied;
+      }
     }
 
+
     if (permission == LocationPermission.deniedForever) {
-      print("영원히 거절");
+      print("영원히 거절이였음");
       throw Loca.deniedForever;
     }
 

@@ -67,6 +67,7 @@ class _UnivState extends State<Univ> {
       body: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CupertinoButton(
                 child: Text("선호도 수정"),
@@ -75,12 +76,6 @@ class _UnivState extends State<Univ> {
                     context,
                     CupertinoPageRoute(builder: (context) => UnivPreference()),
                   );
-                },
-              ),
-              CupertinoButton(
-                child: Text("위치 찾기"),
-                onPressed: () {
-                  UnivDistance.save();
                 },
               ),
             ],
@@ -94,6 +89,15 @@ class _UnivState extends State<Univ> {
             )
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.white,
+          child: Icon(
+            Icons.my_location,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            UnivDistance.save();
+          }),
     );
   }
 }

@@ -27,12 +27,7 @@ class _DownLoadState extends State<DownLoad> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
-          child: CupertinoButton(
-              child: Text("위치"),
-              onPressed: () {
-                UnivDistance.save();
-              })),
+      body: Center(),
     );
   }
 }
