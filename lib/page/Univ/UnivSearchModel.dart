@@ -56,31 +56,10 @@ enum Sort {
   distance,
 }
 
-class UnivDistance {
-  static save() async {
-    try {
-      Position position = await determinePosition();
-      UserSetting.save(
-        UserSetting(longitude: position.longitude, latitude: position.latitude),
-      );
-      print("위치 얻기 성공");
-    } catch (e) {
-      print("예외: $e");
-      switch (e) {
-        case Loca.locationDisable:
-          await Geolocator.openLocationSettings();
-          break;
-        case Loca.denied:
-          break;
-        case Loca.deniedForever:
-          await Geolocator.openAppSettings();
-          break;
-      }
+enum Locale { locationDisable, denied, deniedForever }
 
-      print("현재위치가 북고로 설정되었습니다.");
-      UserSetting.save(UserSetting());
-    }
-  }
+class UnivDistance {
+
 
   static Future<Position> determinePosition() async {
     bool serviceEnabled;
@@ -91,7 +70,7 @@ class UnivDistance {
     serviceEnabled = await geolocatorPlatform.isLocationServiceEnabled();
     if (!serviceEnabled) {
       print("위치 x");
-      throw Loca.locationDisable;
+      throw Locale.locationDisable;
     }
 
     permission = await geolocatorPlatform.checkPermission();
@@ -101,18 +80,18 @@ class UnivDistance {
       permission = await geolocatorPlatform.requestPermission();
       if (permission == LocationPermission.denied) {
         print("거절");
-        throw Loca.denied;
+        throw Locale.denied;
       }
       if (permission == LocationPermission.deniedForever) {
         print("영원히 거절 방금 누름");
-        throw Loca.denied;
+        throw Locale.denied;
       }
     }
 
 
     if (permission == LocationPermission.deniedForever) {
       print("영원히 거절이였음");
-      throw Loca.deniedForever;
+      throw Locale.deniedForever;
     }
 
     print("성공");
@@ -120,4 +99,4 @@ class UnivDistance {
   }
 }
 
-enum Loca { locationDisable, denied, deniedForever }
+

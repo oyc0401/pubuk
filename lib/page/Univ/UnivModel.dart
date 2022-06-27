@@ -95,8 +95,13 @@ class UnivModel with ChangeNotifier {
 
 
 
-  Future<void> _setUrl() async =>
+  Future<void> _setUrl() async {
+    if(webViewController!=null){
       await webViewController?.loadUrl(urlRequest: URLRequest(url: uri));
+    }else{
+      print("지금 잡히는 webView가 없음.");
+    }
+  }
 
   void setScale(double scale){
 

@@ -13,8 +13,6 @@ class DownLoad extends StatefulWidget {
   State<DownLoad> createState() => _DownLoadState();
 }
 
-enum Loca { locationDisable, denied, deniedForever }
-
 class _DownLoadState extends State<DownLoad> {
   String text = "";
 
@@ -31,5 +29,3 @@ class _DownLoadState extends State<DownLoad> {
     );
   }
 }
-
-class Distance {}
