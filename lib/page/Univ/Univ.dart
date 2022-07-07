@@ -127,28 +127,46 @@ class _UnivState extends State<Univ> {
                     ),
                   ],
                 ),
-                onclick: () {NavigateUnivSearch(context);},
+                onclick: () {
+                  NavigateUnivSearch(context);
+                },
               ),
+            ),
+
+            favorateSection(),
+            SizedBox(
+              height: 12,
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "4년제 대학교 입시 결과",
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(2.0),
               child: Row(
                 children: [
-                  RoundButton(
-                    height: 40,
-                    width: 110,
-                    color: Provider.of<UnivSearchModel>(context).currentSort ==
-                            Sort.name
-                        ? Color(0xff89e0ff)
-                        : Color(0xffe8e8e8),
-                    onclick: () {
-                      Provider.of<UnivSearchModel>(context, listen: false)
-                          .sortUnives(Sort.name);
-                    },
-                    child: Text("이름순 정렬"),
-                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: RoundButton(
+                      height: 40,
+                      width: 110,
+                      color:
+                          Provider.of<UnivSearchModel>(context).currentSort ==
+                                  Sort.name
+                              ? Color(0xff89e0ff)
+                              : Color(0xffe8e8e8),
+                      onclick: () {
+                        Provider.of<UnivSearchModel>(context, listen: false)
+                            .sortUnives(Sort.name);
+                      },
+                      child: Text("이름순 정렬"),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0.0),
                     child: RoundButton(
                       height: 40,
                       width: 110,
@@ -165,17 +183,6 @@ class _UnivState extends State<Univ> {
                     ),
                   ),
                 ],
-              ),
-            ),
-            favorateSection(),
-            SizedBox(
-              height: 12,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(
-                "4년제 대학교 입시 결과",
-                style: TextStyle(fontSize: 24),
               ),
             ),
             for (UnivData univ in univDatas) UnivCard(univData: univ)
@@ -207,9 +214,23 @@ class _UnivState extends State<Univ> {
       children: [
         Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Text(
-            "내가 즐겨찾기 한 대학",
-            style: TextStyle(fontSize: 24),
+          child: Row(
+            children: [
+              Text(
+                "내가 즐겨찾기 한 대학",
+                style: TextStyle(fontSize: 24),
+              ),
+              Spacer(),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(builder: (context) => UnivPreference()),
+                  );
+                },
+                icon: Icon(Icons.edit),
+              ),
+            ],
           ),
         ),
         for (UnivInfo univ in favorateUnives)
