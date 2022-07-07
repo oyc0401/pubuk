@@ -15,7 +15,7 @@ class WebViewSetting extends StatefulWidget {
 }
 
 class _WebViewSettingState extends State<WebViewSetting> {
-  Setting setting=Setting.currentSetting;
+  Setting setting=Setting.current;
 
   _save() async {
     Setting.save(setting);

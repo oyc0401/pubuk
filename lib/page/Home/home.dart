@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/SettingDB.dart';
 import 'package:flutterschool/Server/FireTool.dart';
 
 import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
@@ -19,6 +20,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  @override
+  initState(){
+    super.initState();
+
+  }
+
+
   UserProfile userProfile = UserProfile.currentUser;
 
   void NavigateProfile() async {
@@ -37,6 +45,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: buildAppBar(),
       body: ListView(

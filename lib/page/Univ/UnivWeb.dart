@@ -121,11 +121,11 @@ class _UnivWebViewState extends State<UnivWebView> {
     ),
     android: AndroidInAppWebViewOptions(
       useHybridComposition: true,
-      textZoom: (Setting.currentSetting.webScale * 100).toInt(),
+      textZoom: (Setting.current.webScale * 100).toInt(),
     ),
     ios: IOSInAppWebViewOptions(
       allowsInlineMediaPlayback: true,
-      pageZoom: (Setting.currentSetting.webScale),
+      pageZoom: (Setting.current.webScale),
     ),
   );
 
