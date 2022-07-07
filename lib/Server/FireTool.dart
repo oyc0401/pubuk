@@ -32,11 +32,22 @@ class FireUser {
     });
   }
 
-  Future<void> updateGrade({required int grade, required int Class}) async {
-    // 유저의 학년, 반을 업데이트
+  Future<void> updateProfile(
+      {required int grade,
+      required int Class,
+      required String schoolName,
+      required int schoolCode,
+      required int schoolLevel,
+      required String schoolLocalCode}) async {
+
+    // 유저의 학년, 반, 학교를 업데이트
     await userDoc.update({
       'grade': grade,
       'class': Class,
+      'schoolName':schoolName,
+      'schoolCode':schoolCode,
+      'schoolLevel':schoolLevel,
+      'schoolLocalCode':schoolLocalCode,
     }).then((value) async {
       print('grade Update');
     }).catchError((error) => print("Failed to change grade: $error"));

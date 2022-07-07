@@ -31,6 +31,7 @@ class UnivSearchModel with ChangeNotifier {
   }
 
   void InitUnivDatas() async {
+    print("대학 검색 리스트 배치");
     UserSetting userSetting = UserSetting.current;
     _univDatas = UnivName.univDatasDistance(
         longitude: userSetting.longitude, latitude: userSetting.latitude);

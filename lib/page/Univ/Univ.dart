@@ -76,6 +76,7 @@ class _UnivState extends State<Univ> {
       print("위치 얻기 성공");
       _showToast("현재 위치가 업데이트 되었습니다.");
       setState(() => isLocateUpdate = true);
+      Provider.of<UnivSearchModel>(context,listen: false).InitUnivDatas();
     } catch (e) {
       print("예외: $e");
       switch (e) {

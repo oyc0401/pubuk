@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/Profile/ProfileModel.dart';
 import 'package:flutterschool/page/Profile/findschool.dart';
 import 'package:flutterschool/MyWidget/button.dart';
+import 'package:flutterschool/page/Profile/selectSchool.dart';
 import 'package:provider/provider.dart';
 
 import 'package:select_dialog/select_dialog.dart';
@@ -18,30 +20,18 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  /// 닉네임, 학년, 반을 바꾸면 [userData] 내부 값을 변화시킨다.
-  /// 저장 버튼을 누르면 [userData]에 있는 값을 저장하고 화면을 종료한다.
-  /// 로그인 상태라면 파이어베이스에도 저장한다.
+  @override
+  initState() {
+    super.initState();
+    Provider.of<ProfileModel>(context, listen: false).reset();
+  }
 
-  UserProfile userData = UserProfile.currentUser;
-
-  Future<void> Save(UserProfile myUserData) async {
-    // 로컬 DB에 저장
-    UserProfile.save(myUserData);
-
-    switch (userData.provider) {
-      case "Google":
-      case "Apple":
-      case "Kakao":
-        // firebase DB에 저장
-        print("현재 로그인 상태입니다.");
-        FireUser fireUser = FireUser(uid: myUserData.uid);
-        fireUser.updateGrade(
-          grade: myUserData.grade,
-          Class: myUserData.Class,
-        );
-        break;
-    }
+  Future<void> save() async {
+    await Provider.of<ProfileModel>(context, listen: false).saveLocal();
+    await Provider.of<ProfileModel>(context, listen: false).saveFireBase();
     Provider.of<HomeModel>(context, listen: false).setClass();
+    Provider.of<HomeModel>(context, listen: false).setLunch();
+
     // 나가기
     Navigator.of(context).pop('complete');
   }
@@ -61,23 +51,33 @@ class _EditProfileState extends State<EditProfile> {
             SizedBox(
               height: 40,
             ),
-            schoolSection(),
+            RoundButton(
+              text: Provider.of<ProfileModel>(context).schoolName,
+              onclick: NavigateSelectSchool,
+              color: Color(0xffb4d5ff),
+            ),
             SizedBox(
               height: 40,
             ),
-            gradeSection(),
+            RoundButton(
+              text: "${Provider.of<ProfileModel>(context).grade}학년",
+              onclick: changeGrade,
+              color: Color(0xffeeeeee),
+            ),
             SizedBox(
               height: 15,
             ),
-            classSection()
+            RoundButton(
+              text: "${Provider.of<ProfileModel>(context).Class}반",
+              onclick: changeClass,
+              color: Color(0xffeeeeee),
+            )
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: RoundButton(
-        onclick: () {
-          Save(userData);
-        },
+        onclick: () => save(),
         text: '저장',
         color: Color(0xffFFEC83),
         fontSize: 20,
@@ -85,91 +85,63 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  Widget schoolSection() {
-    return RoundButton(
-      text: userData.schoolName,
-      onclick: NavigateFindSchool,
-      color: Color(0xffb4d5ff),
-    );
-  }
-
-  Widget gradeSection() {
-    int myGrade = userData.grade;
-    return RoundButton(
-      text: "$myGrade학년",
-      onclick: changeGrade,
-      color: Color(0xffeeeeee),
-    );
-  }
-
-  Widget classSection() {
-    int myClass = userData.Class;
-    return RoundButton(
-      text: "$myClass반",
-      onclick: changeClass,
-      color: Color(0xffeeeeee),
-    );
-  }
-
   Future<void> changeGrade() async {
-    Future<int> getGradeDialog(BuildContext context, int initGrade) async {
-      await SelectDialog.showModal<String>(
-        context,
-        label: "학년을 선택하세요",
-        selectedValue: "$initGrade학년",
-        items: List.generate(3, (index) {
-          var num = index + 1;
-          return "$num학년";
-        }),
-        onChange: (String selected) {
-          setState(() {
-            print(selected);
-            var dd = selected.split('');
-            initGrade = int.parse(dd[0]);
-          });
-        },
-        showSearchBox: false,
-      );
-
-      return initGrade;
-    }
-
-    int Grade = await getGradeDialog(context, userData.grade);
-    userData.grade = (Grade);
-    setState(() {});
+    int initGrade = Provider.of<ProfileModel>(context, listen: false).grade;
+    await SelectDialog.showModal<String>(
+      context,
+      label: "학년을 선택하세요",
+      selectedValue: "${initGrade}학년",
+      items: List.generate(3, (index) {
+        var num = index + 1;
+        return "$num학년";
+      }),
+      onChange: (String selected) {
+        setState(() {
+          print(selected);
+          var dd = selected.split('');
+          initGrade = int.parse(dd[0]);
+          Provider.of<ProfileModel>(context, listen: false).setGrade(initGrade);
+        });
+      },
+      showSearchBox: false,
+    );
   }
 
   Future<void> changeClass() async {
-    Future<int> getClassDialog(BuildContext context, int initClass) async {
-      await SelectDialog.showModal<String>(
-        context,
-        label: "반을 선택하세요",
-        selectedValue: "$initClass반",
-        items: List.generate(9, (index) {
-          var num = index + 1;
-          return "$num반";
-        }),
-        onChange: (String selected) {
-          print(selected);
-          var dd = selected.split('');
-          initClass = int.parse(dd[0]);
-        },
-        showSearchBox: false,
-      );
-      return initClass;
-    }
-
-    int Class = await getClassDialog(context, userData.Class);
-    userData.Class = (Class);
-    setState(() {});
+    int initClass = Provider.of<ProfileModel>(context, listen: false).Class;
+    await SelectDialog.showModal<String>(
+      context,
+      label: "반을 선택하세요",
+      selectedValue: "$initClass반",
+      items: List.generate(9, (index) {
+        var num = index + 1;
+        return "$num반";
+      }),
+      onChange: (String selected) {
+        print(selected);
+        var dd = selected.split('');
+        initClass = int.parse(dd[0]);
+        Provider.of<ProfileModel>(context, listen: false).setClass(initClass);
+      },
+      showSearchBox: false,
+    );
   }
 
-  void NavigateFindSchool() {
+  void NavigateSelectSchool() {
     Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => const findSchool(),
+        builder: (context) => const SelectSchool(),
       ),
     );
   }
+
+// void NavigateFindSchool() {
+//   Navigator.push(
+//     context,
+//     CupertinoPageRoute(
+//       builder: (context) => const findSchool(),
+//     ),
+//   );
+// }
 }

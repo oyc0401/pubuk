@@ -6,6 +6,7 @@ import 'package:flutterschool/DB/UserSettingDB.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/Home/HomeModel.dart';
+import 'package:flutterschool/page/Profile/ProfileModel.dart';
 import 'package:flutterschool/page/SignIn/Register.dart';
 import 'package:flutterschool/page/Univ/UnivModel.dart';
 import 'package:flutterschool/page/Univ/UnivSearchModel.dart';
@@ -85,17 +86,15 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+            create: (context) => ProfileModel.fromDB(UserProfile.currentUser)),
+        ChangeNotifierProvider(create: (context) => HomeModel()),
+        ChangeNotifierProvider(
             create: (context) => UnivModel(
                   univCode: "0000046",
                   year: 2023,
                   univWay: UnivWay.subject,
                 )),
-        ChangeNotifierProvider(
-          create: (context) => HomeModel(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => UnivSearchModel(),
-        ),
+        ChangeNotifierProvider(create: (context) => UnivSearchModel()),
       ],
       child: MaterialApp(
         builder: (context, child) {

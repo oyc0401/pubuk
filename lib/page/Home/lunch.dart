@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/page/Home/HomeModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -236,6 +237,11 @@ class LunchDownloader {
       cleanedData = cleanedData.replaceAll("_", "");
       cleanedData = cleanedData.replaceAll("()", "");
       cleanedData = cleanedData.replaceAll(" ", "");
+
+
+      if(UserProfile.currentUser.schoolName=="도당고등학교"){
+        cleanedData = cleanedData.replaceAll("1", "");
+      }
 
       foods[i] = cleanedData;
     }
