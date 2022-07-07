@@ -53,7 +53,8 @@ class UnivSearch extends StatelessWidget {
 }
 
 class UnivSelection extends StatelessWidget {
-  UnivSelection({Key? key, required this.univData, required this.whereClick})
+  UnivSelection(
+      {Key? key, required this.univData, this.whereClick = WhereClick.main})
       : super(key: key);
   UnivData univData;
   WhereClick whereClick;

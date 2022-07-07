@@ -50,21 +50,21 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       items: const [
         BottomNavigationBarItem(
-          label: "Home",
+          label: "홈",
           icon: Icon(Icons.home),
         ),
         BottomNavigationBarItem(
-          label: "Univ",
+          label: "대학",
           icon: Icon(Icons.library_books),
         ),
-        BottomNavigationBarItem(
-          label: "Music",
-          icon: Icon(Icons.music_note),
-        ),
-        BottomNavigationBarItem(
-          label: "Places",
-          icon: Icon(Icons.location_on),
-        ),
+        // BottomNavigationBarItem(
+        //   label: "Music",
+        //   icon: Icon(Icons.music_note),
+        // ),
+        // BottomNavigationBarItem(
+        //   label: "Places",
+        //   icon: Icon(Icons.location_on),
+        // ),
       ],
     );
   }
@@ -73,15 +73,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return [
       const Home(),
       const Univ(),
-       const DownLoad(),
+      //  const DownLoad(),
+      // // const Text(
+      // //   'Music',
+      // //   style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
+      // // ),
       // const Text(
-      //   'Music',
+      //   'Places',
       //   style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
       // ),
-      const Text(
-        'Places',
-        style: TextStyle(fontSize: 30, fontFamily: 'DoHyeonRegular'),
-      ),
     ];
   }
 }

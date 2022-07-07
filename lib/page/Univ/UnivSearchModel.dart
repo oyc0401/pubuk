@@ -11,7 +11,7 @@ class UnivSearchModel with ChangeNotifier {
   }
 
   List<UnivData> get unives {
-    switch (_currentSort) {
+    switch (currentSort) {
       case Sort.name:
         _sortName();
         return _univDatas;
@@ -23,10 +23,10 @@ class UnivSearchModel with ChangeNotifier {
 
   List<UnivData> _univDatas = [];
 
-  Sort _currentSort = Sort.name;
+  Sort currentSort = Sort.name;
 
   void sortUnives(Sort sort) {
-    _currentSort = sort;
+    currentSort = sort;
     notifyListeners();
   }
 

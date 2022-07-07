@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../../DB/UnivDB.dart';
 import '../../DB/userProfile.dart';
 
+import '../../MyWidget/button.dart';
 import 'UnivDownLoad.dart';
 import 'UnivModel.dart';
 import 'UnivName.dart';
@@ -76,7 +77,7 @@ class _UnivState extends State<Univ> {
       print("위치 얻기 성공");
       _showToast("현재 위치가 업데이트 되었습니다.");
       setState(() => isLocateUpdate = true);
-      Provider.of<UnivSearchModel>(context,listen: false).InitUnivDatas();
+      Provider.of<UnivSearchModel>(context, listen: false).InitUnivDatas();
     } catch (e) {
       print("예외: $e");
       switch (e) {
@@ -103,36 +104,83 @@ class _UnivState extends State<Univ> {
 
   @override
   Widget build(BuildContext context) {
-    List<UnivInfo>? favorateUnives =
-        Provider.of<UnivModel>(context).favorateUnives;
-    UserSetting userSetting = UserSetting.current;
-
+    List<UnivData> univDatas = Provider.of<UnivSearchModel>(context).unives;
     return Scaffold(
       appBar: UnivAppBar(),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CupertinoButton(
-                child: Text("선호도 수정"),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(builder: (context) => UnivPreference()),
-                  );
-                },
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: RoundButton(
+                color: Color(0xffefefef),
+                child: Row(
+                  children: [
+                    Text(
+                      "대학교 검색",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.search,
+                    ),
+                  ],
+                ),
+                onclick: () {NavigateUnivSearch(context);},
               ),
-            ],
-          ),
-          for (UnivInfo univ in favorateUnives)
-            UnivBar(
-              univData: UnivName.getUnivData(
-                  univCode: univ.univCode,
-                  longitude: userSetting.longitude,
-                  latitude: userSetting.latitude),
-            )
-        ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                children: [
+                  RoundButton(
+                    height: 40,
+                    width: 110,
+                    color: Provider.of<UnivSearchModel>(context).currentSort ==
+                            Sort.name
+                        ? Color(0xff89e0ff)
+                        : Color(0xffe8e8e8),
+                    onclick: () {
+                      Provider.of<UnivSearchModel>(context, listen: false)
+                          .sortUnives(Sort.name);
+                    },
+                    child: Text("이름순 정렬"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: RoundButton(
+                      height: 40,
+                      width: 110,
+                      color:
+                          Provider.of<UnivSearchModel>(context).currentSort ==
+                                  Sort.distance
+                              ? Color(0xff89e0ff)
+                              : Color(0xffe8e8e8),
+                      onclick: () {
+                        Provider.of<UnivSearchModel>(context, listen: false)
+                            .sortUnives(Sort.distance);
+                      },
+                      child: Text("거리순 정렬"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            favorateSection(),
+            SizedBox(
+              height: 12,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "4년제 대학교 입시 결과",
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+            for (UnivData univ in univDatas) UnivCard(univData: univ)
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
           backgroundColor:
@@ -142,6 +190,50 @@ class _UnivState extends State<Univ> {
             color: isLocateUpdate ? Colors.black : Colors.black,
           ),
           onPressed: () => save()),
+    );
+  }
+
+  Widget favorateSection() {
+    List<UnivInfo>? favorateUnives =
+        Provider.of<UnivModel>(context).favorateUnives;
+    UserSetting userSetting = UserSetting.current;
+
+    if (favorateUnives.isEmpty) {
+      return Container();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            "내가 즐겨찾기 한 대학",
+            style: TextStyle(fontSize: 24),
+          ),
+        ),
+        for (UnivInfo univ in favorateUnives)
+          UnivBar(
+            univData: UnivName.getUnivData(
+                univCode: univ.univCode,
+                longitude: userSetting.longitude,
+                latitude: userSetting.latitude),
+          )
+      ],
+    );
+  }
+
+  void NavigateUnivSearch(BuildContext context) async {
+    Provider.of<UnivModel>(context, listen: false).year = 2023;
+    await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) {
+          return UnivSearch(
+            whereClick: WhereClick.main,
+          );
+        },
+      ),
     );
   }
 }
@@ -212,24 +304,124 @@ class UnivBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        // leading: CircleAvatar(
-        //   backgroundColor: Colors.white,
-        //   radius: 24,
-        //   backgroundImage: NetworkImage(
-        //       "https://upload.wikimedia.org/wikipedia/commons/6/67/InhaUniversity_Emblem.jpg"),
-        // ),
-        title: Text(
-          univData.name,
-          //style: TextStyle(fontSize: 24),
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Card(
+        margin: EdgeInsets.all(2),
+        elevation: 1,
+        color: Color(0xffeee9f0),
+        child: ListTile(
+          // leading: CircleAvatar(
+          //   backgroundColor: Colors.white,
+          //   radius: 24,
+          //   backgroundImage: NetworkImage(
+          //       "https://upload.wikimedia.org/wikipedia/commons/6/67/InhaUniversity_Emblem.jpg"),
+          // ),
+          title: Text(
+            univData.name,
+            //style: TextStyle(fontSize: 24),
+          ),
+
+          trailing: IconButton(
+              icon: Icon(Icons.more_vert),
+              onPressed: () => showSelectDialog(context)),
+          onTap: () => NavigateUnivWeb(context),
+          subtitle: Text("${univData.getKm()}km, ${univData.getAddress()}"),
+          //onLongPress: ()=> showSelectDialog(context),
         ),
-        trailing: IconButton(
-            icon: Icon(Icons.more_vert),
-            onPressed: () => showSelectDialog(context)),
-        onTap: () => NavigateUnivWeb(context),
-        subtitle: Text("${univData.getKm()}km, ${univData.getAddress()}"),
-        //onLongPress: ()=> showSelectDialog(context),
+      ),
+    );
+  }
+}
+
+class UnivCard extends StatelessWidget {
+  UnivCard({
+    Key? key,
+    required this.univData,
+    //required this.univ,
+  }) : super(key: key);
+
+  //UnivInfo univ;
+  UnivData univData;
+
+  // Future<void> showSelectDialog(BuildContext context) async {
+  //   switch (await showDialog<select>(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return SimpleDialog(
+  //           children: <Widget>[
+  //             SimpleDialogOption(
+  //               onPressed: () {
+  //                 Navigator.pop(context, select.delete);
+  //               },
+  //               child: const Text("삭제", style: TextStyle(fontSize: 18)),
+  //             ),
+  //             SimpleDialogOption(
+  //               onPressed: () {
+  //                 Navigator.pop(context, select.positionChange);
+  //               },
+  //               child: const Text("순서 변경", style: TextStyle(fontSize: 18)),
+  //             ),
+  //           ],
+  //         );
+  //       })) {
+  //     case select.delete:
+  //       Provider.of<UnivModel>(context, listen: false).delete(univData.code);
+  //       break;
+  //     case select.positionChange:
+  //       Navigator.push(context,
+  //           CupertinoPageRoute(builder: (context) => const UnivPreference()));
+  //       break;
+  //     case null:
+  //     // dialog dismissed
+  //       break;
+  //   }
+  // }
+
+  void NavigateUnivWeb(BuildContext context) {
+    /// webview code 변경, 시작 할 땐 2023년 으로
+    Provider.of<UnivModel>(context, listen: false).univCode = univData.code;
+    Provider.of<UnivModel>(context, listen: false).year = 2023;
+
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) {
+          return ChangeNotifierProvider.value(
+            value: Provider.of<UnivModel>(context),
+            child: UnivWeb(),
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Card(
+        margin: EdgeInsets.all(2),
+        color: Color(0xfff5f5f5),
+        child: ListTile(
+          // leading: CircleAvatar(
+          //   backgroundColor: Colors.white,
+          //   radius: 24,
+          //   backgroundImage: NetworkImage(
+          //       "https://upload.wikimedia.org/wikipedia/commons/6/67/InhaUniversity_Emblem.jpg"),
+          // ),
+
+          title: Text(
+            univData.name,
+            //style: TextStyle(fontSize: 24),
+          ),
+          // trailing: IconButton(
+          //     icon: Icon(Icons.more_vert),
+          //     onPressed: () => showSelectDialog(context)),
+          onTap: () => NavigateUnivWeb(context),
+          subtitle: Text("${univData.getKm()}km, ${univData.getAddress()}"),
+          //onLongPress: ()=> showSelectDialog(context),
+        ),
       ),
     );
   }

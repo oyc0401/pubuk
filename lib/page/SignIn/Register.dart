@@ -71,7 +71,7 @@ class _RegisterState extends State<Register> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: RoundButton(
+      floatingActionButton: RoundTextButton(
         onclick: signUp,
         text: '회원가입',
         color: Color(0xffFFEC83),

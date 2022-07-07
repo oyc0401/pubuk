@@ -24,7 +24,7 @@ class _SelectSchoolState extends State<SelectSchool> {
               SizedBox(
                 height: 60,
               ),
-              RoundButton(
+              RoundTextButton(
                 text: "부천북고등학교",
                 onclick: () => select(HighSchool.pubuk),
                 color: Provider.of<ProfileModel>(context, listen: false)
@@ -36,7 +36,7 @@ class _SelectSchoolState extends State<SelectSchool> {
               SizedBox(
                 height: 20,
               ),
-              RoundButton(
+              RoundTextButton(
                 text: "도당고등학교",
                 onclick: () => select(HighSchool.dodang),
                 color: Provider.of<ProfileModel>(context, listen: false)
@@ -48,7 +48,7 @@ class _SelectSchoolState extends State<SelectSchool> {
               SizedBox(
                 height: 20,
               ),
-              RoundButton(
+              RoundTextButton(
                 text: "원종고등학교",
                 onclick: () => select(HighSchool.wonjong),
                 color: Provider.of<ProfileModel>(context, listen: false)

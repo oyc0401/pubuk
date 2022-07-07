@@ -51,7 +51,7 @@ class _EditProfileState extends State<EditProfile> {
             SizedBox(
               height: 40,
             ),
-            RoundButton(
+            RoundTextButton(
               text: Provider.of<ProfileModel>(context).schoolName,
               onclick: NavigateSelectSchool,
               color: Color(0xffb4d5ff),
@@ -59,7 +59,7 @@ class _EditProfileState extends State<EditProfile> {
             SizedBox(
               height: 40,
             ),
-            RoundButton(
+            RoundTextButton(
               text: "${Provider.of<ProfileModel>(context).grade}학년",
               onclick: changeGrade,
               color: Color(0xffeeeeee),
@@ -67,7 +67,7 @@ class _EditProfileState extends State<EditProfile> {
             SizedBox(
               height: 15,
             ),
-            RoundButton(
+            RoundTextButton(
               text: "${Provider.of<ProfileModel>(context).Class}반",
               onclick: changeClass,
               color: Color(0xffeeeeee),
@@ -76,7 +76,7 @@ class _EditProfileState extends State<EditProfile> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: RoundButton(
+      floatingActionButton: RoundTextButton(
         onclick: () => save(),
         text: '저장',
         color: Color(0xffFFEC83),
