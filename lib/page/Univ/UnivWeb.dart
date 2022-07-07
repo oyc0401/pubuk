@@ -17,8 +17,6 @@ import 'UnivSearch.dart';
 class UnivWeb extends StatelessWidget {
   UnivWeb({Key? key}) : super(key: key);
 
-
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -36,45 +34,25 @@ class UnivWeb extends StatelessWidget {
     return AppBar(
       centerTitle: false,
       elevation: 4,
-      title: SizedBox(
-        height: 50,
-        child: Card(
-          elevation: 0,
-          child: InkWell(
-            onTap: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UnivSearch(
-                    whereClick: WhereClick.web,
-                  ),
-                ),
-              );
-            },
-            child: Ink(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              color: Color(0xfff5f5f5),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      UnivName.getUnivName(Provider.of<UnivModel>(context).univCode),
-                      style: const TextStyle(color: Colors.black, fontSize: 20),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const Icon(
-                    Icons.search,
-                    size: 28,
-                    color: Color(0xff191919),
-                  ),
-                ],
-              ),
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            UnivName.getUnivName(Provider.of<UnivModel>(context).univCode),
+            style: const TextStyle(color: Colors.black),
+            overflow: TextOverflow.ellipsis,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 6),
+            child: Text(
+            "${Provider.of<UnivModel>(context).year}",
+              style: const TextStyle(
+                  color: Colors.blue, fontSize: 14, fontWeight: FontWeight.w400),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-        ),
+        ],
       ),
-
       actions: <Widget>[
         IconButton(
           onPressed: () =>
@@ -93,7 +71,6 @@ class UnivWeb extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class UnivWebView extends StatefulWidget {
@@ -107,12 +84,11 @@ class UnivWebView extends StatefulWidget {
 
 class _UnivWebViewState extends State<UnivWebView> {
   @override
-  dispose(){
+  dispose() {
     super.dispose();
-     print("야네ㅐㄴㄷ");
+    print("야네ㅐㄴㄷ");
     //Provider.of<UnivModel>(context, listen: false).webViewController=null;
   }
-
 
   final InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
@@ -187,36 +163,36 @@ class RemoteButton extends StatelessWidget {
   final FToast fToast = FToast();
 
   void _showToast(String message) {
-    fToast.removeCustomToast();
-
-    fToast.showToast(
-      child: Column(
-        children: [
-          Container(
-            //margin: const EdgeInsets.only(bottom: 100),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0),
-              color: Color(0xffc2c2c2),
-            ),
-            child: Text(
-              message,
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          const SizedBox(
-            height: 100,
-          ),
-        ],
-      ),
-      //gravity: ToastGravity.BOTTOM,
-      positionedToastBuilder: (context, child) {
-        return Positioned(bottom: 50.0, left: 24.0, right: 24.0, child: child);
-      },
-
-      toastDuration: const Duration(seconds: 2),
-    );
+    // fToast.removeCustomToast();
+    //
+    // fToast.showToast(
+    //   child: Column(
+    //     children: [
+    //       Container(
+    //         //margin: const EdgeInsets.only(bottom: 100),
+    //         padding:
+    //             const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+    //         decoration: BoxDecoration(
+    //           borderRadius: BorderRadius.circular(25.0),
+    //           color: Color(0xffc2c2c2),
+    //         ),
+    //         child: Text(
+    //           message,
+    //           style: TextStyle(color: Colors.black),
+    //         ),
+    //       ),
+    //       const SizedBox(
+    //         height: 100,
+    //       ),
+    //     ],
+    //   ),
+    //   //gravity: ToastGravity.BOTTOM,
+    //   positionedToastBuilder: (context, child) {
+    //     return Positioned(bottom: 50.0, left: 24.0, right: 24.0, child: child);
+    //   },
+    //
+    //   toastDuration: const Duration(seconds: 2),
+    // );
   }
 
   @override
