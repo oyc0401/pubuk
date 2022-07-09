@@ -68,7 +68,7 @@ class _UnivState extends State<Univ> {
     );
   }
 
-  void save() async {
+  void setLocate() async {
     try {
       Position position = await UnivDistance.determinePosition();
       UserSetting.save(
@@ -196,12 +196,12 @@ class _UnivState extends State<Univ> {
             Icons.my_location,
             color: isLocateUpdate ? Colors.black : Colors.black,
           ),
-          onPressed: () => save()),
+          onPressed: () => setLocate()),
     );
   }
 
   Widget favorateSection() {
-    List<UnivInfo>? favorateUnives =
+    List<LikeUniv>? favorateUnives =
         Provider.of<UnivModel>(context).favorateUnives;
     UserSetting userSetting = UserSetting.current;
 
@@ -233,7 +233,7 @@ class _UnivState extends State<Univ> {
             ],
           ),
         ),
-        for (UnivInfo univ in favorateUnives)
+        for (LikeUniv univ in favorateUnives)
           UnivBar(
             univData: UnivName.getUnivData(
                 univCode: univ.univCode,

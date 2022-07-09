@@ -25,7 +25,7 @@ class UnivDB {
     _orderBy = order;
   }
 
-  Future<List<UnivInfo>> getInfo() async {
+  Future<List<LikeUniv>> getInfo() async {
     await _setInstance();
     final Database db = await _database;
     final List<Map<String, dynamic>> maps =
@@ -33,7 +33,7 @@ class UnivDB {
     lenght = maps.length;
 
     return List.generate(maps.length, (i) {
-      return UnivInfo(
+      return LikeUniv(
         id: maps[i]['id'],
         univName: maps[i]['univName'],
         univCode: maps[i]['univCode'],
@@ -59,7 +59,7 @@ class UnivDB {
     );
   }
 
-  Future<void> insertInfo(UnivInfo univ) async {
+  Future<void> insertInfo(LikeUniv univ) async {
     lenght++;
     print('id: ${univ.id} 추가됌');
     await _setInstance();
@@ -71,7 +71,7 @@ class UnivDB {
     );
   }
 
-  Future<void> updateInfo(UnivInfo univ) async {
+  Future<void> updateInfo(LikeUniv univ) async {
     print('수정 됌');
     await _setInstance();
     final Database db = await _database;
@@ -87,13 +87,13 @@ class UnivDB {
   }
 }
 
-class UnivInfo {
+class LikeUniv {
   final String id;
   String univName;
   String univCode;
   int preference;
 
-  UnivInfo({
+  LikeUniv({
     required this.id,
     required this.univName,
     required this.univCode,

@@ -12,6 +12,8 @@ class UserProfile {
   int authLevel; // 자신의 권한 1 = user, 2= teacher, 3 = parents, 10 = master
   String provider; // 로그인 환경
   String authId; // firebase authId: 카카오 로그인시 id가 뭔지 확인하기 위해서
+  String certifiedSchoolCode; // 인증 받은 학교 코드
+
   // school
   String schoolLocalCode; // 학교 교육청 코드
   int schoolCode; // 학교 코드
@@ -19,7 +21,7 @@ class UserProfile {
   int schoolLevel; // 1 = 초등학교, 2 = 중학교, 3 = 고등학교
   int grade; // 학년
   int Class; // 반
-  String certifiedSchoolCode; // 인증 받은 학교 코드
+
 
   UserProfile(
       {this.uid = 'guest',

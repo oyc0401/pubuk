@@ -23,12 +23,12 @@ class _EditProfileState extends State<EditProfile> {
   @override
   initState() {
     super.initState();
-    Provider.of<ProfileModel>(context, listen: false).reset();
+    Provider.of<EditProfileModel>(context, listen: false).reset();
   }
 
   Future<void> save() async {
-    await Provider.of<ProfileModel>(context, listen: false).saveLocal();
-    await Provider.of<ProfileModel>(context, listen: false).saveFireBase();
+    await Provider.of<EditProfileModel>(context, listen: false).saveLocal();
+    await Provider.of<EditProfileModel>(context, listen: false).saveFireBase();
     Provider.of<HomeModel>(context, listen: false).setClass();
     Provider.of<HomeModel>(context, listen: false).setLunch();
 
@@ -52,7 +52,7 @@ class _EditProfileState extends State<EditProfile> {
               height: 40,
             ),
             RoundTextButton(
-              text: Provider.of<ProfileModel>(context).schoolName,
+              text: Provider.of<EditProfileModel>(context).schoolName,
               onclick: NavigateSelectSchool,
               color: Color(0xffb4d5ff),
             ),
@@ -60,7 +60,7 @@ class _EditProfileState extends State<EditProfile> {
               height: 40,
             ),
             RoundTextButton(
-              text: "${Provider.of<ProfileModel>(context).grade}학년",
+              text: "${Provider.of<EditProfileModel>(context).grade}학년",
               onclick: changeGrade,
               color: Color(0xffeeeeee),
             ),
@@ -68,7 +68,7 @@ class _EditProfileState extends State<EditProfile> {
               height: 15,
             ),
             RoundTextButton(
-              text: "${Provider.of<ProfileModel>(context).Class}반",
+              text: "${Provider.of<EditProfileModel>(context).Class}반",
               onclick: changeClass,
               color: Color(0xffeeeeee),
             )
@@ -86,7 +86,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> changeGrade() async {
-    int initGrade = Provider.of<ProfileModel>(context, listen: false).grade;
+    int initGrade = Provider.of<EditProfileModel>(context, listen: false).grade;
     await SelectDialog.showModal<String>(
       context,
       label: "학년을 선택하세요",
@@ -100,7 +100,7 @@ class _EditProfileState extends State<EditProfile> {
           print(selected);
           var dd = selected.split('');
           initGrade = int.parse(dd[0]);
-          Provider.of<ProfileModel>(context, listen: false).setGrade(initGrade);
+          Provider.of<EditProfileModel>(context, listen: false).setGrade(initGrade);
         });
       },
       showSearchBox: false,
@@ -108,7 +108,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> changeClass() async {
-    int initClass = Provider.of<ProfileModel>(context, listen: false).Class;
+    int initClass = Provider.of<EditProfileModel>(context, listen: false).Class;
     await SelectDialog.showModal<String>(
       context,
       label: "반을 선택하세요",
@@ -121,7 +121,7 @@ class _EditProfileState extends State<EditProfile> {
         print(selected);
         var dd = selected.split('');
         initClass = int.parse(dd[0]);
-        Provider.of<ProfileModel>(context, listen: false).setClass(initClass);
+        Provider.of<EditProfileModel>(context, listen: false).setClass(initClass);
       },
       showSearchBox: false,
     );

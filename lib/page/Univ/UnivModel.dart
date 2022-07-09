@@ -18,7 +18,7 @@ class UnivModel with ChangeNotifier {
   }
 
   // 즐겨찾기한 대학들
-  List<UnivInfo> favorateUnives=[];
+  List<LikeUniv> favorateUnives=[];
   // 현재 선택한 대학, 전형, 년도
   String univCode;
   UnivWay univWay;
@@ -32,7 +32,7 @@ class UnivModel with ChangeNotifier {
     UnivDB univ = UnivDB();
 
     favorateUnives = await univ.getInfo();
-    for (UnivInfo element in favorateUnives) {
+    for (LikeUniv element in favorateUnives) {
       print("불러오기: ${element.toMap()}");
     }
     notifyListeners();
@@ -45,8 +45,8 @@ class UnivModel with ChangeNotifier {
     /// DB에 저장
     // preference 다시 설정
     UnivDB univ = UnivDB();
-    UnivInfo selectUniv = favorateUnives[selectIndex];
-    UnivInfo targetUniv = favorateUnives[targetIndex];
+    LikeUniv selectUniv = favorateUnives[selectIndex];
+    LikeUniv targetUniv = favorateUnives[targetIndex];
 
     // 둘이 pre 바꾸기
     int target = selectUniv.preference;
@@ -58,7 +58,7 @@ class UnivModel with ChangeNotifier {
     univ.updateInfo(targetUniv);
 
     /// 배열 설정
-    UnivInfo univInfo = favorateUnives.removeAt(selectIndex);
+    LikeUniv univInfo = favorateUnives.removeAt(selectIndex);
     favorateUnives.insert(targetIndex, univInfo);
 
     notifyListeners();
@@ -124,7 +124,7 @@ class UnivModel with ChangeNotifier {
 
   /// 북마크에서 사용하는 함수
   bool get ifLikeIt {
-    for (UnivInfo univ in favorateUnives) {
+    for (LikeUniv univ in favorateUnives) {
       // 이미 즐겨찾기를 했으면
       if (univ.univCode == univCode) {
         print("${UnivName.getUnivName(univCode)}: 즐겨찾기 O");
@@ -155,7 +155,7 @@ class UnivModel with ChangeNotifier {
     }
 
     /// 추가해야 할 univ 설정
-    UnivInfo univ = UnivInfo(
+    LikeUniv univ = LikeUniv(
         id: code,
         univName: UnivName.getUnivName(code),
         univCode: code,

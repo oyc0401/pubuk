@@ -99,7 +99,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) => ProfileModel.fromDB(UserProfile.currentUser)),
+            create: (context) => EditProfileModel.fromDB(UserProfile.currentUser)),
         ChangeNotifierProvider(create: (context) => HomeModel()),
         ChangeNotifierProvider(
             create: (context) => UnivModel(

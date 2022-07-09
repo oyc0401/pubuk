@@ -27,7 +27,7 @@ class _SelectSchoolState extends State<SelectSchool> {
               RoundTextButton(
                 text: "부천북고등학교",
                 onclick: () => select(HighSchool.pubuk),
-                color: Provider.of<ProfileModel>(context, listen: false)
+                color: Provider.of<EditProfileModel>(context, listen: false)
                             .schoolName ==
                         "부천북고등학교"
                     ? Color(0xffb4d5ff)
@@ -39,7 +39,7 @@ class _SelectSchoolState extends State<SelectSchool> {
               RoundTextButton(
                 text: "도당고등학교",
                 onclick: () => select(HighSchool.dodang),
-                color: Provider.of<ProfileModel>(context, listen: false)
+                color: Provider.of<EditProfileModel>(context, listen: false)
                             .schoolName ==
                         "도당고등학교"
                     ? Color(0xffb4d5ff)
@@ -51,7 +51,7 @@ class _SelectSchoolState extends State<SelectSchool> {
               RoundTextButton(
                 text: "원종고등학교",
                 onclick: () => select(HighSchool.wonjong),
-                color: Provider.of<ProfileModel>(context, listen: false)
+                color: Provider.of<EditProfileModel>(context, listen: false)
                             .schoolName ==
                         "원종고등학교"
                     ? Color(0xffb4d5ff)
@@ -63,7 +63,7 @@ class _SelectSchoolState extends State<SelectSchool> {
   }
 
   void select(HighSchool school) {
-    Provider.of<ProfileModel>(context, listen: false).setHighSchool(school);
+    Provider.of<EditProfileModel>(context, listen: false).setHighSchool(school);
     Navigator.of(context).pop('complete');
   }
 }

@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import '../../Server/FireTool.dart';
 import '../Home/HomeModel.dart';
 
-class ProfileModel with ChangeNotifier {
-  ProfileModel(
+class EditProfileModel with ChangeNotifier {
+  EditProfileModel(
       {required this.grade,
       required this.Class,
       required this.schoolName,
@@ -14,8 +14,8 @@ class ProfileModel with ChangeNotifier {
       required this.schoolLevel,
       required this.schoolLocalCode}) {}
 
-  static ProfileModel fromDB(UserProfile userProfile) {
-    return ProfileModel(
+  static EditProfileModel fromDB(UserProfile userProfile) {
+    return EditProfileModel(
       grade: userProfile.grade,
       Class: userProfile.Class,
       schoolName: userProfile.schoolName,

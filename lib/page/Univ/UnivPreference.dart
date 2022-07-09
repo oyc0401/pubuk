@@ -15,7 +15,7 @@ class UnivPreference extends StatefulWidget {
 class _UnivPreferenceState extends State<UnivPreference> {
   @override
   Widget build(BuildContext context) {
-    List<UnivInfo>? favorateUnives =
+    List<LikeUniv>? favorateUnives =
         Provider.of<UnivModel>(context).favorateUnives;
 
     return Scaffold(
@@ -24,7 +24,7 @@ class _UnivPreferenceState extends State<UnivPreference> {
     );
   }
 
-  Widget succeed(List<UnivInfo> unives) {
+  Widget succeed(List<LikeUniv> unives) {
     if (unives.isEmpty) {
       return const Text(
         "북마크한 대학이 없습니다.",
@@ -56,7 +56,7 @@ class UnivCard extends StatelessWidget {
     Key? key,
     required this.univ,
   }) : super(key: key);
-  UnivInfo univ;
+  LikeUniv univ;
 
   @override
   Widget build(BuildContext context) {
