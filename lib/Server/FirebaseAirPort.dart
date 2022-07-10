@@ -6,15 +6,42 @@ abstract class MapContainer {
 }
 
 class FirebaseAirPort {
-  FirebaseAirPort({required String uid})
+  FirebaseAirPort({required String uid}) : plain = FirebasePlain(uid: uid);
+
+  final FirebasePlain plain;
+
+  /// 얻어오기
+  Future<UserProfile?> get() async {
+    Map<String, dynamic>? map = await plain.get();
+
+    // map이 null이 아니면 리턴
+    return map == null ? null : UserProfile.fromMap(map);
+  }
+
+  /// 저장하기
+  Future<void> set(MapContainer mapContainer) async {
+    await plain.set(mapContainer.toMap());
+  }
+
+  /// 업데이트
+  Future<void> update(MapContainer mapContainer) async {
+    await plain.update(mapContainer.toMap());
+  }
+
+  /// 삭제
+  Future<void> delete() async {
+    await plain.delete();
+  }
+}
+
+class FirebasePlain {
+  FirebasePlain({required String uid})
       : userDoc = FirebaseFirestore.instance.collection('user').doc(uid);
 
   final DocumentReference<Map<String, dynamic>> userDoc;
 
   /// 얻어오기
-  Future<UserProfile?> get() async {
-
-
+  Future<Map<String, dynamic>?> get() async {
     // 정보 얻어오기
     DocumentSnapshot<Map<String, dynamic>> snapshot = await userDoc
         .get()
@@ -22,27 +49,22 @@ class FirebaseAirPort {
 
     Map<String, dynamic>? map = snapshot.data();
 
-    // map이 null이 아니면 리턴
-    if (map != null) {
-      return UserProfile.fromMap(map);
-    } else {
-      return null;
-    }
+    return map;
   }
 
   /// 저장하기
-  Future<void> set(MapContainer mapContainer) async {
+  Future<void> set(Map<String, dynamic> map) async {
     await userDoc
-        .set(mapContainer.toMap())
+        .set(map)
         .then((value) => print('firebase store에 정보 설정하기 성공!'))
         .catchError(
             (error) => print("Firebase.set: Failed to Sign in: $error"));
   }
 
   /// 업데이트
-  Future<void> update(MapContainer mapContainer) async {
+  Future<void> update(Map<String, dynamic> map) async {
     await userDoc
-        .update(mapContainer.toMap())
+        .update(map)
         .then((value) => print('유저 정보 업데이트 완료!'))
         .catchError((error) => print("Failed to change grade: $error"));
   }
@@ -55,4 +77,3 @@ class FirebaseAirPort {
         .catchError((error) => print("Failed to delete user: $error"));
   }
 }
-
