@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/userProfile.dart';
+import 'package:flutterschool/Server/FirebaseAirPort.dart';
 import 'package:flutterschool/page/Home/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -35,8 +36,8 @@ class _RegisterState extends State<Register> {
   Future<void> signUp() async {
 
     /// 파이어베이스 DB 에 저장
-    FireUser fireUser=FireUser(uid: widget.userProfile.uid);
-    await fireUser.setUserProfile(widget.userProfile);
+    FirebaseAirPort airPort=FirebaseAirPort(uid: widget.userProfile.uid);
+    await airPort.set(widget.userProfile);
 
     /// 로컬 DB에 저장
     await UserProfile.save(widget.userProfile);

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/SettingDB.dart';
 import 'package:flutterschool/Server/FireTool.dart';
+import 'package:flutterschool/Server/FirebaseAirPort.dart';
 
 import 'package:flutterschool/page/SignIn/GoogleLogin.dart';
 import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
@@ -142,11 +143,11 @@ class _UserWidgetState extends State<UserWidget> {
   }
 
   void setServerDB() async {
-    FireUser fireUser = FireUser(uid: userProfile.uid);
+    FirebaseAirPort fireUser = FirebaseAirPort(uid: userProfile.uid);
     if (userProfile.provider == "") {
       return;
     }
-    serverProfile = await fireUser.getUserProfile();
+    serverProfile = await fireUser.get();
     serverColor = Colors.indigo;
     if (userProfile.toString() == serverProfile.toString()) {
       LocalIsServer = "휴대폰 정보가 현재 서버정보와 같습니다. O";

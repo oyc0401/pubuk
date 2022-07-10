@@ -3,16 +3,16 @@ import 'package:flutterschool/DB/userProfile.dart';
 import 'package:provider/provider.dart';
 
 import '../../Server/FireTool.dart';
+import '../../Server/FirebaseAirPort.dart';
 import '../Home/HomeModel.dart';
 
-class EditProfileModel with ChangeNotifier {
-  EditProfileModel(
-      {required this.grade,
-      required this.Class,
-      required this.schoolName,
-      required this.schoolCode,
-      required this.schoolLevel,
-      required this.schoolLocalCode}) {}
+class EditProfileModel extends MapContainer with ChangeNotifier {
+  EditProfileModel({required this.grade,
+    required this.Class,
+    required this.schoolName,
+    required this.schoolCode,
+    required this.schoolLevel,
+    required this.schoolLocalCode}) {}
 
   static EditProfileModel fromDB(UserProfile userProfile) {
     return EditProfileModel(
@@ -97,20 +97,35 @@ class EditProfileModel with ChangeNotifier {
       case "Google":
       case "Apple":
       case "Kakao":
-        // firebase DB에 저장
+      // firebase DB에 저장
         print("현재 로그인 상태입니다.");
-        FireUser fireUser = FireUser(uid: userData.uid);
-        await fireUser.updateProfile(
-          grade: grade,
-          Class: Class,
-          schoolName: schoolName,
-          schoolCode: schoolCode,
-          schoolLocalCode: schoolLocalCode,
-          schoolLevel: schoolLevel,
+        FirebaseAirPort fireUser = FirebaseAirPort(uid: userData.uid);
+        await fireUser.update(
+            EditProfileModel(
+              grade: grade,
+              Class: Class,
+              schoolName: schoolName,
+              schoolCode: schoolCode,
+              schoolLevel: schoolLevel,
+              schoolLocalCode: schoolLocalCode,
+            )
         );
         print("firebase 저장 완료");
         break;
     }
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    // TODO: implement toMap
+    return {
+      'grade': grade,
+      'class': Class,
+      'schoolName': schoolName,
+      'schoolCode': schoolCode,
+      'schoolLevel': schoolLevel,
+      'schoolLocalCode': schoolLocalCode,
+    };
   }
 }
 

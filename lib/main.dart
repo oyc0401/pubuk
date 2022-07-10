@@ -17,6 +17,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 import 'package:provider/provider.dart';
 
 import 'DB/SettingDB.dart';
+import 'Server/FirebaseAirPort.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -73,8 +74,8 @@ Run_App() async {
 
   // 여기까지 오면 로그인을 했을것이다.
   // 이제 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
-  FireUser fireUser = FireUser(uid: localUser.uid);
-  UserProfile? serverUser = await fireUser.getUserProfile();
+  FirebaseAirPort airPort = FirebaseAirPort(uid: localUser.uid);
+  UserProfile? serverUser = await airPort.get();
 
   // 저장소가 없으면 로그인은 했지만 회원가입을 하지 않은것으로 판단.
   if (serverUser == null) {

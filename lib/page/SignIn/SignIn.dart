@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/MyWidget/button.dart';
 import 'package:flutterschool/Server/FireTool.dart';
+import 'package:flutterschool/Server/FirebaseAirPort.dart';
 import 'package:flutterschool/page/SignIn/AppleLogin.dart';
 import 'package:flutterschool/page/SignIn/KakaoLogin.dart';
 import 'package:provider/provider.dart';
@@ -77,8 +78,8 @@ class _SignInState extends State<SignIn> {
     print("uid: ${uid}\n서버에 계정이 있는지 확인중... ");
 
     // 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
-    FireUser fireUser = FireUser(uid: uid);
-    UserProfile? userProfile = await fireUser.getUserProfile();
+    FirebaseAirPort airPort = FirebaseAirPort(uid: uid);
+    UserProfile? userProfile = await airPort.get();
 
     if (userProfile == null) {
       print("서버 DB에 동일한 유저 정보가 없습니다. 회원가입 이동...");

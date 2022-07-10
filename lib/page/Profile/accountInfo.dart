@@ -9,6 +9,7 @@ import 'package:flutterschool/page/mainPage.dart';
 
 import '../../DB/userProfile.dart';
 import '../../Server/FireTool.dart';
+import '../../Server/FirebaseAirPort.dart';
 
 class AccountInfo extends StatefulWidget {
   const AccountInfo({Key? key}) : super(key: key);
@@ -67,8 +68,8 @@ class _AccountWidgetState extends State<AccountWidget> {
 
   Future<void> deleteUser() async {
     UserProfile userProfile = UserProfile.currentUser;
-    FireUser fireUser = FireUser(uid: userProfile.uid);
-    await fireUser.deleteUser();
+    FirebaseAirPort fireUser = FirebaseAirPort(uid: userProfile.uid);
+    await fireUser.delete();
 
     if (userProfile.provider == "Google") {
       GoogleLogin googleLogin = GoogleLogin();

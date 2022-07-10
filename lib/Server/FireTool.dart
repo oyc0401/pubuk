@@ -1,65 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutterschool/DB/userProfile.dart';
 import 'package:ntp/ntp.dart';
 
-class FireUser {
-  // 유저 Document 객체
-  DocumentReference<Map<String, dynamic>> userDoc;
-
-  FireUser({required String uid})
-      : userDoc = FirebaseFirestore.instance.collection('user').doc(uid);
-
-  Future<UserProfile?> getUserProfile() async {
-    // 정보 얻어오기
-    DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await userDoc.get().catchError((error) {
-      print("Failed to get document: $error");
-    });
-    Map<String, dynamic>? map = snapshot.data();
-
-    // map이 null이 아니면 리턴
-    if (map != null) {
-      return UserProfile.fromMap(map);
-    } else {
-      return null;
-    }
-  }
-
-  Future<void> setUserProfile(UserProfile userProfile) async {
-    // 파라미터로 받은 유저 객체를 이 document에 저장
-    userDoc.set(userProfile.toMap()).catchError((error) {
-      print("Failed to Sign in: $error");
-    });
-  }
-
-  Future<void> updateProfile(
-      {required int grade,
-      required int Class,
-      required String schoolName,
-      required int schoolCode,
-      required int schoolLevel,
-      required String schoolLocalCode}) async {
-
-    // 유저의 학년, 반, 학교를 업데이트
-    await userDoc.update({
-      'grade': grade,
-      'class': Class,
-      'schoolName':schoolName,
-      'schoolCode':schoolCode,
-      'schoolLevel':schoolLevel,
-      'schoolLocalCode':schoolLocalCode,
-    }).then((value) async {
-      print('grade Update');
-    }).catchError((error) => print("Failed to change grade: $error"));
-  }
-
-  Future<void> deleteUser() async {
-    userDoc
-        .delete()
-        .then((value) => print("User Deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
-  }
-}
 
 class FireTool {
   String collectionName = '';
