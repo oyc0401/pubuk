@@ -10,7 +10,7 @@ import 'package:select_dialog/select_dialog.dart';
 
 import '../../DB/userProfile.dart';
 import '../../Server/FireTool.dart';
-import '../Home/HomeModel.dart';
+import '../Home/SchoolInfoModel.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -29,8 +29,8 @@ class _EditProfileState extends State<EditProfile> {
   Future<void> save() async {
     await Provider.of<EditProfileModel>(context, listen: false).saveLocal();
     await Provider.of<EditProfileModel>(context, listen: false).saveFireBase();
-    Provider.of<HomeModel>(context, listen: false).setClass();
-    Provider.of<HomeModel>(context, listen: false).setLunch();
+    UserProfile userProfile=UserProfile.currentUser;
+    Provider.of<SchoolModel>(context, listen: false).setSchoolInfo(userProfile);
 
     // 나가기
     Navigator.of(context).pop('complete');

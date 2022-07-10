@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Profile/profile.dart';
-import 'HomeModel.dart';
+import 'SchoolInfoModel.dart';
 import 'currentUserWidget.dart';
 import 'lunch.dart';
 import 'timetable.dart';
@@ -60,14 +60,14 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            Provider.of<HomeModel>(context).schoolName,
+            Provider.of<SchoolModel>(context).schoolName,
             style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.normal),
           ),
           Text(
-            '${Provider.of<HomeModel>(context).grade}학년 ${Provider.of<HomeModel>(context).Class}반',
+            '${Provider.of<SchoolModel>(context).grade}학년 ${Provider.of<SchoolModel>(context).Class}반',
             style: const TextStyle(
                 color: Colors.blue,
                 fontSize: 14,

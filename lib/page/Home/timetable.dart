@@ -8,14 +8,15 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:skeletons/skeletons.dart';
 
-import 'HomeModel.dart';
+import 'SchoolInfoModel.dart';
+import 'LunchModel.dart';
 
 class MyTimeTable extends StatelessWidget {
   const MyTimeTable({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    ClassData? classData = Provider.of<HomeModel>(context).classData;
+    ClassData? classData = Provider.of<LunchModel>(context).classData;
     if (classData == null) {
       return Skeleton(
         isLoading: true,

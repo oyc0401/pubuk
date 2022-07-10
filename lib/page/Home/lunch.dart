@@ -2,13 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/userProfile.dart';
-import 'package:flutterschool/page/Home/HomeModel.dart';
+import 'package:flutterschool/page/Home/SchoolInfoModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletons/skeletons.dart';
+
+import 'LunchModel.dart';
 
 const int FROM_TERM = -30;
 const int TO_TERM = 30;
@@ -18,7 +20,7 @@ class LunchBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Lunch>? lunches = Provider.of<HomeModel>(context).lunches;
+    List<Lunch>? lunches = Provider.of<LunchModel>(context).lunches;
 
     if (lunches == null) {
       return const SkeletonScroll();
@@ -239,7 +241,8 @@ class LunchDownloader {
       cleanedData = cleanedData.replaceAll(" ", "");
 
 
-      if(UserProfile.currentUser.schoolName=="도당고등학교"){
+      // 도당고는 왜인지 1이 붙는다.
+      if(schoolCode==7530471){
         cleanedData = cleanedData.replaceAll("1", "");
       }
 

@@ -1,6 +1,7 @@
 import 'package:flutterschool/Server/FirebaseAirPort.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class UserProfile extends MapContainer{
   /// DB 더 추가하려면 17개의 인자를 추가해야함
   /// UserProfile: 필드, 생성자 [UserProfile], 파이어베이스 전달 함수 [UserProfile.fromMap], toMap 함수 [toMap]

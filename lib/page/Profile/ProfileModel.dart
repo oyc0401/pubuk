@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../Server/FireTool.dart';
 import '../../Server/FirebaseAirPort.dart';
-import '../Home/HomeModel.dart';
+import '../Home/SchoolInfoModel.dart';
 
 class EditProfileModel extends MapContainer with ChangeNotifier {
   EditProfileModel({required this.grade,
@@ -127,6 +127,7 @@ class EditProfileModel extends MapContainer with ChangeNotifier {
       'schoolLocalCode': schoolLocalCode,
     };
   }
+
 }
 
 enum HighSchool {

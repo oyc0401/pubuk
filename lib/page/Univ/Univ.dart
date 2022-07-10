@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/UserSettingDB.dart';
+import 'package:flutterschool/page/Home/SchoolInfoModel.dart';
 import 'package:flutterschool/page/Univ/UnivPreference.dart';
 
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
@@ -452,8 +453,6 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
   UnivAppBar({Key? key}) : super(key: key);
 
   final double height = 80;
-  UserProfile userProfile = UserProfile.currentUser;
-
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -462,14 +461,14 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            userProfile.schoolName,
+            Provider.of<SchoolModel>(context).schoolName,
             style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.normal),
           ),
           Text(
-            '${userProfile.grade}학년 ${userProfile.Class}반',
+            '${ Provider.of<SchoolModel>(context).grade}학년 ${ Provider.of<SchoolModel>(context).Class}반',
             style: const TextStyle(
                 color: Colors.blue,
                 fontSize: 14,

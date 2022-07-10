@@ -13,7 +13,7 @@ import 'dart:async';
 
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import '../Home/HomeModel.dart';
+import '../Home/SchoolInfoModel.dart';
 import '../mainPage.dart';
 import 'GoogleLogin.dart';
 import 'SignInButton.dart';
@@ -87,7 +87,7 @@ class _SignInState extends State<SignIn> {
     } else {
       print("서버 DB에 동일한 유저 정보가 있습니다. 홈 화면 이동...");
       await UserProfile.save(userProfile);
-      Provider.of<HomeModel>(context, listen: false).setClass();
+      Provider.of<SchoolModel>(context, listen: false).setSchoolInfo(userProfile);
       NavigateHome();
     }
   }

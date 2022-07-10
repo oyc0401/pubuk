@@ -11,7 +11,7 @@ import 'package:select_dialog/select_dialog.dart';
 
 import '../../MyWidget/button.dart';
 import '../../Server/FireTool.dart';
-import '../Home/HomeModel.dart';
+import '../Home/SchoolInfoModel.dart';
 import '../mainPage.dart';
 
 class Register extends StatefulWidget {
@@ -42,7 +42,7 @@ class _RegisterState extends State<Register> {
     /// 로컬 DB에 저장
     await UserProfile.save(widget.userProfile);
 
-    Provider.of<HomeModel>(context, listen: false).setClass();
+    Provider.of<SchoolModel>(context, listen: false).setSchoolInfo(widget.userProfile);
 
     navigateHome();
   }

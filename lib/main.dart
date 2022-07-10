@@ -5,7 +5,8 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/DB/UserSettingDB.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
-import 'package:flutterschool/page/Home/HomeModel.dart';
+import 'package:flutterschool/page/Home/LunchModel.dart';
+import 'package:flutterschool/page/Home/SchoolInfoModel.dart';
 import 'package:flutterschool/page/Home/UserModel.dart';
 import 'package:flutterschool/page/Profile/CreateProfile.dart';
 import 'package:flutterschool/page/Profile/ProfileModel.dart';
@@ -50,15 +51,14 @@ Future<void> main() async {
   FlutterNativeSplash.remove();
 }
 
-Run_App() async {
+enum AccountCondition { firstRun, noLogin, noRegister, signIn }
+
+Future<AccountCondition> currentCondition() async {
   Setting setting = Setting.current;
-  // 앱을 처음 실행하면 정보수정 화면으로 이동
   if (setting.isFirst) {
-    print("앱을 처음 시작했습니다.");
-    runApp(MyApp(initialWidget: const CreateProfile()));
     setting.isFirst = false;
     Setting.save(setting);
-    return;
+    return AccountCondition.firstRun;
   }
 
   // db에 있는 유저 정보를 통해 로그인인지 아닌지 확인한다.
@@ -66,9 +66,7 @@ Run_App() async {
 
   // 로그인 provider가 없으면 로그인을 하지 않은것으로 판단.
   if (localUser.provider == "") {
-    print("로그인을 하지 않았습니다. 홈 화면 이동!");
-    runApp(MyApp(initialWidget: const MyHomePage()));
-    return;
+    return AccountCondition.noLogin;
   }
 
   // 여기까지 오면 로그인을 했을것이다.
@@ -78,18 +76,41 @@ Run_App() async {
 
   // 저장소가 없으면 로그인은 했지만 회원가입을 하지 않은것으로 판단.
   if (serverUser == null) {
-    print("회원가입 중 입니다. 회원가입 이동!");
-    runApp(MyApp(
-        initialWidget:
-            Register(uid: localUser.uid, provider: localUser.provider)));
+    return AccountCondition.noRegister;
   } else {
-    // 저장소가 있고 로그인을 했다고 판단.
-    print("현재 uid: ${localUser.uid} 홈 화면 이동!");
     await UserProfile.save(serverUser);
-    runApp(MyApp(initialWidget: const MyHomePage()));
+    return AccountCondition.signIn;
   }
 }
 
+Future<void> Run_App() async {
+  AccountCondition condition = await currentCondition();
+
+  UserProfile localUser = UserProfile.currentUser;
+
+  switch (condition) {
+    case AccountCondition.firstRun:
+      print("앱을 처음 시작했습니다.");
+      runApp(MyApp(initialWidget: const CreateProfile()));
+      break;
+    case AccountCondition.noLogin:
+      print("로그인을 하지 않았습니다. 홈 화면 이동!");
+      runApp(MyApp(initialWidget: const MyHomePage()));
+      break;
+    case AccountCondition.noRegister:
+      print("회원가입 중 입니다. 회원가입 이동!");
+      runApp(MyApp(
+          initialWidget:
+              Register(uid: localUser.uid, provider: localUser.provider)));
+      break;
+    case AccountCondition.signIn:
+      print("현재 uid: ${localUser.uid} 홈 화면 이동!");
+      runApp(MyApp(initialWidget: const MyHomePage()));
+      break;
+  }
+}
+
+/// 메인 위젯
 class MyApp extends StatelessWidget {
   MyApp({Key? key, required this.initialWidget}) : super(key: key);
   Widget initialWidget;
@@ -98,12 +119,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => SchoolModel()),
+        ChangeNotifierProxyProvider<SchoolModel, LunchModel>(
+          update: (context, SchoolModel, previous) => LunchModel(
+            grade: SchoolModel.grade,
+            Class: SchoolModel.Class,
+            schoolCode: SchoolModel.schoolCode,
+            schoolLocalCode: SchoolModel.schoolLocalCode,
+            schoolName: SchoolModel.schoolName
+          ),
+          create: (context) => LunchModel(),
+        ),
         // ChangeNotifierProvider(
         //     create: (context) => UserModel.fromDB(UserProfile.currentUser)),
         ChangeNotifierProvider(
             create: (context) =>
                 EditProfileModel.fromDB(UserProfile.currentUser)),
-        ChangeNotifierProvider(create: (context) => HomeModel()),
+
         ChangeNotifierProvider(
             create: (context) => UnivModel(
                   univCode: "0000046",
@@ -142,8 +174,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-
-class IDontWantRestart {
-  static bool canBuild = true;
 }

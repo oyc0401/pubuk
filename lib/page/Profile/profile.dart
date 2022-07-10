@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutterschool/page/Profile/accountInfo.dart';
 import 'package:flutterschool/page/Profile/editProfile.dart';
 import 'package:flutterschool/page/SignIn/SignIn.dart';
+import 'package:provider/provider.dart';
 
 import '../../DB/userProfile.dart';
 import '../../MyWidget/button.dart';
+import '../Home/SchoolInfoModel.dart';
 import '../Univ/WebViewSetting.dart';
 
 class profile extends StatefulWidget {
@@ -18,7 +20,6 @@ class profile extends StatefulWidget {
 }
 
 class _profileState extends State<profile> {
-  UserProfile userProfile = UserProfile.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +50,8 @@ class _profileState extends State<profile> {
           ),
           color: Colors.white30,
           child: ListTile(
-            title: Text(userProfile.schoolName),
-            subtitle: Text("${userProfile.grade}학년 ${userProfile.Class}반 "),
+            title: Text( Provider.of<SchoolModel>(context).schoolName),
+            subtitle: Text("${ Provider.of<SchoolModel>(context).grade}학년 ${ Provider.of<SchoolModel>(context).Class}반 "),
           )),
     );
   }
