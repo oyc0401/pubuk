@@ -6,15 +6,27 @@ import 'lunch.dart';
 
 class HomeModel with ChangeNotifier {
   HomeModel() {
+    UserProfile userProfile = UserProfile.currentUser;
     setClass();
     setLunch();
+    grade=userProfile.grade;
+    Class=userProfile.Class;
+    schoolName=userProfile.schoolName;
   }
+
+  late int grade;
+  late int Class;
+  late String schoolName;
 
   List<Lunch>? lunches;
   ClassData? classData;
 
   Future<void> setClass() async {
     UserProfile userProfile = UserProfile.currentUser;
+
+    grade=userProfile.grade;
+    Class=userProfile.Class;
+    schoolName=userProfile.schoolName;
 
     print("${userProfile.grade}학년 ${userProfile.Class}반 시간표 불러오는 중...");
     TableDownloader tabledown = TableDownloader(
@@ -32,6 +44,10 @@ class HomeModel with ChangeNotifier {
 
   Future<void> setLunch() async {
     UserProfile userProfile = UserProfile.currentUser;
+
+    grade=userProfile.grade;
+    Class=userProfile.Class;
+    schoolName=userProfile.schoolName;
 
     print("${userProfile.schoolName} 급식 불러오는 중...");
     LunchDownloader lunchDownloader = LunchDownloader(

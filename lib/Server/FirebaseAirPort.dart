@@ -5,6 +5,8 @@ abstract class MapContainer {
   Map<String, dynamic> toMap();
 }
 
+/// firebase store의 user 문서를 다루는 객체
+/// user 문서는 사용자의 정보를 담고있다.
 class FirebaseAirPort {
   FirebaseAirPort({required String uid}) : plain = FirebasePlain(uid: uid);
 

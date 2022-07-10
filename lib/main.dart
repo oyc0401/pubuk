@@ -6,6 +6,7 @@ import 'package:flutterschool/DB/UserSettingDB.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/Home/HomeModel.dart';
+import 'package:flutterschool/page/Home/UserModel.dart';
 import 'package:flutterschool/page/Profile/CreateProfile.dart';
 import 'package:flutterschool/page/Profile/ProfileModel.dart';
 import 'package:flutterschool/page/SignIn/Register.dart';
@@ -50,17 +51,15 @@ Future<void> main() async {
 }
 
 Run_App() async {
-
-  Setting setting=Setting.current;
+  Setting setting = Setting.current;
   // 앱을 처음 실행하면 정보수정 화면으로 이동
-  if(setting.isFirst){
+  if (setting.isFirst) {
     print("앱을 처음 시작했습니다.");
     runApp(MyApp(initialWidget: const CreateProfile()));
-    setting.isFirst=false;
+    setting.isFirst = false;
     Setting.save(setting);
     return;
   }
-
 
   // db에 있는 유저 정보를 통해 로그인인지 아닌지 확인한다.
   UserProfile localUser = UserProfile.currentUser;
@@ -99,8 +98,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // ChangeNotifierProvider(
+        //     create: (context) => UserModel.fromDB(UserProfile.currentUser)),
         ChangeNotifierProvider(
-            create: (context) => EditProfileModel.fromDB(UserProfile.currentUser)),
+            create: (context) =>
+                EditProfileModel.fromDB(UserProfile.currentUser)),
         ChangeNotifierProvider(create: (context) => HomeModel()),
         ChangeNotifierProvider(
             create: (context) => UnivModel(
