@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutterschool/page/Univ/UnivDownLoad.dart';
-import 'package:flutterschool/page/Univ/UnivSearchModel.dart';
-import 'package:provider/provider.dart';
-
 import 'Home/home.dart';
 import 'Univ/Univ.dart';
-import 'Univ/UnivModel.dart';
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 

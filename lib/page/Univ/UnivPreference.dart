@@ -3,7 +3,7 @@ import 'package:flutterschool/page/Univ/Univ.dart';
 import 'package:provider/provider.dart';
 
 import '../../DB/UnivDB.dart';
-import 'UnivModel.dart';
+import 'Model/UnivModel.dart';
 
 class UnivPreference extends StatefulWidget {
   const UnivPreference({Key? key}) : super(key: key);

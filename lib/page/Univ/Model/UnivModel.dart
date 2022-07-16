@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-import '../../DB/SettingDB.dart';
-import '../../DB/UnivDB.dart';
-import 'UnivName.dart';
+import '../../../DB/SettingDB.dart';
+import '../../../DB/UnivDB.dart';
+import '../UnivName.dart';
 
 class UnivModel with ChangeNotifier {
   UnivModel({

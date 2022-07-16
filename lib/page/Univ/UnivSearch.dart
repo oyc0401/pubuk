@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/UnivDB.dart';
 import 'package:flutterschool/page/Univ/UnivName.dart';
-import 'package:flutterschool/page/Univ/UnivSearchModel.dart';
+import 'package:flutterschool/page/Univ/Model/UnivSearchModel.dart';
 import 'package:flutterschool/page/Univ/UnivWeb.dart';
 import 'package:provider/provider.dart';
 
-import 'UnivModel.dart';
+import 'Model/UnivModel.dart';
 
 enum WhereClick { main, web }
 

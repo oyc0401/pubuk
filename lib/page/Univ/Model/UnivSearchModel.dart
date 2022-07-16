@@ -3,7 +3,7 @@ import 'package:flutterschool/DB/UserSettingDB.dart';
 import 'package:flutterschool/page/Univ/UnivSearch.dart';
 import 'package:geolocator/geolocator.dart';
 
-import 'UnivName.dart';
+import '../UnivName.dart';
 
 class UnivSearchModel with ChangeNotifier {
   UnivSearchModel() {

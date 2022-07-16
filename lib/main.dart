@@ -4,14 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutterschool/DB/UserSettingDB.dart';
 import 'package:flutterschool/DB/userProfile.dart';
-import 'package:flutterschool/Server/FireTool.dart';
 import 'package:flutterschool/page/Home/HomeModel.dart';
-import 'package:flutterschool/page/Home/UserModel.dart';
 import 'package:flutterschool/page/Profile/CreateProfile.dart';
 import 'package:flutterschool/page/Profile/ProfileModel.dart';
 import 'package:flutterschool/page/SignIn/Register.dart';
-import 'package:flutterschool/page/Univ/UnivModel.dart';
-import 'package:flutterschool/page/Univ/UnivSearchModel.dart';
+import 'package:flutterschool/page/Univ/Model/UnivModel.dart';
+import 'package:flutterschool/page/Univ/Model/UnivSearchModel.dart';
 
 import 'package:flutterschool/page/mainPage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;

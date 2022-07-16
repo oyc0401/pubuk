@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../DB/SettingDB.dart';
-import 'UnivModel.dart';
+import 'Model/UnivModel.dart';
 
 class WebViewSetting extends StatefulWidget {
   WebViewSetting({

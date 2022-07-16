@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/DB/UserSettingDB.dart';
@@ -14,11 +12,10 @@ import '../../DB/UnivDB.dart';
 import '../../DB/userProfile.dart';
 
 import '../../MyWidget/button.dart';
-import 'UnivDownLoad.dart';
-import 'UnivModel.dart';
+import 'Model/UnivModel.dart';
 import 'UnivName.dart';
 import 'UnivSearch.dart';
-import 'UnivSearchModel.dart';
+import 'Model/UnivSearchModel.dart';
 
 class Univ extends StatefulWidget {
   const Univ({Key? key}) : super(key: key);
@@ -132,7 +129,6 @@ class _UnivState extends State<Univ> {
                 },
               ),
             ),
-
             favorateSection(),
             SizedBox(
               height: 12,

@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../DB/SettingDB.dart';
 
 import 'WebViewSetting.dart';
-import 'UnivModel.dart';
+import 'Model/UnivModel.dart';
 import 'UnivName.dart';
 import 'UnivSearch.dart';
 
