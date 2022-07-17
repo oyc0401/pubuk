@@ -142,6 +142,4 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class IDontWantRestart {
-  static bool canBuild = true;
-}
+
