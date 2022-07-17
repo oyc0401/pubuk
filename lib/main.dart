@@ -19,6 +19,65 @@ import 'DB/SettingDB.dart';
 import 'Server/FirebaseAirPort.dart';
 import 'firebase_options.dart';
 
+enum AccountCondition { firstRun, noLogin, noRegister, signIn }
+
+Future<AccountCondition> currentCondition() async {
+  Setting setting = Setting.current;
+  if (setting.isFirst) {
+    setting.isFirst = false;
+    Setting.save(setting);
+    return AccountCondition.firstRun;
+  }
+
+  // db에 있는 유저 정보를 통해 로그인인지 아닌지 확인한다.
+  UserProfile localUser = UserProfile.currentUser;
+
+  // 로그인 provider가 없으면 로그인을 하지 않은것으로 판단.
+  if (localUser.provider == "") {
+    return AccountCondition.noLogin;
+  }
+
+  // 여기까지 오면 로그인을 했을것이다.
+  // 이제 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
+  FirebaseAirPort airPort = FirebaseAirPort(uid: localUser.uid);
+  UserProfile? serverUser = await airPort.get();
+
+  // 저장소가 없으면 로그인은 했지만 회원가입을 하지 않은것으로 판단.
+  if (serverUser == null) {
+    return AccountCondition.noRegister;
+  } else {
+    await UserProfile.save(serverUser);
+    return AccountCondition.signIn;
+  }
+}
+
+Future<void> Run_App() async {
+  AccountCondition condition = await currentCondition();
+
+  UserProfile localUser = UserProfile.currentUser;
+
+  switch (condition) {
+    case AccountCondition.firstRun:
+      print("앱을 처음 시작했습니다.");
+      runApp(MyApp(initialWidget: const CreateProfile()));
+      break;
+    case AccountCondition.noLogin:
+      print("로그인을 하지 않았습니다. 홈 화면 이동!");
+      runApp(MyApp(initialWidget: const MyHomePage()));
+      break;
+    case AccountCondition.noRegister:
+      print("회원가입 중 입니다. 회원가입 이동!");
+      runApp(MyApp(
+          initialWidget:
+          Register(uid: localUser.uid, provider: localUser.provider)));
+      break;
+    case AccountCondition.signIn:
+      print("현재 uid: ${localUser.uid} 홈 화면 이동!");
+      runApp(MyApp(initialWidget: const MyHomePage()));
+      break;
+  }
+}
+
 Future<void> main() async {
   print("앱 시작");
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -48,45 +107,7 @@ Future<void> main() async {
   FlutterNativeSplash.remove();
 }
 
-Run_App() async {
-  Setting setting = Setting.current;
-  // 앱을 처음 실행하면 정보수정 화면으로 이동
-  if (setting.isFirst) {
-    print("앱을 처음 시작했습니다.");
-    runApp(MyApp(initialWidget: const CreateProfile()));
-    setting.isFirst = false;
-    Setting.save(setting);
-    return;
-  }
 
-  // db에 있는 유저 정보를 통해 로그인인지 아닌지 확인한다.
-  UserProfile localUser = UserProfile.currentUser;
-
-  // 로그인 provider가 없으면 로그인을 하지 않은것으로 판단.
-  if (localUser.provider == "") {
-    print("로그인을 하지 않았습니다. 홈 화면 이동!");
-    runApp(MyApp(initialWidget: const MyHomePage()));
-    return;
-  }
-
-  // 여기까지 오면 로그인을 했을것이다.
-  // 이제 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
-  FirebaseAirPort airPort = FirebaseAirPort(uid: localUser.uid);
-  UserProfile? serverUser = await airPort.get();
-
-  // 저장소가 없으면 로그인은 했지만 회원가입을 하지 않은것으로 판단.
-  if (serverUser == null) {
-    print("회원가입 중 입니다. 회원가입 이동!");
-    runApp(MyApp(
-        initialWidget:
-            Register(uid: localUser.uid, provider: localUser.provider)));
-  } else {
-    // 저장소가 있고 로그인을 했다고 판단.
-    print("현재 uid: ${localUser.uid} 홈 화면 이동!");
-    await UserProfile.save(serverUser);
-    runApp(MyApp(initialWidget: const MyHomePage()));
-  }
-}
 
 class MyApp extends StatelessWidget {
   MyApp({Key? key, required this.initialWidget}) : super(key: key);
@@ -141,5 +162,14 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+////
+
+
+
 
 
