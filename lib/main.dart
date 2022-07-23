@@ -15,9 +15,11 @@ import 'package:flutterschool/page/mainPage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 import 'package:provider/provider.dart';
 
-import 'DB/SettingDB.dart';
+import 'DB/SettingDB.dart'; //gkrry
 import 'Server/FirebaseAirPort.dart';
 import 'firebase_options.dart';
+
+fkfkk
 
 enum AccountCondition { firstRun, noLogin, noRegister, signIn }
 // dddd
@@ -69,7 +71,7 @@ Future<void> Run_App() async {
       print("회원가입 중 입니다. 회원가입 이동!");
       runApp(MyApp(
           initialWidget:
-          Register(uid: localUser.uid, provider: localUser.provider)));
+              Register(uid: localUser.uid, provider: localUser.provider)));
       break;
     case AccountCondition.signIn:
       print("현재 uid: ${localUser.uid} 홈 화면 이동!");
@@ -106,8 +108,6 @@ Future<void> main() async {
   //print("splash 끄기");
   FlutterNativeSplash.remove();
 }
-
-
 
 class MyApp extends StatelessWidget {
   MyApp({Key? key, required this.initialWidget}) : super(key: key);
@@ -163,13 +163,4 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
-
-
 ////
-
-
-
-
-
