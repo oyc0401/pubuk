@@ -20,7 +20,7 @@ import 'Server/FirebaseAirPort.dart';
 import 'firebase_options.dart';
 
 enum AccountCondition { firstRun, noLogin, noRegister, signIn }
-
+// dddd
 Future<AccountCondition> currentCondition() async {
   Setting setting = Setting.current;
   if (setting.isFirst) {
