@@ -19,6 +19,8 @@ import 'DB/SettingDB.dart';
 import 'Server/FirebaseAirPort.dart';
 import 'firebase_options.dart';
 
+fkfkk
+
 enum AccountCondition { firstRun, noLogin, noRegister, signIn }
 
 Future<AccountCondition> currentCondition() async {
