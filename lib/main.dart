@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,9 +20,8 @@ import 'DB/SettingDB.dart'; //gkrry
 import 'Server/FirebaseAirPort.dart';
 import 'firebase_options.dart';
 
-fkfkk
-
-enum AccountCondition { firstRun, noLogin, noRegister, signIn }
+enum AccountCondition { firstRun, noLogin, noRegister, signIn, AuthExpiration }
+//앱 처음 실행, 로그인 x, 로그인을 했으나 회원가입 x, 로그인 상태, 로그인 상태인데 firebase 인증 만료됌
 
 Future<AccountCondition> currentCondition() async {
   Setting setting = Setting.current;
@@ -33,14 +33,24 @@ Future<AccountCondition> currentCondition() async {
 
   // db에 있는 유저 정보를 통해 로그인인지 아닌지 확인한다.
   UserProfile localUser = UserProfile.currentUser;
-
   // 로그인 provider가 없으면 로그인을 하지 않은것으로 판단.
   if (localUser.provider == "") {
     return AccountCondition.noLogin;
   }
 
+
+
   // 여기까지 오면 로그인을 했을것이다.
   // 이제 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
+
+  // 파이어베이스 인증이 만료되면 만료 상태 리턴
+  User? current= FirebaseAuth.instance.currentUser;
+  if(current==null){
+    return AccountCondition.AuthExpiration;
+  }
+
+
+
   FirebaseAirPort airPort = FirebaseAirPort(uid: localUser.uid);
   UserProfile? serverUser = await airPort.get();
 
@@ -55,7 +65,6 @@ Future<AccountCondition> currentCondition() async {
 
 Future<void> Run_App() async {
   AccountCondition condition = await currentCondition();
-
   UserProfile localUser = UserProfile.currentUser;
 
   switch (condition) {
@@ -76,6 +85,10 @@ Future<void> Run_App() async {
     case AccountCondition.signIn:
       print("현재 uid: ${localUser.uid} 홈 화면 이동!");
       runApp(MyApp(initialWidget: const MyHomePage()));
+      break;
+
+    case AccountCondition.AuthExpiration:
+      // TODO: Handle this case.
       break;
   }
 }
