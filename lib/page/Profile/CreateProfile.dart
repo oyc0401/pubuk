@@ -31,7 +31,7 @@ class _CreateProfileState extends State<CreateProfile> {
 
   Future<void> save() async {
     await Provider.of<EditProfileModel>(context, listen: false).saveLocal();
-    await Provider.of<EditProfileModel>(context, listen: false).saveFireBase();
+   // await Provider.of<EditProfileModel>(context, listen: false).saveFireBase();
     Provider.of<HomeModel>(context, listen: false).setClass();
     Provider.of<HomeModel>(context, listen: false).setLunch();
 

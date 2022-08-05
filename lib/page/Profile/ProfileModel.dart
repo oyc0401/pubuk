@@ -91,29 +91,29 @@ class EditProfileModel extends MapContainer with ChangeNotifier {
     print("로컬 DB 저장 완료");
   }
 
-  Future<void> saveFireBase() async {
-    UserProfile userData = UserProfile.currentUser;
-    switch (userData.provider) {
-      case "Google":
-      case "Apple":
-      case "Kakao":
-      // firebase DB에 저장
-        print("현재 로그인 상태입니다.");
-        FirebaseAirPort fireUser = FirebaseAirPort(uid: userData.uid);
-        await fireUser.update(
-            EditProfileModel(
-              grade: grade,
-              Class: Class,
-              schoolName: schoolName,
-              schoolCode: schoolCode,
-              schoolLevel: schoolLevel,
-              schoolLocalCode: schoolLocalCode,
-            )
-        );
-        print("firebase 저장 완료");
-        break;
-    }
-  }
+  // Future<void> saveFireBase() async {
+  //   UserProfile userData = UserProfile.currentUser;
+  //   switch (userData.provider) {
+  //     case "Google":
+  //     case "Apple":
+  //     case "Kakao":
+  //     // firebase DB에 저장
+  //       print("현재 로그인 상태입니다.");
+  //       FirebaseAirPort fireUser = FirebaseAirPort(uid: userData.uid);
+  //       await fireUser.update(
+  //           EditProfileModel(
+  //             grade: grade,
+  //             Class: Class,
+  //             schoolName: schoolName,
+  //             schoolCode: schoolCode,
+  //             schoolLevel: schoolLevel,
+  //             schoolLocalCode: schoolLocalCode,
+  //           )
+  //       );
+  //       print("firebase 저장 완료");
+  //       break;
+  //   }
+  // }
 
   @override
   Map<String, dynamic> toMap() {

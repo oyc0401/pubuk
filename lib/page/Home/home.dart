@@ -41,10 +41,6 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.only(top: 12, bottom: 12),
             child: LunchBuilder(),
           ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: UserWidget(),
-          ),
           Container(
             height: 400,
           ),

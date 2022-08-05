@@ -7,13 +7,7 @@ class UserProfile extends MapContainer{
   /// DataBase: DB 저장함수, DB 불러오기 함수, UserProfile 받아서 저장하기 함수
   /// Firebase Storage 직접 추가
   ///
-  // user
-  String uid; // 유저 id
-  String nickname; // 닉네임
-  int authLevel; // 자신의 권한 1 = user, 2= teacher, 3 = parents, 10 = master
-  String provider; // 로그인 환경
-  String authId; // firebase authId: 카카오 로그인시 id가 뭔지 확인하기 위해서
-  String certifiedSchoolCode; // 인증 받은 학교 코드
+
 
   // school
   String schoolLocalCode; // 학교 교육청 코드
@@ -25,18 +19,14 @@ class UserProfile extends MapContainer{
 
 
   UserProfile(
-      {this.uid = 'guest',
-      this.nickname = '',
-      this.authLevel = 1,
-      this.provider = "",
-      this.authId = "",
+      {
       this.grade = 1,
       this.Class = 1,
       this.schoolLocalCode = "J10", // 북고만 서비스 할거면 필요없음
       this.schoolName = "부천북고등학교", // 북고만 서비스 할거면 필요없음
       this.schoolLevel = 3, // 북고만 서비스 할거면 필요없음
       this.schoolCode = 7530072, // 북고만 서비스 할거면 필요없음
-      this.certifiedSchoolCode = "null"});
+      });
 
   static UserProfile? _current;
 
@@ -61,9 +51,6 @@ class UserProfile extends MapContainer{
     UserProfile userProfile = UserProfile.currentUser;
 
     return UserProfile(
-      uid: 'guest',
-      nickname: 'guest',
-      authLevel: 1,
       grade: userProfile.grade,
       Class: userProfile.Class,
     );
@@ -72,37 +59,30 @@ class UserProfile extends MapContainer{
   static UserProfile fromMap(Map map) {
     UserProfile user = UserProfile();
     return UserProfile(
-      uid: map['uid'] ?? user.uid,
-      authLevel: map['authLevel'] ?? user.authLevel,
+
       Class: map['class'] ?? user.Class,
       grade: map['grade'] ?? user.grade,
-      provider: map['provider'] ?? user.provider,
-      authId: map['authId'] ?? user.authId,
-      nickname: map['nickname'] ?? user.nickname,
+
       schoolLocalCode: map['schoolLocalCode'] ?? user.schoolLocalCode,
       schoolName: map['schoolName'] ?? user.schoolName,
       schoolCode: map['schoolCode'] ?? user.schoolCode,
       schoolLevel: map['schoolLevel'] ?? user.schoolLevel,
-      certifiedSchoolCode:
-          map['certifiedSchoolCode'] ?? user.certifiedSchoolCode,
+
     );
   }
 
   @override
   Map<String, dynamic> toMap() {
     return {
-      'uid': uid,
-      'authLevel': authLevel,
+
       'class': Class,
       'grade': grade,
-      'provider': provider,
-      'authId': authId,
-      'nickname': nickname,
+
       'schoolLocalCode': schoolLocalCode,
       'schoolName': schoolName,
       'schoolCode': schoolCode,
       'schoolLevel': schoolLevel,
-      'certifiedSchoolCode': certifiedSchoolCode,
+
     };
   }
 
@@ -167,11 +147,7 @@ class SavePro {
 
   int _getSchoolCode() => prefs.getInt('SchoolCode') ?? userProfile.schoolCode;
 
-  String _getUid() => prefs.getString('ID') ?? userProfile.uid;
 
-  String _getNickName() => prefs.getString('Nickname') ?? userProfile.nickname;
-
-  int _getAuthLevel() => prefs.getInt('AuthLevel') ?? userProfile.authLevel;
 
   String _getSchoolName() =>
       prefs.getString('schoolName') ?? userProfile.schoolName;
@@ -179,35 +155,21 @@ class SavePro {
   int _getSchoolLevel() =>
       prefs.getInt('schoolLevel') ?? userProfile.schoolLevel;
 
-  String _getCertifiedSchoolCode() =>
-      prefs.getString('certifiedSchoolCode') ?? userProfile.certifiedSchoolCode;
 
-  String _getProvider() => prefs.getString('provider') ?? userProfile.provider;
-
-  String _getAuthId() => prefs.getString('authId') ?? userProfile.authId;
 
   UserProfile getUserProfile() {
     return UserProfile(
-        uid: _getUid(),
-        nickname: _getNickName(),
-        authLevel: _getAuthLevel(),
-        provider: _getProvider(),
-        authId: _getAuthId(),
+
         grade: _getGrade(),
         Class: _getClass(),
         schoolLocalCode: _getSchoolLocalCode(),
         schoolCode: _getSchoolCode(),
         schoolName: _getSchoolName(),
         schoolLevel: _getSchoolLevel(),
-        certifiedSchoolCode: _getCertifiedSchoolCode());
+       );
   }
 
   setUserProfile(UserProfile userProfile) {
-    _setUid(userProfile.uid);
-    _setNickName(userProfile.nickname);
-    _setAuthLevel(userProfile.authLevel);
-    _setProvider(userProfile.provider);
-    _setAuthId(userProfile.authId);
     _setGrade(userProfile.grade);
     _setClass(userProfile.Class);
     _setSchoolCode(userProfile.schoolCode);

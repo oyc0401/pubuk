@@ -32,7 +32,7 @@ class _profileState extends State<profile> {
       body: Column(
         children: [
           goSetting(),
-          Logined(),
+          //Logined(),
           // webviewSetting(),
         ],
       ),
@@ -55,44 +55,44 @@ class _profileState extends State<profile> {
     );
   }
 
-  Widget Logined() {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      return InkWell(
-        onTap: navigateSignIn,
-        child: Card(
-          margin: EdgeInsets.all(12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          color: Colors.grey,
-          child: Container(
-            height: 50,
-            child: Center(
-              child: Text(
-                '로그인',
-                style: TextStyle(fontSize: 18, color: Colors.black),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        CupertinoButton(
-          child: Text(
-            '로그인 정보',
-            style: TextStyle(fontSize: 18, color: Colors.black),
-          ),
-          color: Colors.grey,
-          onPressed: navigateAccountInfo,
-        ),
-      ],
-    );
-  }
+  // Widget Logined() {
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //
+  //   if (user == null) {
+  //     return InkWell(
+  //       onTap: navigateSignIn,
+  //       child: Card(
+  //         margin: EdgeInsets.all(12),
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(16.0),
+  //         ),
+  //         color: Colors.grey,
+  //         child: Container(
+  //           height: 50,
+  //           child: Center(
+  //             child: Text(
+  //               '로그인',
+  //               style: TextStyle(fontSize: 18, color: Colors.black),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     );
+  //   }
+  //
+  //   return Column(
+  //     children: [
+  //       CupertinoButton(
+  //         child: Text(
+  //           '로그인 정보',
+  //           style: TextStyle(fontSize: 18, color: Colors.black),
+  //         ),
+  //         color: Colors.grey,
+  //         onPressed: navigateAccountInfo,
+  //       ),
+  //     ],
+  //   );
+  // }
 
   // Widget webviewSetting() {
   //   return Padding(
@@ -105,19 +105,19 @@ class _profileState extends State<profile> {
   //   );
   // }
 
-  void navigateAccountInfo() {
-    Navigator.push(
-      context,
-      CupertinoPageRoute(builder: (context) => const AccountInfo()),
-    );
-  }
+  // void navigateAccountInfo() {
+  //   Navigator.push(
+  //     context,
+  //     CupertinoPageRoute(builder: (context) => const AccountInfo()),
+  //   );
+  // }
 
-  void navigateSignIn() async {
-    await Navigator.push(
-      context,
-      CupertinoPageRoute(builder: (context) => const SignIn()),
-    );
-  }
+  // void navigateSignIn() async {
+  //   await Navigator.push(
+  //     context,
+  //     CupertinoPageRoute(builder: (context) => const SignIn()),
+  //   );
+  // }
 
   void navigateSetting() async {
     await Navigator.push(

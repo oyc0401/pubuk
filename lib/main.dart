@@ -20,79 +20,6 @@ import 'DB/SettingDB.dart'; //gkrry
 import 'Server/FirebaseAirPort.dart';
 import 'firebase_options.dart';
 
-enum AccountCondition { firstRun, noLogin, noRegister, signIn, AuthExpiration }
-//앱 처음 실행, 로그인 x, 로그인을 했으나 회원가입 x, 로그인 상태, 로그인 상태인데 firebase 인증 만료됌
-
-Future<AccountCondition> currentCondition() async {
-  Setting setting = Setting.current;
-  if (setting.isFirst) {
-    setting.isFirst = false;
-    Setting.save(setting);
-    return AccountCondition.firstRun;
-  }
-
-  // db에 있는 유저 정보를 통해 로그인인지 아닌지 확인한다.
-  UserProfile localUser = UserProfile.currentUser;
-  // 로그인 provider가 없으면 로그인을 하지 않은것으로 판단.
-  if (localUser.provider == "") {
-    return AccountCondition.noLogin;
-  }
-
-
-
-  // 여기까지 오면 로그인을 했을것이다.
-  // 이제 파이어베이스에 uid에 맞는 저장소가 있는지 확인한다.
-
-  // 파이어베이스 인증이 만료되면 만료 상태 리턴
-  User? current= FirebaseAuth.instance.currentUser;
-  if(current==null){
-    return AccountCondition.AuthExpiration;
-  }
-
-
-
-  FirebaseAirPort airPort = FirebaseAirPort(uid: localUser.uid);
-  UserProfile? serverUser = await airPort.get();
-
-  // 저장소가 없으면 로그인은 했지만 회원가입을 하지 않은것으로 판단.
-  if (serverUser == null) {
-    return AccountCondition.noRegister;
-  } else {
-    await UserProfile.save(serverUser);
-    return AccountCondition.signIn;
-  }
-}
-
-Future<void> Run_App() async {
-  AccountCondition condition = await currentCondition();
-  UserProfile localUser = UserProfile.currentUser;
-
-  switch (condition) {
-    case AccountCondition.firstRun:
-      print("앱을 처음 시작했습니다.");
-      runApp(MyApp(initialWidget: const CreateProfile()));
-      break;
-    case AccountCondition.noLogin:
-      print("로그인을 하지 않았습니다. 홈 화면 이동!");
-      runApp(MyApp(initialWidget: const MyHomePage()));
-      break;
-    case AccountCondition.noRegister:
-      print("회원가입 중 입니다. 회원가입 이동!");
-      runApp(MyApp(
-          initialWidget:
-          Register(uid: localUser.uid, provider: localUser.provider)));
-      break;
-    case AccountCondition.signIn:
-      print("현재 uid: ${localUser.uid} 홈 화면 이동!");
-      runApp(MyApp(initialWidget: const MyHomePage()));
-      break;
-
-    case AccountCondition.AuthExpiration:
-    // TODO: Handle this case.
-      break;
-  }
-}
-
 Future<void> main() async {
   print("앱 시작");
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -117,7 +44,7 @@ Future<void> main() async {
     statusBarColor: Colors.transparent, // status bar color
   ));
 
-  await Run_App();
+  runApp(MyApp(initialWidget: const MyHomePage()));
   //print("splash 끄기");
   FlutterNativeSplash.remove();
 }
