@@ -80,7 +80,7 @@ Future<void> Run_App() async {
       print("회원가입 중 입니다. 회원가입 이동!");
       runApp(MyApp(
           initialWidget:
-              Register(uid: localUser.uid, provider: localUser.provider)));
+          Register(uid: localUser.uid, provider: localUser.provider)));
       break;
     case AccountCondition.signIn:
       print("현재 uid: ${localUser.uid} 홈 화면 이동!");
@@ -88,7 +88,7 @@ Future<void> Run_App() async {
       break;
 
     case AccountCondition.AuthExpiration:
-      // TODO: Handle this case.
+    // TODO: Handle this case.
       break;
   }
 }
@@ -138,10 +138,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => HomeModel()),
         ChangeNotifierProvider(
             create: (context) => UnivModel(
-                  univCode: "0000046",
-                  year: 2023,
-                  univWay: UnivWay.subject,
-                )),
+              univCode: "0000046",
+              year: 2023,
+              univWay: UnivWay.subject,
+            )),
         ChangeNotifierProvider(create: (context) => UnivSearchModel()),
       ],
       child: MaterialApp(
