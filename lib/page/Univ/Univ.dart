@@ -101,41 +101,85 @@ class _UnivState extends State<Univ> {
 
   @override
   Widget build(BuildContext context) {
+    List<UnivData> univDatas = Provider.of<UnivSearchModel>(context).unives;
+    List<LikeUniv>? favorateUnives =
+        Provider.of<UnivModel>(context).favorateUnives;
+    UserSetting userSetting = UserSetting.current;
+
+    int favorateNum = favorateUnives.length;
+
+    bool showFavorate = !favorateUnives.isEmpty;
+
+    int count = univDatas.length + 1;
+    if (showFavorate) {
+      count += favorateUnives.length + 1;
+    }
+
+    print(count);
+    print(univDatas.length);
     return Scaffold(
       appBar: UnivAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: RoundButton(
-                color: Color(0xffefefef),
-                child: Row(
-                  children: const [
-                     Text(
-                      "대학교 검색",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Spacer(),
-                    Icon(
-                      Icons.search,
-                    ),
-                  ],
-                ),
-                onclick: () {
-                  NavigateUnivSearch(context);
-                },
-              ),
-            ),
-            favorateSection(),
-            const SizedBox(
-              height: 12,
-            ),
-            sortSection(),
-          ],
-        ),
+      body: ListView.builder(
+        itemCount: count,
+        itemBuilder: (context, i) {
+          if (showFavorate) {
+            if (i == 0) {
+              return favorateSection();
+            }
+            if (i < favorateUnives.length + 1) {
+              return FavorateUniv(
+                univData: UnivName.getUnivData(
+                    univCode: favorateUnives[i - 1].univCode,
+                    longitude: userSetting.longitude,
+                    latitude: userSetting.latitude),
+              );
+            }
+            if (i < favorateUnives.length + 1 + favorateUnives.length) {
+              return sortSection();
+            }
+            return UnivCard(univData: univDatas[i - 2 - favorateUnives.length]);
+          } else {
+            if (i == 0) {
+              return sortSection();
+            }
+            return UnivCard(univData: univDatas[i - 1]);
+          }
+        },
       ),
+
+      // body: SingleChildScrollView(
+      //   child: Column(
+      //     crossAxisAlignment: CrossAxisAlignment.start,
+      //     children: [
+      //       Padding(
+      //         padding: const EdgeInsets.symmetric(horizontal: 40),
+      //         child: RoundButton(
+      //           color: Color(0xffefefef),
+      //           child: Row(
+      //             children: const [
+      //                Text(
+      //                 "대학교 검색",
+      //                 style: TextStyle(fontSize: 16),
+      //               ),
+      //               Spacer(),
+      //               Icon(
+      //                 Icons.search,
+      //               ),
+      //             ],
+      //           ),
+      //           onclick: () {
+      //             NavigateUnivSearch(context);
+      //           },
+      //         ),
+      //       ),
+      //       favorateSection(),
+      //       const SizedBox(
+      //         height: 12,
+      //       ),
+      //       sortSection(),
+      //     ],
+      //   ),
+      // ),
       floatingActionButton: FloatingActionButton(
           backgroundColor:
               isLocateUpdate ? Colors.lightBlueAccent : Colors.white,
@@ -148,7 +192,6 @@ class _UnivState extends State<Univ> {
   }
 
   Widget sortSection() {
-    List<UnivData> univDatas = Provider.of<UnivSearchModel>(context).unives;
     return Column(
       children: [
         const Padding(
@@ -197,20 +240,12 @@ class _UnivState extends State<Univ> {
             ],
           ),
         ),
-        for (UnivData univ in univDatas) UnivCard(univData: univ)
+        // for (UnivData univ in univDatas) UnivCard(univData: univ)
       ],
     );
   }
 
   Widget favorateSection() {
-    List<LikeUniv>? favorateUnives =
-        Provider.of<UnivModel>(context).favorateUnives;
-    UserSetting userSetting = UserSetting.current;
-
-    if (favorateUnives.isEmpty) {
-      return Container();
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -235,13 +270,6 @@ class _UnivState extends State<Univ> {
             ],
           ),
         ),
-        for (LikeUniv univ in favorateUnives)
-          FavorateUniv(
-            univData: UnivName.getUnivData(
-                univCode: univ.univCode,
-                longitude: userSetting.longitude,
-                latitude: userSetting.latitude),
-          )
       ],
     );
   }

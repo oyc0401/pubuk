@@ -51,10 +51,10 @@ class _MyHomePageState extends State<MyHomePage> {
           label: "대학",
           icon: Icon(Icons.library_books),
         ),
-        BottomNavigationBarItem(
-          label: "메신저",
-          icon: Icon(Icons.music_note),
-        ),
+        // BottomNavigationBarItem(
+        //   label: "메신저",
+        //   icon: Icon(Icons.music_note),
+        // ),
         // BottomNavigationBarItem(
         //   label: "Places",
         //   icon: Icon(Icons.location_on),
