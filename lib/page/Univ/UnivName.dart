@@ -1,56 +1,45 @@
-import 'package:flutterschool/page/Univ/Univ.dart';
 import 'package:geolocator/geolocator.dart';
 
+/// static 으로 함수를 모아놓은 클래스
 class UnivName {
-  static List<UnivData> get univDatas {
-    List<UnivData> datas = [];
 
-    univInformations.keys.forEach((code) {
-      Map map = univInformations[code];
-      UnivData univData = UnivData.fromMap(map);
-      datas.add(univData);
-    });
-    return datas;
-
-    //UnivData(code: code, name: name, link: link, location: location)
-  }
-
-  static List<UnivData> univDatasDistance(
+  /// 거리가 포함된 대학 객체들을 얻습니다.
+  static List<UnivData> univDatas(
       {required double longitude, required double latitude}) {
-    /// 거리가 포함된 대학 객체들을 얻습니다.
+    // 반환할 리스트를 선언한다.
     List<UnivData> datas = [];
+
+    // 거리 측정 하는 GeolocatorPlatform 도 선언한다.
     GeolocatorPlatform geolocatorPlatform = GeolocatorPlatform.instance;
 
-    for (var code in univInformations.keys) {
-      // UnivData 얻기
-      Map map = univInformations[code];
+    // map을 한바퀴 돌면서 UnivData 모델로 만들고 리스트에 추가한다.
+    univInformations.forEach((key, map) {
       UnivData univData = UnivData.fromMap(map);
 
       // 거리 구하기
-      double dis = geolocatorPlatform.distanceBetween(
+      univData.distance = geolocatorPlatform.distanceBetween(
           latitude, longitude, univData.latitude, univData.longitude);
-      univData.distance = dis;
       datas.add(univData);
-    }
-
+    });
     return datas;
   }
 
+  /// 한가지 대학의 UnivData를 얻을 때 사용하는 함수
   static UnivData getUnivData(
       {required String univCode,
       required double longitude,
       required double latitude}) {
-    Map map = univInformations[univCode];
+    Map map = univInformations[univCode]!;
     UnivData univData = UnivData.fromMap(map);
 
     GeolocatorPlatform geolocatorPlatform = GeolocatorPlatform.instance;
-    double dis = geolocatorPlatform.distanceBetween(
+    univData.distance = geolocatorPlatform.distanceBetween(
         latitude, longitude, univData.latitude, univData.longitude);
-    univData.distance = dis;
 
     return univData;
   }
 
+  /// UnivCode를 입력하면 대학 이름을 주는 함수
   static String getUnivName(String univCode) {
     Map? map = univInformations[univCode];
     return map?["name"] ?? "이름을 찾을 수 없습니다.";
@@ -76,11 +65,12 @@ class UnivData {
   double longitude;
   double distance;
 
+  /// distance를 km 단위로 만들어준다.
   String getKm() {
     return (distance / 1000).toStringAsFixed(2);
   }
 
-  String getAddress(){
+  String getAddress() {
     String address = location;
     if (address.contains("(")) {
       int where = address.indexOf(" (");
@@ -129,7 +119,7 @@ class UnivData {
 
 // 2022.6.16 대학들
 // 분교가 3개 이상인 대학은 없다.
-final Map univInformations = {
+final Map<String, Map<String, dynamic>> univInformations = {
   "0002748": {
     "code": "0002748",
     "name": "가야대학교(김해)",

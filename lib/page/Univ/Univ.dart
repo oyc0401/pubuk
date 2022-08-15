@@ -25,14 +25,14 @@ class Univ extends StatefulWidget {
 }
 
 class _UnivState extends State<Univ> {
+  bool isLocateUpdate = false;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fToast.init(context);
   }
-
-  bool isLocateUpdate = false;
 
   final FToast fToast = FToast();
 
@@ -74,7 +74,7 @@ class _UnivState extends State<Univ> {
       print("위치 얻기 성공");
       _showToast("현재 위치가 업데이트 되었습니다.");
       setState(() => isLocateUpdate = true);
-      Provider.of<UnivSearchModel>(context, listen: false).InitUnivDatas();
+      Provider.of<UnivSearchModel>(context, listen: false).setUnivDatas();
     } catch (e) {
       print("예외: $e");
       switch (e) {
@@ -101,7 +101,6 @@ class _UnivState extends State<Univ> {
 
   @override
   Widget build(BuildContext context) {
-    List<UnivData> univDatas = Provider.of<UnivSearchModel>(context).unives;
     return Scaffold(
       appBar: UnivAppBar(),
       body: SingleChildScrollView(
@@ -113,8 +112,8 @@ class _UnivState extends State<Univ> {
               child: RoundButton(
                 color: Color(0xffefefef),
                 child: Row(
-                  children: [
-                    Text(
+                  children: const [
+                     Text(
                       "대학교 검색",
                       style: TextStyle(fontSize: 16),
                     ),
@@ -130,58 +129,10 @@ class _UnivState extends State<Univ> {
               ),
             ),
             favorateSection(),
-            SizedBox(
+            const SizedBox(
               height: 12,
             ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(
-                "4년제 대학교 입시 결과",
-                style: TextStyle(fontSize: 24),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: RoundButton(
-                      height: 40,
-                      width: 110,
-                      color:
-                          Provider.of<UnivSearchModel>(context).currentSort ==
-                                  Sort.name
-                              ? Color(0xff89e0ff)
-                              : Color(0xffe8e8e8),
-                      onclick: () {
-                        Provider.of<UnivSearchModel>(context, listen: false)
-                            .sortUnives(Sort.name);
-                      },
-                      child: Text("이름순 정렬"),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                    child: RoundButton(
-                      height: 40,
-                      width: 110,
-                      color:
-                          Provider.of<UnivSearchModel>(context).currentSort ==
-                                  Sort.distance
-                              ? Color(0xff89e0ff)
-                              : Color(0xffe8e8e8),
-                      onclick: () {
-                        Provider.of<UnivSearchModel>(context, listen: false)
-                            .sortUnives(Sort.distance);
-                      },
-                      child: Text("거리순 정렬"),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            for (UnivData univ in univDatas) UnivCard(univData: univ)
+            sortSection(),
           ],
         ),
       ),
@@ -193,6 +144,61 @@ class _UnivState extends State<Univ> {
             color: isLocateUpdate ? Colors.black : Colors.black,
           ),
           onPressed: () => setLocate()),
+    );
+  }
+
+  Widget sortSection() {
+    List<UnivData> univDatas = Provider.of<UnivSearchModel>(context).unives;
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Text(
+            "4년제 대학교 입시 결과",
+            style: TextStyle(fontSize: 24),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: RoundButton(
+                  height: 40,
+                  width: 110,
+                  color: Provider.of<UnivSearchModel>(context).currentSort ==
+                          Sort.name
+                      ? const Color(0xff89e0ff)
+                      : const Color(0xffe8e8e8),
+                  onclick: () {
+                    Provider.of<UnivSearchModel>(context, listen: false)
+                        .changeSort(Sort.name);
+                  },
+                  child: const Text("이름순 정렬"),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                child: RoundButton(
+                  height: 40,
+                  width: 110,
+                  color: Provider.of<UnivSearchModel>(context).currentSort ==
+                          Sort.distance
+                      ? const Color(0xff89e0ff)
+                      : const Color(0xffe8e8e8),
+                  onclick: () {
+                    Provider.of<UnivSearchModel>(context, listen: false)
+                        .changeSort(Sort.distance);
+                  },
+                  child: const Text("거리순 정렬"),
+                ),
+              ),
+            ],
+          ),
+        ),
+        for (UnivData univ in univDatas) UnivCard(univData: univ)
+      ],
     );
   }
 
@@ -212,7 +218,7 @@ class _UnivState extends State<Univ> {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              Text(
+              const Text(
                 "내가 즐겨찾기 한 대학",
                 style: TextStyle(fontSize: 24),
               ),
@@ -224,13 +230,13 @@ class _UnivState extends State<Univ> {
                     CupertinoPageRoute(builder: (context) => UnivPreference()),
                   );
                 },
-                icon: Icon(Icons.edit),
+                icon: const Icon(Icons.edit),
               ),
             ],
           ),
         ),
         for (LikeUniv univ in favorateUnives)
-          UnivBar(
+          FavorateUniv(
             univData: UnivName.getUnivData(
                 univCode: univ.univCode,
                 longitude: userSetting.longitude,
@@ -257,14 +263,12 @@ class _UnivState extends State<Univ> {
 
 enum select { delete, positionChange }
 
-class UnivBar extends StatelessWidget {
-  UnivBar({
+class FavorateUniv extends StatelessWidget {
+  FavorateUniv({
     Key? key,
     required this.univData,
-    //required this.univ,
   }) : super(key: key);
 
-  //UnivInfo univ;
   UnivData univData;
 
   Future<void> showSelectDialog(BuildContext context) async {

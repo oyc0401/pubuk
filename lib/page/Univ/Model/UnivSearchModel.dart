@@ -6,46 +6,54 @@ import 'package:geolocator/geolocator.dart';
 import '../UnivName.dart';
 
 class UnivSearchModel with ChangeNotifier {
+  /// 처음 시작하면 모든 대학들을 리스트에 포함시킨다.
   UnivSearchModel() {
-    InitUnivDatas();
+    setUnivDatas();
   }
 
-  List<UnivData> get unives {
-    switch (currentSort) {
-      case Sort.name:
-        _sortName();
-        return _univDatas;
-      case Sort.distance:
-        _sortDis();
-        return _univDatas;
-    }
-  }
-
+  /// model 요소
+  /// [currentSort] 현재 정렬 기준,
+  /// [_univDatas] 현재 대학 데이터들
+  Sort currentSort = Sort.name;
   List<UnivData> _univDatas = [];
 
-  Sort currentSort = Sort.name;
+  // 현재 정렬된 대학 리스트를 가져온다.
+  List<UnivData> get unives {
+    return sortedUnives(currentSort);
+  }
 
-  void sortUnives(Sort sort) {
+  void changeSort(Sort sort) {
     currentSort = sort;
     notifyListeners();
   }
 
-  void InitUnivDatas() async {
-    print("대학 검색 리스트 배치");
+  void setUnivDatas() async {
     UserSetting userSetting = UserSetting.current;
-    _univDatas = UnivName.univDatasDistance(
-        longitude: userSetting.longitude, latitude: userSetting.latitude);
-
+    print("대학 검색 리스트 배치 (위도: ${userSetting.latitude}, 경도: ${userSetting.longitude})");
+    _univDatas = UnivName.univDatas(
+         latitude: userSetting.latitude,longitude: userSetting.longitude,);
     notifyListeners();
   }
 
-  _sortName() {
+  List<UnivData> sortedUnives(Sort sort) {
+    switch (sort) {
+      case Sort.name:
+        _sortName();
+        break;
+      case Sort.distance:
+        _sortDis();
+        break;
+    }
+    return _univDatas;
+  }
+
+  void _sortName() {
     _univDatas.sort((UnivData a, UnivData b) {
       return a.name.compareTo(b.name);
     });
   }
 
-  _sortDis() {
+  void _sortDis() {
     _univDatas.sort((UnivData a, UnivData b) {
       return a.distance.compareTo(b.distance);
     });
@@ -60,8 +68,6 @@ enum Sort {
 enum Locale { locationDisable, denied, deniedForever }
 
 class UnivDistance {
-
-
   static Future<Position> determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -89,7 +95,6 @@ class UnivDistance {
       }
     }
 
-
     if (permission == LocationPermission.deniedForever) {
       print("영원히 거절이였음");
       throw Locale.deniedForever;
@@ -99,5 +104,3 @@ class UnivDistance {
     return await Geolocator.getCurrentPosition();
   }
 }
-
-

@@ -27,13 +27,13 @@ class UnivSearch extends StatelessWidget {
                   child: Text("이름순 정렬"),
                   onPressed: () {
                     Provider.of<UnivSearchModel>(context, listen: false)
-                        .sortUnives(Sort.name);
+                        .changeSort(Sort.name);
                   }),
               CupertinoButton(
                   child: Text("거리순 정렬"),
                   onPressed: () {
                     Provider.of<UnivSearchModel>(context, listen: false)
-                        .sortUnives(Sort.distance);
+                        .changeSort(Sort.distance);
                   }),
             ],
           ),
