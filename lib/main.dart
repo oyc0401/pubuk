@@ -26,11 +26,11 @@ Future<void> main() async {
   // 스플래시 화면 켜기
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // 파이어베이스 초기화
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
   // 카카오 sdk 시작
-  kakao.KakaoSdk.init(nativeAppKey: '3e345bcd63a5df82971a7d52cabb73a2');
+  // kakao.KakaoSdk.init(nativeAppKey: '3e345bcd63a5df82971a7d52cabb73a2');
 
   // DB 불러오기
   await UserProfile.initializeUser();

@@ -31,14 +31,6 @@
           }
         },
         {
-          "client_id": "38235317642-lb8pkhhvjb28nr9adfk9cemjnklnbu15.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.oyc0401.flutterschool",
-            "certificate_hash": "53b60f381105e6d29de5c35c6c967be5ae97861e"
-          }
-        },
-        {
           "client_id": "38235317642-pkdm0f57o557v8scvudo1gcvbaghaptr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -47,21 +39,41 @@
           }
         },
         {
-          "client_id": "38235317642-rv7taai36pr6fs3ba3404dl38g74g7l7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.oyc0401.flutterschool",
-            "certificate_hash": "1e4f8aeb9dd6f401d9358d26c23dd9edae0fa6ca"
-          }
-        },
+          "client_id": "38235317642-c9bgtj0qfovi4qc983iicjlf5mqii58l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
         {
-          "client_id": "38235317642-vc0dochcgdr45i9t82iat5vkh79e3ftl.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.oyc0401.flutterschool",
-            "certificate_hash": "a3838d91587d48bc4cf4624d471679744bea06f2"
-          }
-        },
+          "current_key": "AIzaSyDEi3Nj78MYDN5wiOGMrDBRv5QWTeEZAm8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "38235317642-c9bgtj0qfovi4qc983iicjlf5mqii58l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "38235317642-4i8ul6m33g6ljpap0bk2b46lv05k1j79.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.oyc0401.flutterschool"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:38235317642:android:7d4a30e03647cc5849d473",
+        "android_client_info": {
+          "package_name": "com.oyc0401.pubuk"
+        }
+      },
+      "oauth_client": [
         {
           "client_id": "38235317642-c9bgtj0qfovi4qc983iicjlf5mqii58l.apps.googleusercontent.com",
           "client_type": 3
