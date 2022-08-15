@@ -27,7 +27,7 @@ class _WebViewSettingState extends State<WebViewSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('webview setting'),
+        title: Text('확대'),
         foregroundColor: Colors.black,
         backgroundColor: Colors.white,
       ),

@@ -106,7 +106,6 @@ class _UnivState extends State<Univ> {
         Provider.of<UnivModel>(context).favorateUnives;
     UserSetting userSetting = UserSetting.current;
 
-    int favorateNum = favorateUnives.length;
 
     bool showFavorate = !favorateUnives.isEmpty;
 
@@ -115,8 +114,6 @@ class _UnivState extends State<Univ> {
       count += favorateUnives.length + 1;
     }
 
-    print(count);
-    print(univDatas.length);
     return Scaffold(
       appBar: UnivAppBar(),
       body: ListView.builder(
@@ -146,40 +143,6 @@ class _UnivState extends State<Univ> {
           }
         },
       ),
-
-      // body: SingleChildScrollView(
-      //   child: Column(
-      //     crossAxisAlignment: CrossAxisAlignment.start,
-      //     children: [
-      //       Padding(
-      //         padding: const EdgeInsets.symmetric(horizontal: 40),
-      //         child: RoundButton(
-      //           color: Color(0xffefefef),
-      //           child: Row(
-      //             children: const [
-      //                Text(
-      //                 "대학교 검색",
-      //                 style: TextStyle(fontSize: 16),
-      //               ),
-      //               Spacer(),
-      //               Icon(
-      //                 Icons.search,
-      //               ),
-      //             ],
-      //           ),
-      //           onclick: () {
-      //             NavigateUnivSearch(context);
-      //           },
-      //         ),
-      //       ),
-      //       favorateSection(),
-      //       const SizedBox(
-      //         height: 12,
-      //       ),
-      //       sortSection(),
-      //     ],
-      //   ),
-      // ),
       floatingActionButton: FloatingActionButton(
           backgroundColor:
               isLocateUpdate ? Colors.lightBlueAccent : Colors.white,
@@ -194,11 +157,15 @@ class _UnivState extends State<Univ> {
   Widget sortSection() {
     return Column(
       children: [
-        const Padding(
+         Padding(
           padding: EdgeInsets.all(12.0),
-          child: Text(
-            "4년제 대학교 입시 결과",
-            style: TextStyle(fontSize: 24),
+          child: Row(
+            children: const [
+              Text(
+                "4년제 대학교 입시 결과",
+                style: TextStyle(fontSize: 24),
+              ),
+            ],
           ),
         ),
         Padding(
@@ -250,7 +217,7 @@ class _UnivState extends State<Univ> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
           child: Row(
             children: [
               const Text(
@@ -462,6 +429,7 @@ class UnivCard extends StatelessWidget {
 
           title: Text(
             univData.name,
+            overflow: TextOverflow.ellipsis,
             //style: TextStyle(fontSize: 24),
           ),
           // trailing: IconButton(
@@ -469,6 +437,7 @@ class UnivCard extends StatelessWidget {
           //     onPressed: () => showSelectDialog(context)),
           onTap: () => NavigateUnivWeb(context),
           subtitle: Text("${univData.getKm()}km, ${univData.getAddress()}"),
+
           //onLongPress: ()=> showSelectDialog(context),
         ),
       ),
@@ -507,21 +476,21 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
       ),
       //backgroundColor: Colors.blue,
       centerTitle: false,
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(top: 24, right: 8),
-          child: IconButton(
-            onPressed: () {
-              NavigateUnivSearch(context);
-            },
-            icon: const Icon(
-              Icons.search,
-              size: 28,
-              color: Color(0xff191919),
-            ),
-          ),
-        ),
-      ],
+      // actions: [
+      //   Padding(
+      //     padding: const EdgeInsets.only(top: 24, right: 8),
+      //     child: IconButton(
+      //       onPressed: () {
+      //         NavigateUnivSearch(context);
+      //       },
+      //       icon: const Icon(
+      //         Icons.search,
+      //         size: 28,
+      //         color: Color(0xff191919),
+      //       ),
+      //     ),
+      //   ),
+      // ],
     );
   }
 
