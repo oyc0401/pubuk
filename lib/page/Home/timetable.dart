@@ -15,7 +15,9 @@ class MyTimeTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ClassData? classData = Provider.of<HomeModel>(context).classData;
+    ClassData? classData = Provider
+        .of<HomeModel>(context)
+        .classData;
     if (classData == null) {
       return Skeleton(
         isLoading: true,
@@ -25,8 +27,7 @@ class MyTimeTable extends StatelessWidget {
       );
     } else {
       return TimeTable(
-        height: 450,
-        percent: 0.4,
+        height: 380,
         monday: classData.Mon,
         tuesday: classData.Tue,
         wednesday: classData.Wed,
@@ -45,13 +46,11 @@ class TimeTable extends StatelessWidget {
   List<String> friday;
 
   //테이블 총 세로길이 450
-  double boxHeight = 0;
-  double boxSmallHeight = 0;
+  late double boxHeight;
+  late double boxSmallHeight;
 
-  double percent = 0.5;
+  double percent = 0.4;
   int maxLenght;
-
-  final TextStyle textStyle = const TextStyle(fontSize: 12);
 
   TimeTable({
     Key? key,
@@ -87,18 +86,31 @@ class TimeTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Table(
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      border: TableBorder.all(),
-      columnWidths: {
-        0: FlexColumnWidth(percent),
-        1: FlexColumnWidth(1),
-        2: FlexColumnWidth(1),
-        3: FlexColumnWidth(1),
-        4: FlexColumnWidth(1),
-        5: FlexColumnWidth(1),
-      },
-      children: tableRows(),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        // boxShadow: [
+        //   BoxShadow(color: Colors.black, spreadRadius: 1),
+        // ],
+      ),
+      // decoration: BoxDecoration(
+      //   borderRadius: BorderRadius.circular(10),
+      //   // border: Border.all(),
+      // ),
+      child: Table(
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+       border: TableBorder.all(color: Color(0xfff8f8f8), width: 1.5),
+        columnWidths: {
+          0: FlexColumnWidth(percent),
+          1: FlexColumnWidth(1),
+          2: FlexColumnWidth(1),
+          3: FlexColumnWidth(1),
+          4: FlexColumnWidth(1),
+          5: FlexColumnWidth(1),
+        },
+        children: tableRows(),
+      ),
     );
   }
 
@@ -115,88 +127,154 @@ class TimeTable extends StatelessWidget {
   }
 
   TableRow firstBar() {
-    List<Widget> list = [];
+    var weekday = DateTime
+        .now()
+        .weekday;
 
-    list.add(Container(
+    print(weekday);
+
+    return TableRow(children: [
+      TableSideUnit(
         height: boxSmallHeight,
-        child: Center(
-            child: Text(
-          " ",
-          style: textStyle,
-        ))));
-    list.add(Text(
-      "월요일",
-      textAlign: TextAlign.center,
-      style: textStyle,
-    ));
-    list.add(Text(
-      "화요일",
-      textAlign: TextAlign.center,
-      style: textStyle,
-    ));
-    list.add(Text(
-      "수요일",
-      textAlign: TextAlign.center,
-      style: textStyle,
-    ));
-    list.add(Text(
-      "목요일",
-      textAlign: TextAlign.center,
-      style: textStyle,
-    ));
-    list.add(Text(
-      "금요일",
-      textAlign: TextAlign.center,
-      style: textStyle,
-    ));
-
-    return TableRow(children: list);
+        text: ' ',
+      ),
+      TableSideUnit(
+        height: boxSmallHeight,
+        text: '월',
+        light: weekday == 1 ,
+      ),
+      TableSideUnit(
+        height: boxSmallHeight,
+        text: '화',
+        light: weekday == 2 ,
+      ),
+      TableSideUnit(
+        height: boxSmallHeight,
+        text: '수',
+        light: weekday == 3 ,
+      ),
+      TableSideUnit(
+        height: boxSmallHeight,
+        text: '목',
+        light: weekday == 4 ,
+      ),
+      TableSideUnit(
+        height: boxSmallHeight,
+        text: '금',
+        light: weekday == 5 ,
+      ),
+    ]);
   }
 
   TableRow subjects({required int index}) {
-    List<Widget> list = [];
+    var weekday = DateTime
+        .now()
+        .weekday;
 
-    int kosy = index + 1;
-    list.add(Container(
+    return TableRow(children: [
+      TableSideUnit(
         height: boxHeight,
+        text: "${index + 1}",
+
+      ),
+      TableUnit(
+        height: boxHeight,
+        text: monday[index],
+        light: weekday == 1 ,
+      ),
+      TableUnit(
+        height: boxHeight,
+        text: tuesday[index],
+        light: weekday == 2 ,
+      ),
+      TableUnit(
+        height: boxHeight,
+        text: wednesday[index],
+        light: weekday == 3 ,
+      ),
+      TableUnit(
+        height: boxHeight,
+        text: thursday[index],
+        light: weekday == 4 ,
+      ),
+      TableUnit(
+        height: boxHeight,
+        text: friday[index],
+        light: weekday == 5 ,
+      ),
+    ]);
+  }
+}
+
+class TableSideUnit extends StatelessWidget {
+  TableSideUnit({
+    Key? key,
+    required this.text,
+    required this.height,
+    this.light = false
+  }) : super(key: key);
+
+  double height;
+  String text;
+  bool light;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+       // color: light? Color(0x2f9cd2ff):Colors.white,
+        //color: light? Colors.blue:null,
+        height: height,
         child: Center(
             child: Text(
-          "$kosy",
-          textAlign: TextAlign.center,
-          style: textStyle,
-        ))));
-    list.add(Center(
-        child: Text(
-      monday[index],
-      textAlign: TextAlign.center,
-      style: textStyle,
-    )));
-    list.add(Center(
-        child: Text(
-      tuesday[index],
-      textAlign: TextAlign.center,
-      style: textStyle,
-    )));
-    list.add(Center(
-        child: Text(
-      wednesday[index],
-      textAlign: TextAlign.center,
-      style: textStyle,
-    )));
-    list.add(Center(
-        child: Text(
-      thursday[index],
-      textAlign: TextAlign.center,
-      style: textStyle,
-    )));
-    list.add(Center(
-        child: Text(
-      friday[index],
-      textAlign: TextAlign.center,
-      style: textStyle,
-    )));
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12),
+            )));
 
-    return TableRow(children: list);
+    // return Text(
+    //   text,
+    //   textAlign: TextAlign.center,
+    //   style: const TextStyle(fontSize: 12),
+    // );
+  }
+}
+
+class TableUnit extends StatelessWidget {
+  TableUnit({
+    Key? key,
+    required this.text,
+    required this.height,
+    this.light = false
+  }) : super(key: key);
+
+  double height;
+  String text;
+  bool light;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+         color: light? Color(0x2fc3edff):Colors.white,
+        //color: light? Colors.blue:null,
+        // decoration: BoxDecoration(
+        //   border: Border.all(
+        //     width: 1,
+        //     color: Color(0xffe0e0e0),
+        //   ),
+        // ),
+        height: height,
+        child: Center(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12),
+            )));
+
+    // return Text(
+    //   text,
+    //   textAlign: TextAlign.center,
+    //   style: const TextStyle(fontSize: 12),
+    // );
   }
 }
 
@@ -228,7 +306,7 @@ class TableDownloader {
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&Type=json&pIndex=1&pSize=1000&"
-        "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
+            "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
     return uri;
   }
 
@@ -251,7 +329,8 @@ class TableDownloader {
   ClassData classDataFromJson(Map<String, dynamic> json) {
     // 각 요일의 날짜를 구하기
     final DateTime now = DateTime.now();
-    List<String> dates = [];  // dates: [20220613, 20220614, 20220615, 20220616, 20220617]
+    List<String> dates =
+    []; // dates: [20220613, 20220614, 20220615, 20220616, 20220617]
     for (int i = 1; i <= 5; i++) {
       dates.add(DateFormat('yyyyMMdd')
           .format(now.add(Duration(days: -1 * now.weekday + i))));
@@ -268,13 +347,14 @@ class TableDownloader {
     List? TimeList = json['hisTimetable']?[1]?['row'];
 
     if (TimeList == null) {
-      assert(json["RESULT"]?["MESSAGE"] == "해당하는 데이터가 없습니다.", "시간표 url을 불러오는 과정에서 예상치 못한 오류가 발생했습니다.");
+      assert(json["RESULT"]?["MESSAGE"] == "해당하는 데이터가 없습니다.",
+      "시간표 url을 불러오는 과정에서 예상치 못한 오류가 발생했습니다.");
       String message = "데이터가 없습니다.";
-        arrMon.add(message);
-        arrTue.add(message);
-        arrWed.add(message);
-        arrThu.add(message);
-        arrFri.add(message);
+      arrMon.add(message);
+      arrTue.add(message);
+      arrWed.add(message);
+      arrThu.add(message);
+      arrFri.add(message);
     } else {
       assert(json['hisTimetable']?[0]?['head']?[1]?['RESULT']?['MESSAGE'] ==
           "정상 처리되었습니다.");
@@ -298,7 +378,11 @@ class TableDownloader {
     }
 
     return ClassData(
-        Mon: arrMon, Tue: arrTue, Wed: arrWed, Thu: arrThu, Fri: arrFri);
+        Mon: arrMon,
+        Tue: arrTue,
+        Wed: arrWed,
+        Thu: arrThu,
+        Fri: arrFri);
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/userProfile.dart';
 import 'package:provider/provider.dart';
 
 import '../Profile/profile.dart';
@@ -30,6 +31,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      backgroundColor: Color(0xfffbfbfb),
       appBar: buildAppBar(),
       body: ListView(
         children: [
@@ -37,6 +39,7 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.all(12.0),
             child: MyTimeTable(),
           ),
+          // MyTimeTable(),
            const Padding(
             padding: EdgeInsets.only(top: 12, bottom: 12),
             child: LunchBuilder(),
@@ -50,6 +53,7 @@ class _HomeState extends State<Home> {
   }
 
   AppBar buildAppBar() {
+    print(UserProfile.currentUser.toString());
     return AppBar(
       toolbarHeight: 80,
       title: Column(

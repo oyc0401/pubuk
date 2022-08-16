@@ -173,6 +173,7 @@ class SavePro {
     _setGrade(userProfile.grade);
     _setClass(userProfile.Class);
     _setSchoolCode(userProfile.schoolCode);
+    _setSchoolName(userProfile.schoolName);
     print('Local DB: 유저 저장');
   }
 }
