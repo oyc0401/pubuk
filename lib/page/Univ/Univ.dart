@@ -131,7 +131,7 @@ class _UnivState extends State<Univ> {
                     latitude: userSetting.latitude),
               );
             }
-            if (i < favorateUnives.length + 1 + favorateUnives.length) {
+            if (i == favorateUnives.length + 1) {
               return sortSection();
             }
             return UnivCard(univData: univDatas[i - 2 - favorateUnives.length]);
