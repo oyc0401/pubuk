@@ -22,7 +22,7 @@ class MyTimeTable extends StatelessWidget {
       return Skeleton(
         isLoading: true,
         skeleton: const SkeletonAvatar(
-            style: SkeletonAvatarStyle(width: 480, height: 450)),
+            style: SkeletonAvatarStyle(width: 480, height: 380)),
         child: Container(),
       );
     } else {
@@ -45,7 +45,7 @@ class TimeTable extends StatelessWidget {
   List<String> thursday;
   List<String> friday;
 
-  //테이블 총 세로길이 450
+  //테이블 총 세로길이 380
   late double boxHeight;
   late double boxSmallHeight;
 
@@ -55,7 +55,7 @@ class TimeTable extends StatelessWidget {
   TimeTable({
     Key? key,
     this.maxLenght = 7,
-    double height = 450,
+    double height = 380,
     this.percent = 0.5,
     required this.monday,
     required this.tuesday,
@@ -206,39 +206,6 @@ class TimeTable extends StatelessWidget {
   }
 }
 
-class TableSideUnit extends StatelessWidget {
-  TableSideUnit({
-    Key? key,
-    required this.text,
-    required this.height,
-    this.light = false
-  }) : super(key: key);
-
-  double height;
-  String text;
-  bool light;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-       // color: light? Color(0x2f9cd2ff):Colors.white,
-        //color: light? Colors.blue:null,
-        height: height,
-        child: Center(
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12),
-            )));
-
-    // return Text(
-    //   text,
-    //   textAlign: TextAlign.center,
-    //   style: const TextStyle(fontSize: 12),
-    // );
-  }
-}
-
 class TableUnit extends StatelessWidget {
   TableUnit({
     Key? key,
@@ -262,6 +229,40 @@ class TableUnit extends StatelessWidget {
         //     color: Color(0xffe0e0e0),
         //   ),
         // ),
+        height: height,
+        child: Center(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12),
+              overflow: TextOverflow.fade,
+            )));
+
+    // return Text(
+    //   text,
+    //   textAlign: TextAlign.center,
+    //   style: const TextStyle(fontSize: 12),
+    // );
+  }
+}
+
+class TableSideUnit extends StatelessWidget {
+  TableSideUnit({
+    Key? key,
+    required this.text,
+    required this.height,
+    this.light = false
+  }) : super(key: key);
+
+  double height;
+  String text;
+  bool light;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // color: light? Color(0x2f9cd2ff):Colors.white,
+      //color: light? Colors.blue:null,
         height: height,
         child: Center(
             child: Text(

@@ -30,8 +30,19 @@ class _profileState extends State<profile> {
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          goSetting(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              "내 정보",
+              style: TextStyle(fontSize: 24),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: goSetting(),
+          ),
           //Logined(),
           // webviewSetting(),
         ],
@@ -43,11 +54,10 @@ class _profileState extends State<profile> {
     return InkWell(
       onTap: navigateSetting,
       child: Card(
-          margin: EdgeInsets.all(12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
           ),
-          color: Colors.white30,
+          color: Color(0xffe1e1e1),
           child: ListTile(
             title: Text(userProfile.schoolName),
             subtitle: Text("${userProfile.grade}학년 ${userProfile.Class}반 "),
@@ -127,6 +137,4 @@ class _profileState extends State<profile> {
 
     setState(() {});
   }
-
-
 }

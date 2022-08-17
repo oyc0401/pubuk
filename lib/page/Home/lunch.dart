@@ -47,13 +47,9 @@ class LunchScroll extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: -FROM_TERM + 1 + TO_TERM,
         itemBuilder: (context, index) {
-          Color color = Colors.black;
-          if (index == -FROM_TERM) {
-            color = Colors.blue;
-          }
           return LunchContainer(
             lunch: lunches[index],
-            lineColor: color,
+            light: index == -FROM_TERM,
           );
         },
       ),
@@ -66,14 +62,14 @@ class LunchContainer extends StatelessWidget {
   /// skeleton 설정도 가능하다.
 
   Lunch lunch;
-  Color lineColor;
+  bool light;
   bool isSkeleton;
 
   LunchContainer({
     Key? key,
     required this.lunch,
     this.isSkeleton = false,
-    this.lineColor = Colors.black,
+    this.light = false,
   }) : super(key: key);
 
   @override
@@ -83,7 +79,9 @@ class LunchContainer extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: lineColor),
+        border: Border.all(color: light? Color(0xff8cc2ff):Color(0xffc4c4c4)),
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.white
       ),
       child: Column(
         children: [titleSection(), foodSection()],
@@ -140,16 +138,12 @@ class SkeletonScroll extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: 11,
         itemBuilder: (context, index) {
-          Color color = Colors.black;
-          if (index == 5) {
-            color = Colors.blue;
-          }
           return LunchContainer(
             lunch: Lunch(
               date: "",
               menu: List.generate(6, (index) => ""),
             ),
-            lineColor: color,
+            light: index == 5,
             isSkeleton: true,
           );
         },
