@@ -60,9 +60,9 @@
 			<true/>
 		</dict>
 		<key>NSLocationAlwaysUsageDescription</key>
-		<string>Your location is required for xyz benefits for you</string>
+		<string>현재 위치와 대학 사이의 거리를 측정하는 데 사용합니다.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Your location is required for xyz benefits for you</string>
+		<string>현재 위치와 대학 사이의 거리를 측정하는 데 사용합니다.</string>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>

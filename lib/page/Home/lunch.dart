@@ -74,17 +74,22 @@ class LunchContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 160,
-      margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: light? Color(0xff8cc2ff):Color(0xffc4c4c4)),
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white
-      ),
-      child: Column(
-        children: [titleSection(), foodSection()],
+    return InkWell(
+      onTap: () {
+        print(lunch);
+      },
+      child: Container(
+        width: 160,
+        margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+            border: Border.all(
+                color: light ? Color(0xff8cc2ff) : Color(0xffc4c4c4)),
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.white),
+        child: Column(
+          children: [titleSection(), foodSection()],
+        ),
       ),
     );
   }
@@ -139,10 +144,7 @@ class SkeletonScroll extends StatelessWidget {
         itemCount: 11,
         itemBuilder: (context, index) {
           return LunchContainer(
-            lunch: Lunch(
-              date: "",
-              menu: List.generate(6, (index) => ""),
-            ),
+            lunch: Lunch.blank(),
             light: index == 5,
             isSkeleton: true,
           );
@@ -155,13 +157,109 @@ class SkeletonScroll extends StatelessWidget {
 class Lunch {
   /// 하루의 점심 정보를 담고있는 객체
 
-  String date;
-  List<String> menu;
+  String YMD;
+  List<String> dish;
+  List<String> orplc;
+  String cal;
+  List<String> nutrient;
 
   Lunch({
-    required this.date,
-    required this.menu,
+    required this.YMD,
+    required this.dish,
+    required this.orplc,
+    required this.cal,
+    required this.nutrient,
   });
+
+  List<String> get menu {
+    if (dish.isEmpty) {
+      return ["급식정보가 없습니다."];
+    }
+
+    List<String> me = [];
+    for (var value in dish) {
+      String cleanedData = value.replaceAll("북고", "");
+
+      for (int k = 20; k > 0; k--) {
+        cleanedData = cleanedData.replaceAll("$k.", "");
+      }
+
+      cleanedData = cleanedData.replaceAll("-", "");
+      cleanedData = cleanedData.replaceAll("_", "");
+      cleanedData = cleanedData.replaceAll("()", "");
+      cleanedData = cleanedData.replaceAll(" ", "");
+
+      if (UserProfile.currentUser.schoolName == "도당고등학교") {
+        cleanedData = cleanedData.replaceAll("1", "");
+      }
+
+      me.add(cleanedData);
+    }
+
+    return me;
+  }
+
+  String get date {
+    if (YMD == "") {
+      return "";
+    }
+    DateTime dateTime = DateTime.parse(YMD);
+
+    // 이름 구하기
+    String st = DateFormat('MM월 dd일').format(dateTime);
+    String weekday = DateFormat('E','ko').format(dateTime);
+    String title = "$st $weekday요알";
+
+    return title;
+  }
+
+  @override
+  String toString() {
+    return "$date, ${menu}, ${orplc}, $cal, $nutrient";
+  }
+
+  factory Lunch.mapToLunch(Map map) {
+    List<String> splitList(String text) {
+      // 문자열 나누기
+      List<String> foods = text.split("<br/>");
+
+      return foods;
+    }
+
+    String date = map["MLSV_YMD"];
+    String dish = map["DDISH_NM"];
+    String orplc = map["ORPLC_INFO"];
+    String cal = map["CAL_INFO"];
+    String nutrient = map["NTR_INFO"];
+
+    return Lunch(
+      YMD: date,
+      dish: splitList(dish),
+      orplc: splitList(orplc),
+      cal: cal,
+      nutrient: splitList(nutrient),
+    );
+  }
+
+  factory Lunch.noData(String date) {
+    return Lunch(
+      YMD: date,
+      dish: [],
+      orplc: [],
+      nutrient: [],
+      cal: "",
+    );
+  }
+
+  factory Lunch.blank() {
+    return Lunch(
+      YMD: "",
+      dish: List.generate(6, (index) => ""),
+      orplc: [],
+      nutrient: [],
+      cal: "",
+    );
+  }
 }
 
 class LunchDownloader {
@@ -177,12 +275,10 @@ class LunchDownloader {
 
   late Map<String, dynamic> Json;
 
-
   /// 실행 함수
   Future<void> downLoad() async => Json = await _getJson();
 
-  List<Lunch> getLunches() => _addBlankLunch(_lunches(Json));
-
+  List<Lunch> getLunches() => _addBlankLunch(_currentLunch(Json));
 
   /// json 얻기
   Uri get _uri {
@@ -213,37 +309,8 @@ class LunchDownloader {
     }
   }
 
-
-  /// Lunch로 포장
-  List<String> _lunchStringToList(String lunchMenus) {
-    // 문자열 나누기
-    List<String> foods = lunchMenus.split("<br/>");
-
-    // 코딱지 떼기
-    for (int i = 0; i < foods.length; i++) {
-      String cleanedData = foods[i].replaceAll("북고", "");
-
-      for (int k = 20; k > 0; k--) {
-        cleanedData = cleanedData.replaceAll("$k.", "");
-      }
-
-      cleanedData = cleanedData.replaceAll("-", "");
-      cleanedData = cleanedData.replaceAll("_", "");
-      cleanedData = cleanedData.replaceAll("()", "");
-      cleanedData = cleanedData.replaceAll(" ", "");
-
-
-      if(UserProfile.currentUser.schoolName=="도당고등학교"){
-        cleanedData = cleanedData.replaceAll("1", "");
-      }
-
-      foods[i] = cleanedData;
-    }
-
-    return foods;
-  }
-
-  Map<String, Lunch> _lunches(Map<String, dynamic> json) {
+  /// Map에 현재 얻어올 수 있는 급식을 날짜대로 저장하고
+  Map<String, Lunch> _currentLunch(Map<String, dynamic> json) {
     Map<String, Lunch> lunches = {}; // cleanMap["20211204"]= ["밥", "된장국", "딸기"]
 
     List? lunchMaps = json["mealServiceDietInfo"]?[1]?["row"];
@@ -253,67 +320,29 @@ class LunchDownloader {
     } else {
       for (Map map in lunchMaps) {
         String date = map["MLSV_YMD"];
-        List<String> foods = _lunchStringToList(map["DDISH_NM"]);
-
-        lunches[date] = Lunch(
-          date: date,
-          menu: foods,
-        );
+        lunches[date] = Lunch.mapToLunch(map);
       }
     }
 
     return lunches;
   }
 
-
-  /// 빈 곳 채워주기
+  /// 일정 기간 이내에서 Map에 급식이 없으면 빈 모델을 리스트에 넣는다.
   List<Lunch> _addBlankLunch(Map<String, Lunch> lunches) {
     // 빈자리를 채워주고 이름을 월, 일, 요일로 만들어준다.
     List<Lunch> boxes = [];
 
     final DateTime nowDateTime = DateTime.now();
     for (int index = FROM_TERM; index <= TO_TERM; index++) {
+      
       // 날짜 구하기
       DateTime plusDateTime = nowDateTime.add(Duration(days: index));
       String day = DateFormat('yyyyMMdd').format(plusDateTime);
 
-      // 이름 구하기
-      String date = DateFormat('MM월 dd일 ').format(plusDateTime);
-      String weekday = _weekdayEng2Kor(DateFormat('E').format(plusDateTime));
-      String title = "$date $weekday";
-
-      // 이름 바꾸기
-      Lunch lunch = lunches[day] ?? Lunch(date: date, menu: ["급식정보가 없습니다."]);
-      lunch.date = title;
-
       // 배열에 추가
-      boxes.add(lunch);
+      boxes.add(lunches[day] ?? Lunch.noData(day));
     }
 
     return boxes;
-  }
-
-  String _weekdayEng2Kor(String weekEng) {
-    // 영어 요일을 한국어로 변환
-
-    String weekKor = "";
-
-    if (weekEng == 'Sun') {
-      weekKor = '일';
-    } else if (weekEng == 'Mon') {
-      weekKor = '월';
-    } else if (weekEng == 'Tue') {
-      weekKor = '화';
-    } else if (weekEng == 'Wed') {
-      weekKor = '수';
-    } else if (weekEng == 'Thu') {
-      weekKor = '목';
-    } else if (weekEng == 'Fri') {
-      weekKor = '금';
-    } else if (weekEng == 'Sat') {
-      weekKor = '토';
-    }
-    weekKor = "$weekKor요일";
-    return weekKor;
   }
 }

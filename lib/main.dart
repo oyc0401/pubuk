@@ -13,6 +13,7 @@ import 'package:flutterschool/page/Univ/Model/UnivModel.dart';
 import 'package:flutterschool/page/Univ/Model/UnivSearchModel.dart';
 
 import 'package:flutterschool/page/mainPage.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,8 @@ Future<void> main() async {
   await UserProfile.initializeUser();
   await Setting.initializeSetting();
   await UserSetting.initializeUserSetting();
+
+  initializeDateFormatting('ko_KR', null);
 
   print("초기설정 완료");
 
