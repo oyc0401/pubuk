@@ -34,6 +34,7 @@ class HomeModel with ChangeNotifier {
       Class: userProfile.Class,
       SchoolCode: userProfile.schoolCode,
       CityCode: userProfile.schoolLocalCode,
+      schoolLevel: userProfile.schoolLevel,
     );
     await tabledown.downLoad();
 

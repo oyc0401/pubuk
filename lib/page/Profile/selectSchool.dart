@@ -38,7 +38,7 @@ class _SelectSchoolState extends State<SelectSchool> {
               ),
               RoundTextButton(
                 text: "도당고등학교",
-                onclick: () => select(HighSchool.dodang),
+                onclick: () => select(HighSchool.dodangH),
                 color: Provider.of<EditProfileModel>(context, listen: false)
                             .schoolName ==
                         "도당고등학교"
@@ -49,14 +49,16 @@ class _SelectSchoolState extends State<SelectSchool> {
                 height: 20,
               ),
               RoundTextButton(
-                text: "원종고등학교",
-                onclick: () => select(HighSchool.wonjong),
+                text: "도당중학교",
+                onclick: () => select(HighSchool.dodangM),
                 color: Provider.of<EditProfileModel>(context, listen: false)
-                            .schoolName ==
-                        "원종고등학교"
+                    .schoolName ==
+                    "도당중학교"
                     ? Color(0xffb4d5ff)
                     : Color(0xffeeeeee),
               ),
+
+
             ],
           ),
         ));

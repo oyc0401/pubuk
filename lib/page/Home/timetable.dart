@@ -15,9 +15,7 @@ class MyTimeTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ClassData? classData = Provider
-        .of<HomeModel>(context)
-        .classData;
+    ClassData? classData = Provider.of<HomeModel>(context).classData;
     if (classData == null) {
       return Skeleton(
         isLoading: true,
@@ -100,7 +98,7 @@ class TimeTable extends StatelessWidget {
       // ),
       child: Table(
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-       border: TableBorder.all(color: Color(0xfff8f8f8), width: 1.5),
+        border: TableBorder.all(color: Color(0xfff8f8f8), width: 1.5),
         columnWidths: {
           0: FlexColumnWidth(percent),
           1: FlexColumnWidth(1),
@@ -127,9 +125,7 @@ class TimeTable extends StatelessWidget {
   }
 
   TableRow firstBar() {
-    var weekday = DateTime
-        .now()
-        .weekday;
+    var weekday = DateTime.now().weekday;
 
     print(weekday);
 
@@ -141,78 +137,72 @@ class TimeTable extends StatelessWidget {
       TableSideUnit(
         height: boxSmallHeight,
         text: '월',
-        light: weekday == 1 ,
+        light: weekday == 1,
       ),
       TableSideUnit(
         height: boxSmallHeight,
         text: '화',
-        light: weekday == 2 ,
+        light: weekday == 2,
       ),
       TableSideUnit(
         height: boxSmallHeight,
         text: '수',
-        light: weekday == 3 ,
+        light: weekday == 3,
       ),
       TableSideUnit(
         height: boxSmallHeight,
         text: '목',
-        light: weekday == 4 ,
+        light: weekday == 4,
       ),
       TableSideUnit(
         height: boxSmallHeight,
         text: '금',
-        light: weekday == 5 ,
+        light: weekday == 5,
       ),
     ]);
   }
 
   TableRow subjects({required int index}) {
-    var weekday = DateTime
-        .now()
-        .weekday;
+    var weekday = DateTime.now().weekday;
 
     return TableRow(children: [
       TableSideUnit(
         height: boxHeight,
         text: "${index + 1}",
-
       ),
       TableUnit(
         height: boxHeight,
         text: monday[index],
-        light: weekday == 1 ,
+        light: weekday == 1,
       ),
       TableUnit(
         height: boxHeight,
         text: tuesday[index],
-        light: weekday == 2 ,
+        light: weekday == 2,
       ),
       TableUnit(
         height: boxHeight,
         text: wednesday[index],
-        light: weekday == 3 ,
+        light: weekday == 3,
       ),
       TableUnit(
         height: boxHeight,
         text: thursday[index],
-        light: weekday == 4 ,
+        light: weekday == 4,
       ),
       TableUnit(
         height: boxHeight,
         text: friday[index],
-        light: weekday == 5 ,
+        light: weekday == 5,
       ),
     ]);
   }
 }
 
 class TableUnit extends StatelessWidget {
-  TableUnit({
-    Key? key,
-    required this.text,
-    required this.height,
-    this.light = false
-  }) : super(key: key);
+  TableUnit(
+      {Key? key, required this.text, required this.height, this.light = false})
+      : super(key: key);
 
   double height;
   String text;
@@ -221,7 +211,7 @@ class TableUnit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-         color: light? Color(0x2fc3edff):Colors.white,
+        color: light ? Color(0x2fc3edff) : Colors.white,
         //color: light? Colors.blue:null,
         // decoration: BoxDecoration(
         //   border: Border.all(
@@ -232,11 +222,11 @@ class TableUnit extends StatelessWidget {
         height: height,
         child: Center(
             child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12),
-              overflow: TextOverflow.fade,
-            )));
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12),
+          overflow: TextOverflow.fade,
+        )));
 
     // return Text(
     //   text,
@@ -247,12 +237,9 @@ class TableUnit extends StatelessWidget {
 }
 
 class TableSideUnit extends StatelessWidget {
-  TableSideUnit({
-    Key? key,
-    required this.text,
-    required this.height,
-    this.light = false
-  }) : super(key: key);
+  TableSideUnit(
+      {Key? key, required this.text, required this.height, this.light = false})
+      : super(key: key);
 
   double height;
   String text;
@@ -261,15 +248,15 @@ class TableSideUnit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // color: light? Color(0x2f9cd2ff):Colors.white,
-      //color: light? Colors.blue:null,
+        // color: light? Color(0x2f9cd2ff):Colors.white,
+        //color: light? Colors.blue:null,
         height: height,
         child: Center(
             child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12),
-            )));
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12),
+        )));
 
     // return Text(
     //   text,
@@ -284,12 +271,14 @@ class TableDownloader {
   int Class;
   String CityCode;
   int SchoolCode;
+  int schoolLevel;
 
   TableDownloader({
     required this.Grade,
     required this.Class,
     required this.CityCode,
     required this.SchoolCode,
+    required this.schoolLevel,
   });
 
   late Map<String, dynamic> Json;
@@ -305,10 +294,18 @@ class TableDownloader {
     var fri = DateFormat('yyyyMMdd')
         .format(now.add(Duration(days: -1 * now.weekday + 5))); // weekday 금요일=5
 
-    Uri uri = Uri.parse(
-        "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&Type=json&pIndex=1&pSize=1000&"
-            "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
-    return uri;
+    if (schoolLevel == 2) {
+      return Uri.parse(
+          "https://open.neis.go.kr/hub/misTimetable?Key=59b8af7c4312435989470cba41e5c7a6&Type=json&pIndex=1&pSize=1000&"
+          "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
+    }
+    else {
+      Uri uri = Uri.parse(
+          "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&Type=json&pIndex=1&pSize=1000&"
+              "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
+      return uri;
+    }
+
   }
 
   Future<Map<String, dynamic>> _getJson() async {
@@ -331,7 +328,7 @@ class TableDownloader {
     // 각 요일의 날짜를 구하기
     final DateTime now = DateTime.now();
     List<String> dates =
-    []; // dates: [20220613, 20220614, 20220615, 20220616, 20220617]
+        []; // dates: [20220613, 20220614, 20220615, 20220616, 20220617]
     for (int i = 1; i <= 5; i++) {
       dates.add(DateFormat('yyyyMMdd')
           .format(now.add(Duration(days: -1 * now.weekday + i))));
@@ -349,7 +346,7 @@ class TableDownloader {
 
     if (TimeList == null) {
       assert(json["RESULT"]?["MESSAGE"] == "해당하는 데이터가 없습니다.",
-      "시간표 url을 불러오는 과정에서 예상치 못한 오류가 발생했습니다.");
+          "시간표 url을 불러오는 과정에서 예상치 못한 오류가 발생했습니다.");
       String message = "데이터가 없습니다.";
       arrMon.add(message);
       arrTue.add(message);
@@ -379,11 +376,7 @@ class TableDownloader {
     }
 
     return ClassData(
-        Mon: arrMon,
-        Tue: arrTue,
-        Wed: arrWed,
-        Thu: arrThu,
-        Fri: arrFri);
+        Mon: arrMon, Tue: arrTue, Wed: arrWed, Thu: arrThu, Fri: arrFri);
   }
 }
 

@@ -1,13 +1,12 @@
 import 'package:flutterschool/Server/FirebaseAirPort.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserProfile extends MapContainer{
+class UserProfile extends MapContainer {
   /// DB 더 추가하려면 17개의 인자를 추가해야함
   /// UserProfile: 필드, 생성자 [UserProfile], 파이어베이스 전달 함수 [UserProfile.fromMap], toMap 함수 [toMap]
   /// DataBase: DB 저장함수, DB 불러오기 함수, UserProfile 받아서 저장하기 함수
   /// Firebase Storage 직접 추가
   ///
-
 
   // school
   String schoolLocalCode; // 학교 교육청 코드
@@ -17,16 +16,14 @@ class UserProfile extends MapContainer{
   int grade; // 학년
   int Class; // 반
 
-
-  UserProfile(
-      {
-      this.grade = 1,
-      this.Class = 1,
-      this.schoolLocalCode = "J10", // 북고만 서비스 할거면 필요없음
-      this.schoolName = "부천북고등학교", // 북고만 서비스 할거면 필요없음
-      this.schoolLevel = 3, // 북고만 서비스 할거면 필요없음
-      this.schoolCode = 7530072, // 북고만 서비스 할거면 필요없음
-      });
+  UserProfile({
+    this.grade = 1,
+    this.Class = 1,
+    this.schoolLocalCode = "J10", // 북고만 서비스 할거면 필요없음
+    this.schoolName = "부천북고등학교", // 북고만 서비스 할거면 필요없음
+    this.schoolLevel = 3, // 북고만 서비스 할거면 필요없음
+    this.schoolCode = 7530072, // 북고만 서비스 할거면 필요없음
+  });
 
   static UserProfile? _current;
 
@@ -59,30 +56,24 @@ class UserProfile extends MapContainer{
   static UserProfile fromMap(Map map) {
     UserProfile user = UserProfile();
     return UserProfile(
-
       Class: map['class'] ?? user.Class,
       grade: map['grade'] ?? user.grade,
-
       schoolLocalCode: map['schoolLocalCode'] ?? user.schoolLocalCode,
       schoolName: map['schoolName'] ?? user.schoolName,
       schoolCode: map['schoolCode'] ?? user.schoolCode,
       schoolLevel: map['schoolLevel'] ?? user.schoolLevel,
-
     );
   }
 
   @override
   Map<String, dynamic> toMap() {
     return {
-
       'class': Class,
       'grade': grade,
-
       'schoolLocalCode': schoolLocalCode,
       'schoolName': schoolName,
       'schoolCode': schoolCode,
       'schoolLevel': schoolLevel,
-
     };
   }
 
@@ -147,26 +138,21 @@ class SavePro {
 
   int _getSchoolCode() => prefs.getInt('SchoolCode') ?? userProfile.schoolCode;
 
-
-
   String _getSchoolName() =>
       prefs.getString('schoolName') ?? userProfile.schoolName;
 
   int _getSchoolLevel() =>
       prefs.getInt('schoolLevel') ?? userProfile.schoolLevel;
 
-
-
   UserProfile getUserProfile() {
     return UserProfile(
-
-        grade: _getGrade(),
-        Class: _getClass(),
-        schoolLocalCode: _getSchoolLocalCode(),
-        schoolCode: _getSchoolCode(),
-        schoolName: _getSchoolName(),
-        schoolLevel: _getSchoolLevel(),
-       );
+      grade: _getGrade(),
+      Class: _getClass(),
+      schoolLocalCode: _getSchoolLocalCode(),
+      schoolCode: _getSchoolCode(),
+      schoolName: _getSchoolName(),
+      schoolLevel: _getSchoolLevel(),
+    );
   }
 
   setUserProfile(UserProfile userProfile) {
@@ -174,6 +160,7 @@ class SavePro {
     _setClass(userProfile.Class);
     _setSchoolCode(userProfile.schoolCode);
     _setSchoolName(userProfile.schoolName);
+    _setSchoolLevel(userProfile.schoolLevel);
     print('Local DB: 유저 저장');
   }
 }

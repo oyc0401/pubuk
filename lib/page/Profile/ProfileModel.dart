@@ -51,16 +51,16 @@ class EditProfileModel extends MapContainer with ChangeNotifier {
         schoolLevel = 3;
         schoolLocalCode = "J10";
         break;
-      case HighSchool.dodang:
+      case HighSchool.dodangH:
         schoolName = "도당고등학교";
         schoolCode = 7530471;
         schoolLevel = 3;
         schoolLocalCode = "J10";
         break;
-      case HighSchool.wonjong:
-        schoolName = "원종고등학교";
-        schoolCode = 7530107;
-        schoolLevel = 3;
+      case HighSchool.dodangM:
+        schoolName = "도당중학교";
+        schoolCode = 7581267;
+        schoolLevel = 2;
         schoolLocalCode = "J10";
         break;
     }
@@ -131,6 +131,6 @@ class EditProfileModel extends MapContainer with ChangeNotifier {
 
 enum HighSchool {
   pubuk,
-  dodang,
-  wonjong,
+  dodangH,
+  dodangM,
 }
