@@ -114,9 +114,9 @@ class _findSchoolState extends State<findSchool> {
   }
 
   void saveSchoolCode(int schoolCode, String cityCode) async {
-    UserProfile myUser = UserProfile.currentUser;
-    myUser.schoolLocalCode = cityCode;
-    myUser.schoolCode = schoolCode;
+    UserSchool myUser = UserProfile.currentUser;
+    myUser.officeCode = cityCode;
+    myUser.code = schoolCode;
     await UserProfile.save(myUser);
 
     Navigator.of(context).pop('complete');

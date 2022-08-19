@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Home/home.dart';
 import 'Messenger/Messenger.dart';
-import 'Univ/Univ.dart';
+import 'Univ/UnivPage.dart';
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List _widgetOptions() {
     return [
       const Home(),
-      const Univ(),
+      const UnivPage(),
        const Messenger(),
       // const Text(
       //   'Music',

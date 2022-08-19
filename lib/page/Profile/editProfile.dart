@@ -29,8 +29,8 @@ class _EditProfileState extends State<EditProfile> {
   Future<void> save() async {
     await Provider.of<EditProfileModel>(context, listen: false).saveLocal();
     //await Provider.of<EditProfileModel>(context, listen: false).saveFireBase();
-    Provider.of<HomeModel>(context, listen: false).setClass();
-    Provider.of<HomeModel>(context, listen: false).setLunch();
+    Provider.of<HomeModel>(context, listen: false).setTimeTable(UserProfile.currentUser);
+    Provider.of<HomeModel>(context, listen: false).setLunch(UserProfile.currentUser);
 
     // 나가기
     Navigator.of(context).pop('complete');

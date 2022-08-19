@@ -14,26 +14,26 @@ class EditProfileModel extends MapContainer with ChangeNotifier {
     required this.schoolLevel,
     required this.schoolLocalCode}) {}
 
-  static EditProfileModel fromDB(UserProfile userProfile) {
+  static EditProfileModel fromDB(UserSchool userProfile) {
     return EditProfileModel(
       grade: userProfile.grade,
       Class: userProfile.Class,
-      schoolName: userProfile.schoolName,
-      schoolCode: userProfile.schoolCode,
-      schoolLevel: userProfile.schoolLevel,
-      schoolLocalCode: userProfile.schoolLocalCode,
+      schoolName: userProfile.name,
+      schoolCode: userProfile.code,
+      schoolLevel: userProfile.level,
+      schoolLocalCode: userProfile.officeCode,
     );
   }
 
   void reset() {
     print("리셋: ${UserProfile.currentUser}");
-    UserProfile pro = UserProfile.currentUser;
+    UserSchool pro = UserProfile.currentUser;
     grade = pro.grade;
     Class = pro.Class;
-    schoolName = pro.schoolName;
-    schoolCode = pro.schoolCode;
-    schoolLevel = pro.schoolLevel;
-    schoolLocalCode = pro.schoolLocalCode;
+    schoolName = pro.name;
+    schoolCode = pro.code;
+    schoolLevel = pro.level;
+    schoolLocalCode = pro.officeCode;
   }
 
   int grade;
@@ -78,13 +78,13 @@ class EditProfileModel extends MapContainer with ChangeNotifier {
   }
 
   Future<void> saveLocal() async {
-    UserProfile user = UserProfile.currentUser;
+    UserSchool user = UserProfile.currentUser;
     user.grade = grade;
     user.Class = Class;
-    user.schoolName = schoolName;
-    user.schoolCode = schoolCode;
-    user.schoolLevel = schoolLevel;
-    user.schoolLocalCode = schoolLocalCode;
+    user.name = schoolName;
+    user.code = schoolCode;
+    user.level = schoolLevel;
+    user.officeCode = schoolLocalCode;
     // 로컬 DB에 저장
 
     await UserProfile.save(user);

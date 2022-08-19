@@ -18,7 +18,7 @@ class profile extends StatefulWidget {
 }
 
 class _profileState extends State<profile> {
-  UserProfile userProfile = UserProfile.currentUser;
+  UserSchool userProfile = UserProfile.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class _profileState extends State<profile> {
           ),
           color: Color(0xffe1e1e1),
           child: ListTile(
-            title: Text(userProfile.schoolName),
+            title: Text(userProfile.name),
             subtitle: Text("${userProfile.grade}학년 ${userProfile.Class}반 "),
           )),
     );

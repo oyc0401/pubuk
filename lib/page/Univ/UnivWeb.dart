@@ -86,7 +86,6 @@ class _UnivWebViewState extends State<UnivWebView> {
   @override
   dispose() {
     super.dispose();
-    print("야네ㅐㄴㄷ");
     //Provider.of<UnivModel>(context, listen: false).webViewController=null;
   }
 
@@ -106,6 +105,7 @@ class _UnivWebViewState extends State<UnivWebView> {
   );
 
   int? maxHight;
+  bool last=false;
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +121,7 @@ class _UnivWebViewState extends State<UnivWebView> {
               controller;
         },
         onScrollChanged: (controller, x, y) {
-          // print("x: $x, y: $y");
+          //print("x: $x, y: $y");
 
           // 이미 보여주고 있을땐 나가기
           if (Provider.of<WebModel>(context, listen: false).onFloating) {
@@ -131,11 +131,12 @@ class _UnivWebViewState extends State<UnivWebView> {
           assert(maxHight! > 0, "세로길이가 0보다 작습니다.");
 
           // 마지막보다 위에 있을 때 보이기
-          if (maxHight != null && (maxHight! - 50) > y) {
+          if (maxHight != null && maxHight! > y) {
             print("보이기 $y");
             Provider.of<WebModel>(context, listen: false).showFloating();
           }
         },
+
         onOverScrolled: (controller, x, y, horizon, vertical) {
           // 이미 숨기고 있을땐 나가기
           if (!Provider.of<WebModel>(context, listen: false).onFloating) {
@@ -149,6 +150,7 @@ class _UnivWebViewState extends State<UnivWebView> {
             maxHight = y;
           }
         },
+
         onLoadStart: (controller, url) {
           print(url);
         },

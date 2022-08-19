@@ -1,67 +1,49 @@
 import 'package:flutterschool/Server/FirebaseAirPort.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserProfile extends MapContainer {
+
+class UserSchool extends MapContainer{
   /// DB 더 추가하려면 17개의 인자를 추가해야함
-  /// UserProfile: 필드, 생성자 [UserProfile], 파이어베이스 전달 함수 [UserProfile.fromMap], toMap 함수 [toMap]
+  /// UserProfile: 필드, 생성자 [UserSchool], 파이어베이스 전달 함수 [UserSchool.fromMap], toMap 함수 [toMap]
   /// DataBase: DB 저장함수, DB 불러오기 함수, UserProfile 받아서 저장하기 함수
   /// Firebase Storage 직접 추가
   ///
 
   // school
-  String schoolLocalCode; // 학교 교육청 코드
-  int schoolCode; // 학교 코드
-  String schoolName; // 학교 이름
-  int schoolLevel; // 1 = 초등학교, 2 = 중학교, 3 = 고등학교
+  String officeCode; // 학교 교육청 코드
+  int code; // 학교 코드
+  String name; // 학교 이름
+  int level; // 1 = 초등학교, 2 = 중학교, 3 = 고등학교
   int grade; // 학년
   int Class; // 반
 
-  UserProfile({
+  UserSchool({
     this.grade = 1,
     this.Class = 1,
-    this.schoolLocalCode = "J10", // 북고만 서비스 할거면 필요없음
-    this.schoolName = "부천북고등학교", // 북고만 서비스 할거면 필요없음
-    this.schoolLevel = 3, // 북고만 서비스 할거면 필요없음
-    this.schoolCode = 7530072, // 북고만 서비스 할거면 필요없음
+    this.officeCode = "J10", // 북고만 서비스 할거면 필요없음
+    this.name = "부천북고등학교", // 북고만 서비스 할거면 필요없음
+    this.level = 3, // 북고만 서비스 할거면 필요없음
+    this.code = 7530072, // 북고만 서비스 할거면 필요없음
   });
 
-  static UserProfile? _current;
+  static UserSchool guest() {
+    UserSchool userProfile = UserProfile.currentUser;
 
-  static initializeUser() async {
-    SavePro savePro = await SavePro.Instance();
-    _current = savePro.getUserProfile();
-  }
-
-  static UserProfile get currentUser {
-    assert(_current != null, "Warning: 유저 초기화가 필요합니다.");
-    return _current!;
-  }
-
-  static Future<void> save(UserProfile userProfile) async {
-    _current = userProfile;
-    print("static User update");
-    SavePro savePro = await SavePro.Instance();
-    savePro.setUserProfile(userProfile);
-  }
-
-  static UserProfile guest() {
-    UserProfile userProfile = UserProfile.currentUser;
-
-    return UserProfile(
+    return UserSchool(
       grade: userProfile.grade,
       Class: userProfile.Class,
     );
   }
 
-  static UserProfile fromMap(Map map) {
-    UserProfile user = UserProfile();
-    return UserProfile(
+  static UserSchool fromMap(Map map) {
+    UserSchool user = UserSchool();
+    return UserSchool(
       Class: map['class'] ?? user.Class,
       grade: map['grade'] ?? user.grade,
-      schoolLocalCode: map['schoolLocalCode'] ?? user.schoolLocalCode,
-      schoolName: map['schoolName'] ?? user.schoolName,
-      schoolCode: map['schoolCode'] ?? user.schoolCode,
-      schoolLevel: map['schoolLevel'] ?? user.schoolLevel,
+      officeCode: map['schoolLocalCode'] ?? user.officeCode,
+      name: map['schoolName'] ?? user.name,
+      code: map['schoolCode'] ?? user.code,
+      level: map['schoolLevel'] ?? user.level,
     );
   }
 
@@ -70,10 +52,10 @@ class UserProfile extends MapContainer {
     return {
       'class': Class,
       'grade': grade,
-      'schoolLocalCode': schoolLocalCode,
-      'schoolName': schoolName,
-      'schoolCode': schoolCode,
-      'schoolLevel': schoolLevel,
+      'schoolLocalCode': officeCode,
+      'schoolName': name,
+      'schoolCode': code,
+      'schoolLevel': level,
     };
   }
 
@@ -81,12 +63,28 @@ class UserProfile extends MapContainer {
   String toString() => toMap().toString();
 }
 
-class UserProfileHandler extends UserProfile {
-  UserProfileHandler.SwitchGuest() {
-    print("Local DB 게스트 상태로 변경");
-    UserProfile userProfile = UserProfile.guest();
-    UserProfile.save(userProfile);
+class UserProfile  {
+  //UserSchool 저장하는 클래스
+
+  static UserSchool? _current;
+
+  static initializeUser() async {
+    SavePro savePro = await SavePro.Instance();
+    _current = savePro.getUserProfile();
   }
+
+  static UserSchool get currentUser {
+    assert(_current != null, "Warning: 유저 초기화가 필요합니다.");
+    return _current!;
+  }
+
+  static Future<void> save(UserSchool userProfile) async {
+    _current = userProfile;
+    print("static User update");
+    SavePro savePro = await SavePro.Instance();
+    savePro.setUserProfile(userProfile);
+  }
+
 }
 
 class SavePro {
@@ -100,7 +98,7 @@ class SavePro {
     return key;
   }
 
-  UserProfile userProfile = UserProfile();
+  UserSchool userProfile = UserSchool();
 
   /// _set
   _setGrade(int Grade) => prefs.setInt('Grade', Grade);
@@ -134,33 +132,33 @@ class SavePro {
   int _getClass() => prefs.getInt('Class') ?? userProfile.Class;
 
   String _getSchoolLocalCode() =>
-      prefs.getString('schoolLocalCode') ?? userProfile.schoolLocalCode;
+      prefs.getString('schoolLocalCode') ?? userProfile.officeCode;
 
-  int _getSchoolCode() => prefs.getInt('SchoolCode') ?? userProfile.schoolCode;
+  int _getSchoolCode() => prefs.getInt('SchoolCode') ?? userProfile.code;
 
   String _getSchoolName() =>
-      prefs.getString('schoolName') ?? userProfile.schoolName;
+      prefs.getString('schoolName') ?? userProfile.name;
 
   int _getSchoolLevel() =>
-      prefs.getInt('schoolLevel') ?? userProfile.schoolLevel;
+      prefs.getInt('schoolLevel') ?? userProfile.level;
 
-  UserProfile getUserProfile() {
-    return UserProfile(
+  UserSchool getUserProfile() {
+    return UserSchool(
       grade: _getGrade(),
       Class: _getClass(),
-      schoolLocalCode: _getSchoolLocalCode(),
-      schoolCode: _getSchoolCode(),
-      schoolName: _getSchoolName(),
-      schoolLevel: _getSchoolLevel(),
+      officeCode: _getSchoolLocalCode(),
+      code: _getSchoolCode(),
+      name: _getSchoolName(),
+      level: _getSchoolLevel(),
     );
   }
 
-  setUserProfile(UserProfile userProfile) {
+  setUserProfile(UserSchool userProfile) {
     _setGrade(userProfile.grade);
     _setClass(userProfile.Class);
-    _setSchoolCode(userProfile.schoolCode);
-    _setSchoolName(userProfile.schoolName);
-    _setSchoolLevel(userProfile.schoolLevel);
+    _setSchoolCode(userProfile.code);
+    _setSchoolName(userProfile.name);
+    _setSchoolLevel(userProfile.level);
     print('Local DB: 유저 저장');
   }
 }

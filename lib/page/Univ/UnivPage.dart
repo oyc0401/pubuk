@@ -17,14 +17,14 @@ import 'UnivName.dart';
 import 'UnivSearch.dart';
 import 'Model/UnivSearchModel.dart';
 
-class Univ extends StatefulWidget {
-  const Univ({Key? key}) : super(key: key);
+class UnivPage extends StatefulWidget {
+  const UnivPage({Key? key}) : super(key: key);
 
   @override
-  State<Univ> createState() => _UnivState();
+  State<UnivPage> createState() => _UnivPageState();
 }
 
-class _UnivState extends State<Univ> {
+class _UnivPageState extends State<UnivPage> {
   bool isLocateUpdate = false;
 
   @override
@@ -65,39 +65,41 @@ class _UnivState extends State<Univ> {
     );
   }
 
-  void setLocate() async {
-    try {
-      Position position = await UnivDistance.determinePosition();
-      UserSetting.save(
-        UserSetting(longitude: position.longitude, latitude: position.latitude),
-      );
-      print("위치 얻기 성공");
-      _showToast("현재 위치가 업데이트 되었습니다.");
-      setState(() => isLocateUpdate = true);
-      Provider.of<UnivSearchModel>(context, listen: false).setUnivDatas();
-    } catch (e) {
-      print("예외: $e");
-      switch (e) {
-        case Locale.locationDisable:
-          _showToast("위치 설정을 확인해주세요.");
-          setState(() => isLocateUpdate = false);
-          await Geolocator.openLocationSettings();
-          break;
-        case Locale.denied:
-          _showToast("위치정보를 얻지 못했습니다.");
-          setState(() => isLocateUpdate = false);
-          break;
-        case Locale.deniedForever:
-          _showToast("앱 설정에서 위치 정보를 설정해주세요.");
-          setState(() => isLocateUpdate = false);
-          await Geolocator.openAppSettings();
-          break;
-      }
-
-      print("현재위치가 북고로 설정되었습니다.");
-      UserSetting.save(UserSetting());
-    }
-  }
+  // void setLocate() async {
+  //   try {
+  //     Position position = await UnivDistance.determinePosition();
+  //     UserSetting.save(
+  //       UserSetting(longitude: position.longitude, latitude: position.latitude),
+  //     );
+  //     print("위치 얻기 성공");
+  //     //print(position);
+  //     _showToast("현재 위치가 업데이트 되었습니다.");
+  //     setState(() => isLocateUpdate = true);
+  //
+  //     Provider.of<UnivSearchModel>(context, listen: false).setUnivDatas();
+  //   } catch (e) {
+  //     print("예외: $e");
+  //     switch (e) {
+  //       case Locale.locationDisable:
+  //         _showToast("위치 설정을 확인해주세요.");
+  //         setState(() => isLocateUpdate = false);
+  //         await Geolocator.openLocationSettings();
+  //         break;
+  //       case Locale.denied:
+  //         _showToast("위치정보를 얻지 못했습니다.");
+  //         setState(() => isLocateUpdate = false);
+  //         break;
+  //       case Locale.deniedForever:
+  //         _showToast("앱 설정에서 위치 정보를 설정해주세요.");
+  //         setState(() => isLocateUpdate = false);
+  //         await Geolocator.openAppSettings();
+  //         break;
+  //     }
+  //
+  //     print("현재위치가 북고로 설정되었습니다.");
+  //     UserSetting.save(UserSetting());
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -143,14 +145,14 @@ class _UnivState extends State<Univ> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor:
-              isLocateUpdate ? Colors.lightBlueAccent : Colors.white,
-          child: Icon(
-            Icons.my_location,
-            color: isLocateUpdate ? Colors.black : Colors.black,
-          ),
-          onPressed: () => setLocate()),
+      // floatingActionButton: FloatingActionButton(
+      //     backgroundColor:
+      //         isLocateUpdate ? Colors.lightBlueAccent : Colors.white,
+      //     child: Icon(
+      //       Icons.my_location,
+      //       color: isLocateUpdate ? Colors.black : Colors.black,
+      //     ),
+      //     onPressed: () => setLocate()),
     );
   }
 
@@ -192,7 +194,7 @@ class _UnivState extends State<Univ> {
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: RoundButton(
                   height: 40,
-                  width: 110,
+                  width: 180,
                   color: Provider.of<UnivSearchModel>(context).currentSort ==
                           Sort.distance
                       ? const Color(0xff89e0ff)
@@ -201,7 +203,7 @@ class _UnivState extends State<Univ> {
                     Provider.of<UnivSearchModel>(context, listen: false)
                         .changeSort(Sort.distance);
                   },
-                  child: const Text("거리순 정렬"),
+                  child: const Text("거리순 정렬 (부천북고)"),
                 ),
               ),
             ],
@@ -449,7 +451,7 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
   UnivAppBar({Key? key}) : super(key: key);
 
   final double height = 80;
-  UserProfile userProfile = UserProfile.currentUser;
+  UserSchool userProfile = UserProfile.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -459,7 +461,7 @@ class UnivAppBar extends StatelessWidget with PreferredSizeWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            userProfile.schoolName,
+            userProfile.name,
             style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,

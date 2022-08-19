@@ -13,11 +13,11 @@ class FirebaseAirPort {
   final FirebasePlain plain;
 
   /// 얻어오기
-  Future<UserProfile?> get() async {
+  Future<UserSchool?> get() async {
     Map<String, dynamic>? map = await plain.get();
 
     // map이 null이 아니면 리턴
-    return map == null ? null : UserProfile.fromMap(map);
+    return map == null ? null : UserSchool.fromMap(map);
   }
 
   /// 저장하기

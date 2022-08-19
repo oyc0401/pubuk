@@ -29,7 +29,7 @@ class _editState extends State<edit> {
 
   /// 로딩전 초기값
 
-  UserProfile userData = UserProfile.currentUser;
+  UserSchool userData = UserProfile.currentUser;
 
   @override
   void initState() {

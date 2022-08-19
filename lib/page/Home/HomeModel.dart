@@ -2,16 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutterschool/page/Home/timetable.dart';
 
 import '../../DB/userProfile.dart';
-import 'lunch.dart';
+import 'Lunch/Lunch.dart';
+import 'Lunch/lunchListView.dart';
 
 class HomeModel with ChangeNotifier {
   HomeModel() {
-    UserProfile userProfile = UserProfile.currentUser;
-    setClass();
-    setLunch();
+    UserSchool userProfile = UserProfile.currentUser;
+    setTimeTable(userProfile);
+    setLunch(userProfile);
     grade=userProfile.grade;
     Class=userProfile.Class;
-    schoolName=userProfile.schoolName;
+    schoolName=userProfile.name;
   }
 
   late int grade;
@@ -21,20 +22,18 @@ class HomeModel with ChangeNotifier {
   List<Lunch>? lunches;
   ClassData? classData;
 
-  Future<void> setClass() async {
-    UserProfile userProfile = UserProfile.currentUser;
-
+  Future<void> setTimeTable(UserSchool userProfile) async {
     grade=userProfile.grade;
     Class=userProfile.Class;
-    schoolName=userProfile.schoolName;
+    schoolName=userProfile.name;
 
     print("${userProfile.grade}학년 ${userProfile.Class}반 시간표 불러오는 중...");
     TableDownloader tabledown = TableDownloader(
       Grade: userProfile.grade,
       Class: userProfile.Class,
-      SchoolCode: userProfile.schoolCode,
-      CityCode: userProfile.schoolLocalCode,
-      schoolLevel: userProfile.schoolLevel,
+      SchoolCode: userProfile.code,
+      CityCode: userProfile.officeCode,
+      schoolLevel: userProfile.level,
     );
     await tabledown.downLoad();
 
@@ -43,17 +42,15 @@ class HomeModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setLunch() async {
-    UserProfile userProfile = UserProfile.currentUser;
-
+  Future<void> setLunch(UserSchool userProfile) async {
     grade=userProfile.grade;
     Class=userProfile.Class;
-    schoolName=userProfile.schoolName;
+    schoolName=userProfile.name;
 
-    print("${userProfile.schoolName} 급식 불러오는 중...");
+    print("${userProfile.name} 급식 불러오는 중...");
     LunchDownloader lunchDownloader = LunchDownloader(
-      schoolCode: userProfile.schoolCode,
-      cityCode: userProfile.schoolLocalCode,
+      schoolCode: userProfile.code,
+      cityCode: userProfile.officeCode,
     );
     await lunchDownloader.downLoad();
 
