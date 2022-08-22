@@ -2,8 +2,24 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
+
+
+class lunchSearch extends StatefulWidget {
+ const  lunchSearch({Key? key}) : super(key: key);
+
+  @override
+  State<lunchSearch> createState() => _lunchSearchState();
+}
+
+class _lunchSearchState extends State<lunchSearch> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: lunchview(),
+    );
+  }
+}
 
 class lunchview extends StatefulWidget {
   const lunchview({Key? key}) : super(key: key);
@@ -13,11 +29,10 @@ class lunchview extends StatefulWidget {
 }
 
 class _lunchviewState extends State<lunchview> {
-
   /// 전역변수
   List MenuArray = [];
   String lunchImageTitle = "뭔가 오류가 있다.";
-  List? touchedDateList = ['20211122'];
+  List? touchedDateList = ['20211122','20211122'];
 
   ///나중에 설정하는 변수
   late Map allMenuMap;
@@ -28,10 +43,11 @@ class _lunchviewState extends State<lunchview> {
     allMenuMap = assetMap();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Container(child: SizedBox(height: 340, child: PictureView()),);
+    return Container(
+      child: SizedBox(height: 340, child: PictureView()),
+    );
   }
 
   /// 사진 레이아웃
@@ -70,13 +86,14 @@ class _lunchviewState extends State<lunchview> {
     }
     return list;
   }
+
   /// 저장한 json맵
   Map assetMap() {
     Map<dynamic, List> allMap =
-    Map(); // ["급식이름"][20210819, 20210910, 20211005, 20211108];
+        Map(); // ["급식이름"][20210819, 20210910, 20211005, 20211108];
 
     Future<String> jsonstring() async {
-      String jsonString = await rootBundle.loadString('asset/a.json');
+      String jsonString = await rootBundle.loadString('assets/a.json');
       return jsonString;
     }
 
@@ -92,7 +109,7 @@ class _lunchviewState extends State<lunchview> {
         var keys = Menu.keys.toList(); // =[20321,3213,3222,20214533,20214534,]
 
         List menuList =
-        Menu[keys[i]]; //[현미보리밥, 냉이달래된장국, 봄동겉절이, 치즈불닭, 배추김치, 크림꽈배기]
+            Menu[keys[i]]; //[현미보리밥, 냉이달래된장국, 봄동겉절이, 치즈불닭, 배추김치, 크림꽈배기]
 
         for (int j = 0; j <= menuList.length - 1; j++) {
           List? list = allMap[menuList[j]]; //이 리스트는 이 맵안에서 이트 메뉴가 가지고있는 리스
@@ -114,7 +131,6 @@ class _lunchviewState extends State<lunchview> {
     });
     return allMap;
   }
-
 }
 
 // 왼쪽

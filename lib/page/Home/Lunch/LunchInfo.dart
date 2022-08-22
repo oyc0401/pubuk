@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'Lunch.dart';
+import 'lunchYesterDay.dart';
 
 const String allergy = "요리명에 표시된 번호는 알레르기를 유발할수 있는 식재료입니다 "
     "(1.난류, 2.우유, 3.메밀, 4.땅콩, 5.대두, 6.밀, 7.고등어, 8.게, 9.새우, 10.돼지고기, 11.복숭아, 12.토마토,"
@@ -44,6 +46,14 @@ class LunchInfo extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: allergyWidget(),
           ),
+          CupertinoButton(child: Text("검색창 이동"), onPressed: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => const lunchSearch(),
+              ),
+            );
+          }),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
