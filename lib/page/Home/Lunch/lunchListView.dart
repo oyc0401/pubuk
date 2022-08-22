@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/Home/HomeModel.dart';
+import 'package:flutterschool/page/Home/Lunch/LunchInfo.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletons/skeletons.dart';
@@ -67,11 +68,31 @@ class LunchContainer extends StatelessWidget {
     this.light = false,
   }) : super(key: key);
 
+  Route createRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.easeIn;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         print(lunch);
+        Navigator.of(context).push(createRoute(LunchInfo(lunch: lunch)));
+
       },
       child: Container(
         width: 160,

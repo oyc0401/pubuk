@@ -5,7 +5,7 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
-class Lunch extends MapContainer {
+class Lunch {
   /// 하루의 점심 정보를 담고있는 객체
 
   String YMD;
@@ -39,7 +39,7 @@ class Lunch extends MapContainer {
       cleanedData = cleanedData.replaceAll("_", "");
       cleanedData = cleanedData.replaceAll("()", "");
 
-      /// cleanedData = cleanedData.replaceAll(" ", "");
+      cleanedData = cleanedData.replaceAll(" ", "");
 
       // if (UserProfile.currentUser.schoolName == "도당고등학교") {
       //   cleanedData = cleanedData.replaceAll("1", "");
