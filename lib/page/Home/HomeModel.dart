@@ -3,7 +3,7 @@ import 'package:flutterschool/page/Home/timetable.dart';
 
 import '../../DB/userProfile.dart';
 import 'Lunch/Lunch.dart';
-import 'Lunch/lunchListView.dart';
+import 'Lunch/lunchSlider.dart';
 
 class HomeModel with ChangeNotifier {
   HomeModel() {
@@ -50,7 +50,7 @@ class HomeModel with ChangeNotifier {
     print("${userProfile.name} 급식 불러오는 중...");
     LunchDownload lunchDownload = LunchDownload(
         schoolCode: userProfile.code, cityCode: userProfile.officeCode);
-    var json = await lunchDownload.getJson();
+    var json = await lunchDownload.getJson(lunchDownload.uri30);
 
     JsonToLunch jsonToLunch = JsonToLunch(json: json);
     lunches = jsonToLunch.getLunches();

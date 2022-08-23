@@ -148,7 +148,7 @@ class LunchDownload {
   });
 
   /// nice API url
-  Uri get _uri {
+  Uri get uri30 {
     DateTime now = DateTime.now();
     String firstday =
         DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
@@ -165,9 +165,9 @@ class LunchDownload {
   }
 
   /// json 얻기
-  Future<Map<String, dynamic>> getJson() async {
+  Future<Map<String, dynamic>> getJson(Uri uri) async {
     // 요청하기
-    final Response response = await http.get(_uri);
+    final Response response = await http.get(uri);
 
     // 요청 성공하면 리턴
     if (response.statusCode == 200) {
@@ -176,6 +176,21 @@ class LunchDownload {
       throw Exception('Failed to load post');
     }
   }
+
+  /// nice API url
+  Uri get uriPast {
+    DateTime now = DateTime.now();
+    String nowDay = DateFormat('yyyyMMdd').format(now);
+
+    Uri uri = Uri.parse(
+        "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
+            "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$cityCode&SD_SCHUL_CODE=$schoolCode&"
+            "MLSV_FROM_YMD=20190401&MLSV_TO_YMD=$nowDay");
+
+    print("20190401 ~ $nowDay 급식메뉴: $uri");
+    return uri;
+  }
+
 }
 
 class JsonToLunch {

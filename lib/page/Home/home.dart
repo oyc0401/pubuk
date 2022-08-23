@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../Profile/profile.dart';
 import 'HomeModel.dart';
 import 'currentUserWidget.dart';
-import 'Lunch/lunchListView.dart';
+import 'Lunch/lunchSlider.dart';
 import 'timetable.dart';
 
 class Home extends StatefulWidget {
