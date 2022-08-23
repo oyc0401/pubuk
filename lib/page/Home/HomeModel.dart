@@ -10,9 +10,9 @@ class HomeModel with ChangeNotifier {
     UserSchool userProfile = UserProfile.currentUser;
     setTimeTable(userProfile);
     setLunch(userProfile);
-    grade=userProfile.grade;
-    Class=userProfile.Class;
-    schoolName=userProfile.name;
+    grade = userProfile.grade;
+    Class = userProfile.Class;
+    schoolName = userProfile.name;
   }
 
   late int grade;
@@ -23,9 +23,9 @@ class HomeModel with ChangeNotifier {
   ClassData? classData;
 
   Future<void> setTimeTable(UserSchool userProfile) async {
-    grade=userProfile.grade;
-    Class=userProfile.Class;
-    schoolName=userProfile.name;
+    grade = userProfile.grade;
+    Class = userProfile.Class;
+    schoolName = userProfile.name;
 
     print("${userProfile.grade}학년 ${userProfile.Class}반 시간표 불러오는 중...");
     TableDownloader tabledown = TableDownloader(
@@ -43,18 +43,18 @@ class HomeModel with ChangeNotifier {
   }
 
   Future<void> setLunch(UserSchool userProfile) async {
-    grade=userProfile.grade;
-    Class=userProfile.Class;
-    schoolName=userProfile.name;
+    grade = userProfile.grade;
+    Class = userProfile.Class;
+    schoolName = userProfile.name;
 
     print("${userProfile.name} 급식 불러오는 중...");
-    LunchDownloader lunchDownloader = LunchDownloader(
-      schoolCode: userProfile.code,
-      cityCode: userProfile.officeCode,
-    );
-    await lunchDownloader.downLoad();
+    LunchDownload lunchDownload = LunchDownload(
+        schoolCode: userProfile.code, cityCode: userProfile.officeCode);
+    var json = await lunchDownload.getJson();
 
-    lunches = lunchDownloader.getLunches();
+    JsonToLunch jsonToLunch = JsonToLunch(json: json);
+    lunches = jsonToLunch.getLunches();
+
     notifyListeners();
   }
 }

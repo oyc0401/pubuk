@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/page/Home/Lunch/LunchSearch.dart';
 
 import 'Lunch.dart';
 import 'lunchYesterDay.dart';
@@ -32,16 +33,7 @@ class LunchInfo extends StatelessWidget {
             "급식을 선택해주세요",
             style: TextStyle(fontSize: 24),
           )),
-          Container(
-            height: 200,
-            margin: EdgeInsets.all(8.0),
-            color: Colors.grey,
-            child: Center(
-                child: Text(
-              "아직 개발중 입니다.",
-              style: TextStyle(color: Colors.white),
-            )),
-          ),
+          LunchImage(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: allergyWidget(),
@@ -50,7 +42,15 @@ class LunchInfo extends StatelessWidget {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => const lunchSearch(),
+                builder: (context) => const LunchSearch(),
+              ),
+            );
+          }),
+          CupertinoButton(child: Text("예전 위젯 이동"), onPressed: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => const lunchImageYesterDay(),
               ),
             );
           }),
@@ -103,6 +103,26 @@ class LunchInfo extends StatelessWidget {
         Text("원산지", style: TextStyle(fontSize: 20)),
         for (String text in lunch.origin) Text(text),
       ],
+    );
+  }
+}
+
+
+
+class LunchImage extends StatelessWidget {
+  const LunchImage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      margin: EdgeInsets.all(8.0),
+      color: Colors.grey,
+      child: Center(
+          child: Text(
+            "아직 개발중 입니다.",
+            style: TextStyle(color: Colors.white),
+          )),
     );
   }
 }
