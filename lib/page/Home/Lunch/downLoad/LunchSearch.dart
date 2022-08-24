@@ -1,14 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutterschool/DB/userProfile.dart';
-import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
 import '../../HomeModel.dart';
-import '../AllMap.dart';
 import '../Lunch.dart';
 
 class LunchSearch extends StatefulWidget {

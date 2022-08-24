@@ -1,12 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterschool/page/Home/Lunch/downLoad/LunchSearch.dart';
 import 'package:provider/provider.dart';
-
 import '../HomeModel.dart';
-import 'AllMap.dart';
 import 'Lunch.dart';
-import 'downLoad/lunchYesterDay.dart';
+
 
 const String allergy = "요리명에 표시된 번호는 알레르기를 유발할수 있는 식재료입니다 "
     "(1.난류, 2.우유, 3.메밀, 4.땅콩, 5.대두, 6.밀, 7.고등어, 8.게, 9.새우, 10.돼지고기, 11.복숭아, 12.토마토,"

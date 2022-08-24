@@ -16,14 +16,14 @@ class JsonToLunch {
     } else {
       for (Map map in lunchMaps) {
         String date = map["MLSV_YMD"];
-        lunches[date] = mapToLunch(map, isHttp);
+        lunches[date] = _mapToLunch(map, isHttp);
       }
     }
 
     return lunches;
   }
 
-  mapToLunch(Map map, bool isHttp) {
+  Lunch _mapToLunch(Map map, bool isHttp) {
     List<String> splitList(String text) {
       List<String> foods = [];
       if (isHttp) {
