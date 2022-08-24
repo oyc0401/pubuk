@@ -4,7 +4,7 @@ import 'package:flutterschool/page/Home/timetable.dart';
 import '../../DB/userProfile.dart';
 import 'Lunch/Lunch.dart';
 import 'Lunch/NiceApi.dart';
-import 'Lunch/JsonToLunch.dart';
+import 'Lunch/LunchMaker.dart';
 
 class HomeModel with ChangeNotifier {
   HomeModel() {
@@ -81,7 +81,7 @@ class GetLunch {
     Map<String, dynamic> json = await lunchDownload.parse(lunchDownload.uriPast);
 
     /// 그걸 Lunch에 넣는다.
-    JsonToLunch jsonToLunch = JsonToLunch(json: json);
+    LunchMaker jsonToLunch = LunchMaker(json: json);
     return jsonToLunch.currentLunch(true);
   }
 }

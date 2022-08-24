@@ -1,7 +1,7 @@
 import 'Lunch.dart';
 
-class JsonToLunch {
-  JsonToLunch({required this.json});
+class LunchMaker {
+  LunchMaker({required this.json});
 
   Map<String, dynamic> json;
 
@@ -24,37 +24,21 @@ class JsonToLunch {
   }
 
   Lunch _mapToLunch(Map map, bool isHttp) {
-    List<String> splitList(String text) {
-      List<String> foods = [];
-      if (isHttp) {
-        // 문자열 나누기
-        foods = text.split("<br/>");
-      } else {
-        // 문자열 나누기
-        foods = text.split(" ");
-      }
-
-      return foods;
-    }
+    List<String> splitList(String text) =>
+        isHttp ? text.split("<br/>") : text.split(" ");
 
     String date = map["MLSV_YMD"];
     String dish = map["DDISH_NM"];
-    String orplc = map["ORPLC_INFO"];
-    String cal = map["CAL_INFO"];
+    String origin = map["ORPLC_INFO"];
+    String calorie = map["CAL_INFO"];
     String nutrient = map["NTR_INFO"];
 
     return Lunch(
       YMD: date,
       dish: splitList(dish),
-      origin: splitList(orplc),
-      calorie: cal,
+      origin: splitList(origin),
+      calorie: calorie,
       nutrient: splitList(nutrient),
     );
   }
-
-
-
-
-
-
 }
