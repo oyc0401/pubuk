@@ -10,22 +10,30 @@ class HomeModel with ChangeNotifier {
     UserSchool userProfile = UserProfile.currentUser;
     setTimeTable(userProfile);
     setLunch(userProfile);
-    grade = userProfile.grade;
-    Class = userProfile.Class;
-    schoolName = userProfile.name;
+    _grade = userProfile.grade;
+    _class = userProfile.Class;
+    _schoolName = userProfile.name;
   }
 
-  late int grade;
-  late int Class;
-  late String schoolName;
+  late int _grade;
+  late int _class;
+  late String _schoolName;
 
-  List<Lunch>? lunches;
-  ClassData? classData;
+  Map<String, Lunch>? _lunchMap;
+  ClassData? _classData;
+
+  int get grade => _grade;
+
+  int get Class => _class;
+
+  String get schoolName => _schoolName;
+
+  Map<String, Lunch>? get lunchMap => _lunchMap;
+
+  ClassData? get classData => _classData;
 
   Future<void> setTimeTable(UserSchool userProfile) async {
-    grade = userProfile.grade;
-    Class = userProfile.Class;
-    schoolName = userProfile.name;
+    _changeProfile(userProfile);
 
     print("${userProfile.grade}학년 ${userProfile.Class}반 시간표 불러오는 중...");
     TableDownloader tabledown = TableDownloader(
@@ -37,24 +45,28 @@ class HomeModel with ChangeNotifier {
     );
     await tabledown.downLoad();
 
-    classData = tabledown.getData();
+    _classData = tabledown.getData();
 
     notifyListeners();
   }
 
   Future<void> setLunch(UserSchool userProfile) async {
-    grade = userProfile.grade;
-    Class = userProfile.Class;
-    schoolName = userProfile.name;
+    _changeProfile(userProfile);
 
     print("${userProfile.name} 급식 불러오는 중...");
     LunchDownload lunchDownload = LunchDownload(
         schoolCode: userProfile.code, cityCode: userProfile.officeCode);
-    var json = await lunchDownload.getJson(lunchDownload.uri30);
+    var json = await lunchDownload.getJson(lunchDownload.uriPast);
 
     JsonToLunch jsonToLunch = JsonToLunch(json: json);
-    lunches = jsonToLunch.getLunches();
 
+    _lunchMap = jsonToLunch.currentLunch(true);
     notifyListeners();
+  }
+
+  _changeProfile(UserSchool userProfile){
+    _grade = userProfile.grade;
+    _class = userProfile.Class;
+    _schoolName = userProfile.name;
   }
 }

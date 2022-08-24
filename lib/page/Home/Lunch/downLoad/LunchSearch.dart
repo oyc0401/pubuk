@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutterschool/DB/userProfile.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
+import '../../HomeModel.dart';
 import '../AllMap.dart';
 import '../Lunch.dart';
 
@@ -27,8 +29,35 @@ class _LunchSearchState extends State<LunchSearch> {
     init();
   }
 
+   Map<String, List<String>> nameMap(Map<String, Lunch>? lunchMap)  {
+    Map<String, List<String>> allMap =
+    {}; // ["급식이름"][20210819, 20210910, 20211005, 20211108];
+
+    if(lunchMap==null){
+      return {};
+    }
+
+    lunchMap.forEach((date, lunch) {
+      for (var dish in lunch.menu) {
+        if (allMap[dish] == null) {
+          allMap[dish] = [date];
+        } else {
+          allMap[dish]!.add(date);
+        }
+      }
+    });
+
+    print(allMap);
+
+    return allMap;
+  }
+
   init() async {
-    allMenuMap = await LunchAllMap.assetMap();
+
+    Map<String, Lunch>? lunchMap= Provider.of<HomeModel>(context).lunchMap;
+    print(lunchMap);
+    print("Dsada");
+    allMenuMap =  nameMap(lunchMap);
 
     setState(() {});
   }

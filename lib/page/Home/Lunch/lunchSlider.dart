@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/Home/HomeModel.dart';
 import 'package:flutterschool/page/Home/Lunch/LunchInfo.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletons/skeletons.dart';
@@ -12,9 +13,30 @@ const int TO_TERM = 30;
 class LunchBuilder extends StatelessWidget {
   const LunchBuilder({Key? key}) : super(key: key);
 
+  /// 일정 기간 이내에서 Map에 급식이 없으면 빈 모델을 리스트에 넣는다.
+  List<Lunch>? _addBlankLunch(Map<String, Lunch>? lunches) {
+    if(lunches==null){
+      return null;
+    }
+    // 빈자리를 채워주고 이름을 월, 일, 요일로 만들어준다.
+    List<Lunch> boxes = [];
+
+    final DateTime nowDateTime = DateTime.now();
+    for (int index = FROM_TERM; index <= TO_TERM; index++) {
+      // 날짜 구하기
+      DateTime plusDateTime = nowDateTime.add(Duration(days: index));
+      String day = DateFormat('yyyyMMdd').format(plusDateTime);
+
+      // 배열에 추가
+      boxes.add(lunches[day] ?? Lunch.noData(day));
+    }
+
+    return boxes;
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Lunch>? lunches = Provider.of<HomeModel>(context).lunches;
+    List<Lunch>? lunches = _addBlankLunch(Provider.of<HomeModel>(context).lunchMap);
 
     if (lunches == null) {
       return const SkeletonScroll();

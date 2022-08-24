@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterschool/page/Home/Lunch/downLoad/LunchSearch.dart';
+import 'package:provider/provider.dart';
 
+import '../HomeModel.dart';
 import 'AllMap.dart';
 import 'Lunch.dart';
 import 'downLoad/lunchYesterDay.dart';
@@ -134,6 +136,7 @@ class _LunchInfoState extends State<LunchInfo> {
   }
 }
 
+
 class LunchImage extends StatefulWidget {
   LunchImage({Key? key, required this.menu}) : super(key: key);
 
@@ -145,22 +148,15 @@ class LunchImage extends StatefulWidget {
 
 class _LunchImageState extends State<LunchImage> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    init();
-  }
-
-  init() async {
-    allmap = await LunchAllMap.assetMap();
-    setState(() {});
-  }
-
-  Map<String, List<String>> allmap = {};
-
-  @override
   Widget build(BuildContext context) {
-    List<String> list = allmap[widget.menu] ?? [];
+    Name_DateMap lunchAllMap=Name_DateMap(Provider.of<HomeModel>(context).lunchMap);
+    Map<String, List<String>> allmap = lunchAllMap.nameMap();
+
+    List<String> DateList = allmap[widget.menu] ?? [];
+
+    List<String> reversedList = List.from(DateList.reversed);
+    print("${widget.menu}: $reversedList");
+
     return Column(
       children: [
         Center(
@@ -175,12 +171,12 @@ class _LunchImageState extends State<LunchImage> {
           child: ListView.builder(
             //initialScrollIndex: 5, // 0 1 2 3 4 , 5, 6 7 8 9 10
             scrollDirection: Axis.horizontal,
-            itemCount: list.length,
+            itemCount: reversedList.length,
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ImageCard(
-                  date: list[index],
+                  date: reversedList[index],
                 ),
               );
             },
@@ -188,24 +184,19 @@ class _LunchImageState extends State<LunchImage> {
         ),
       ],
     );
-
-    // list.add(Image.network(
-    //   "https://puchonbuk.hs.kr/phpThumb/phpThumb.php?src=/upload/l_passquery/$Date"+"_2.jpeg&w=139&h=99",
-    //   errorBuilder: (context, error, stackTrace) => Text("급식 사진을 찾을 수 없습니다."),
-    // ));
   }
 }
+
 
 class ImageCard extends StatelessWidget {
   ImageCard({Key? key, required this.date}) : super(key: key);
   String date;
 
-  @override
-  Widget build(BuildContext context) {
+  String get url {
     DateTime curr = DateTime.parse(date);
     DateTime dateTime2 = DateTime.parse('20220228');
     int diff = dateTime2.difference(curr).inHours;
-    print(diff);
+
     String url = "";
     if (diff > 0) {
       ///2022년도부터는 jpg이다.
@@ -217,8 +208,15 @@ class ImageCard extends StatelessWidget {
           //   "https://puchonbuk.hs.kr/phpThumb/phpThumb.php?src=/upload/l_passquery/${date}_2.jpg&w=139&h=99";
           "https://puchonbuk.hs.kr/upload/l_passquery/${date}_2.jpg";
     }
+    print("$date: $url");
+    return url;
+  }
 
-    print(url);
+
+
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(12.0),
       decoration: BoxDecoration(
@@ -234,7 +232,6 @@ class ImageCard extends StatelessWidget {
             height: 120,
             child: Image.network(
               url,
-
               loadingBuilder: (BuildContext context, Widget child,
                   ImageChunkEvent? loadingProgress) {
                 if (loadingProgress == null) return child;
@@ -252,7 +249,8 @@ class ImageCard extends StatelessWidget {
                   height: 100,
                   color: Colors.white70,
                   child: Center(
-                    child: Text("급식 사진이 업로드 되지 않았습니다."),
+                    child: Text("급식 사진이 업로드 되지 않았습니다.",
+                        textAlign: TextAlign.center),
                   ),
                 );
               },
@@ -268,5 +266,37 @@ class ImageCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+
+
+
+class Name_DateMap {
+  Name_DateMap(Map<String, Lunch>? map) {
+    _lunchMap = map;
+  }
+
+  Map<String, Lunch>? _lunchMap;
+
+  Map<String, List<String>> nameMap() {
+    Map<String, List<String>> allMap =
+        {}; // ["급식이름"][20210819, 20210910, 20211005, 20211108];
+
+    if (_lunchMap == null) {
+      return {};
+    }
+
+    _lunchMap!.forEach((date, lunch) {
+      for (var dish in lunch.menu) {
+        if (allMap[dish] == null) {
+          allMap[dish] = [date];
+        } else {
+          allMap[dish]!.add(date);
+        }
+      }
+    });
+
+    return allMap;
   }
 }

@@ -150,17 +150,34 @@ class LunchDownload {
   /// nice API url
   Uri get uri30 {
     DateTime now = DateTime.now();
-    String firstday =
+    String firstDay =
         DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
-    String lastday =
+    String lastDay =
         DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
         "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$cityCode&SD_SCHUL_CODE=$schoolCode&"
-        "MLSV_FROM_YMD=$firstday&MLSV_TO_YMD=$lastday");
+        "MLSV_FROM_YMD=$firstDay&MLSV_TO_YMD=$lastDay");
 
-    print("$firstday ~ $lastday 급식메뉴: $uri");
+    print("$firstDay ~ $lastDay 급식메뉴: $uri");
+    return uri;
+  }
+
+  /// nice API url
+  Uri get uriPast {
+    const String firstDay='20190401';
+
+    DateTime now = DateTime.now();
+    String lastDay =
+    DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
+
+    Uri uri = Uri.parse(
+        "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
+            "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$cityCode&SD_SCHUL_CODE=$schoolCode&"
+            "MLSV_FROM_YMD=$firstDay&MLSV_TO_YMD=$lastDay");
+
+    print("$firstDay ~ $lastDay 급식메뉴: $uri");
     return uri;
   }
 
@@ -177,27 +194,13 @@ class LunchDownload {
     }
   }
 
-  /// nice API url
-  Uri get uriPast {
-    DateTime now = DateTime.now();
-    String nowDay = DateFormat('yyyyMMdd').format(now);
 
-    Uri uri = Uri.parse(
-        "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
-            "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$cityCode&SD_SCHUL_CODE=$schoolCode&"
-            "MLSV_FROM_YMD=20190401&MLSV_TO_YMD=$nowDay");
-
-    print("20190401 ~ $nowDay 급식메뉴: $uri");
-    return uri;
-  }
 
 }
 
 class JsonToLunch {
   JsonToLunch({required this.json});
   Map<String, dynamic> json;
-
-  List<Lunch> getLunches() => _addBlankLunch(currentLunch(true));
 
   /// Map에 현재 얻어올 수 있는 급식을 날짜대로 저장하고
   Map<String, Lunch> currentLunch(bool isHttp) {
@@ -217,21 +220,4 @@ class JsonToLunch {
     return lunches;
   }
 
-  /// 일정 기간 이내에서 Map에 급식이 없으면 빈 모델을 리스트에 넣는다.
-  List<Lunch> _addBlankLunch(Map<String, Lunch> lunches) {
-    // 빈자리를 채워주고 이름을 월, 일, 요일로 만들어준다.
-    List<Lunch> boxes = [];
-
-    final DateTime nowDateTime = DateTime.now();
-    for (int index = FROM_TERM; index <= TO_TERM; index++) {
-      // 날짜 구하기
-      DateTime plusDateTime = nowDateTime.add(Duration(days: index));
-      String day = DateFormat('yyyyMMdd').format(plusDateTime);
-
-      // 배열에 추가
-      boxes.add(lunches[day] ?? Lunch.noData(day));
-    }
-
-    return boxes;
-  }
 }
