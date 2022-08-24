@@ -1,9 +1,4 @@
-import 'dart:convert';
-
-import 'package:flutterschool/Server/FirebaseAirPort.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 
 class Lunch {
   /// 하루의 점심 정보를 담고있는 객체
@@ -27,7 +22,8 @@ class Lunch {
       return ["급식정보가 없습니다."];
     }
 
-    return List.generate(dish.length, (index) => LunchText.cleanText(dish[index]));
+    return List.generate(
+        dish.length, (index) => LunchText.cleanText(dish[index]));
   }
 
   String get date {
@@ -44,35 +40,6 @@ class Lunch {
     return title;
   }
 
-  factory Lunch.mapToLunch(Map map,bool isHttp) {
-    List<String> splitList(String text) {
-
-      List<String> foods=[];
-      if(isHttp){
-        // 문자열 나누기
-         foods = text.split("<br/>");
-      }else{
-        // 문자열 나누기
-         foods = text.split(" ");
-      }
-
-      return foods;
-    }
-
-    String date = map["MLSV_YMD"];
-    String dish = map["DDISH_NM"];
-    String orplc = map["ORPLC_INFO"];
-    String cal = map["CAL_INFO"];
-    String nutrient = map["NTR_INFO"];
-
-    return Lunch(
-      YMD: date,
-      dish: splitList(dish),
-      origin: splitList(orplc),
-      calorie: cal,
-      nutrient: splitList(nutrient),
-    );
-  }
 
   factory Lunch.noData(String date) {
     return Lunch(
@@ -111,9 +78,8 @@ class Lunch {
   }
 }
 
-
-class LunchText{
-  static  cleanText(String text){
+class LunchText {
+  static cleanText(String text) {
     String cleanedData = text.replaceAll("북고", "");
 
     for (int k = 20; k > 0; k--) {
@@ -135,89 +101,3 @@ class LunchText{
   }
 }
 
-const int FROM_TERM = -30;
-const int TO_TERM = 30;
-
-class LunchDownload {
-  int schoolCode;
-  String cityCode;
-
-  LunchDownload({
-    required this.cityCode,
-    required this.schoolCode,
-  });
-
-  /// nice API url
-  Uri get uri30 {
-    DateTime now = DateTime.now();
-    String firstDay =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: FROM_TERM)));
-    String lastDay =
-        DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
-
-    Uri uri = Uri.parse(
-        "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
-        "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$cityCode&SD_SCHUL_CODE=$schoolCode&"
-        "MLSV_FROM_YMD=$firstDay&MLSV_TO_YMD=$lastDay");
-
-    print("$firstDay ~ $lastDay 급식메뉴: $uri");
-    return uri;
-  }
-
-  /// nice API url
-  Uri get uriPast {
-    const String firstDay='20190401';
-
-    DateTime now = DateTime.now();
-    String lastDay =
-    DateFormat('yyyyMMdd').format(now.add(Duration(days: TO_TERM)));
-
-    Uri uri = Uri.parse(
-        "https://open.neis.go.kr/hub/mealServiceDietInfo?Key=59b8af7c4312435989470cba41e5c7a6&"
-            "Type=json&pIndex=1&pSize=1000&ATPT_OFCDC_SC_CODE=$cityCode&SD_SCHUL_CODE=$schoolCode&"
-            "MLSV_FROM_YMD=$firstDay&MLSV_TO_YMD=$lastDay");
-
-    print("$firstDay ~ $lastDay 급식메뉴: $uri");
-    return uri;
-  }
-
-  /// json 얻기
-  Future<Map<String, dynamic>> getJson(Uri uri) async {
-    // 요청하기
-    final Response response = await http.get(uri);
-
-    // 요청 성공하면 리턴
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load post');
-    }
-  }
-
-
-
-}
-
-class JsonToLunch {
-  JsonToLunch({required this.json});
-  Map<String, dynamic> json;
-
-  /// Map에 현재 얻어올 수 있는 급식을 날짜대로 저장하고
-  Map<String, Lunch> currentLunch(bool isHttp) {
-    Map<String, Lunch> lunches = {}; // cleanMap["20211204"]= ["밥", "된장국", "딸기"]
-
-    List? lunchMaps = json["mealServiceDietInfo"]?[1]?["row"];
-
-    if (lunchMaps == null) {
-      print("불러오지 못했습니다.");
-    } else {
-      for (Map map in lunchMaps) {
-        String date = map["MLSV_YMD"];
-        lunches[date] = Lunch.mapToLunch(map,isHttp);
-      }
-    }
-
-    return lunches;
-  }
-
-}

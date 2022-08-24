@@ -59,7 +59,7 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            Provider.of<HomeModel>(context).schoolName,
+            Provider.of<HomeModel>(context).name,
             style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,

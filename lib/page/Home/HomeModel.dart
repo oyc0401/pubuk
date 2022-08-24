@@ -3,7 +3,8 @@ import 'package:flutterschool/page/Home/timetable.dart';
 
 import '../../DB/userProfile.dart';
 import 'Lunch/Lunch.dart';
-import 'Lunch/lunchSlider.dart';
+import 'Lunch/NiceApi.dart';
+import 'Lunch/lunchDown.dart';
 
 class HomeModel with ChangeNotifier {
   HomeModel() {
@@ -12,12 +13,12 @@ class HomeModel with ChangeNotifier {
     setLunch(userProfile);
     _grade = userProfile.grade;
     _class = userProfile.Class;
-    _schoolName = userProfile.name;
+    _name = userProfile.name;
   }
 
   late int _grade;
   late int _class;
-  late String _schoolName;
+  late String _name;
 
   Map<String, Lunch>? _lunchMap;
   ClassData? _classData;
@@ -26,7 +27,7 @@ class HomeModel with ChangeNotifier {
 
   int get Class => _class;
 
-  String get schoolName => _schoolName;
+  String get name => _name;
 
   Map<String, Lunch>? get lunchMap => _lunchMap;
 
@@ -50,23 +51,37 @@ class HomeModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setLunch(UserSchool userProfile) async {
-    _changeProfile(userProfile);
+  Future<void> setLunch(UserSchool userSchool) async {
+    _changeProfile(userSchool);
 
-    print("${userProfile.name} 급식 불러오는 중...");
-    LunchDownload lunchDownload = LunchDownload(
-        schoolCode: userProfile.code, cityCode: userProfile.officeCode);
+    GetLunch getLunch = GetLunch(userSchool);
+    _lunchMap = await getLunch.getLunch();
+
+    notifyListeners();
+  }
+
+  _changeProfile(UserSchool userProfile) {
+    _grade = userProfile.grade;
+    _class = userProfile.Class;
+    _name = userProfile.name;
+  }
+}
+
+class GetLunch {
+  GetLunch(UserSchool userSchool) : _userSchool = userSchool;
+
+  final UserSchool _userSchool;
+
+  Future<Map<String, Lunch>> getLunch() async {
+    print("${_userSchool.name} 급식 불러오는 중...");
+
+    LunchDownloader lunchDownload = LunchDownloader(
+        code: _userSchool.code, officeCode: _userSchool.officeCode);
     var json = await lunchDownload.getJson(lunchDownload.uriPast);
 
     JsonToLunch jsonToLunch = JsonToLunch(json: json);
 
-    _lunchMap = jsonToLunch.currentLunch(true);
-    notifyListeners();
-  }
-
-  _changeProfile(UserSchool userProfile){
-    _grade = userProfile.grade;
-    _class = userProfile.Class;
-    _schoolName = userProfile.name;
+    Map<String, Lunch> _lunchMap = jsonToLunch.currentLunch(true);
+    return _lunchMap;
   }
 }
