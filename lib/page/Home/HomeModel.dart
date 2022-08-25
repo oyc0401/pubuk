@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutterschool/page/Home/timetable.dart';
-
 import '../../DB/userProfile.dart';
 import 'Lunch/Lunch.dart';
-import 'Lunch/NiceApi.dart';
-import 'Lunch/LunchMaker.dart';
+import 'Lunch/GetLunch.dart';
+import 'TimeTable/ClassData.dart';
+import 'TimeTable/GetTable.dart';
 
 class HomeModel with ChangeNotifier {
   HomeModel() {
@@ -37,22 +36,17 @@ class HomeModel with ChangeNotifier {
     _changeProfile(userProfile);
 
     print("${userProfile.grade}학년 ${userProfile.Class}반 시간표 불러오는 중...");
-    TableDownloader tabledown = TableDownloader(
-      Grade: userProfile.grade,
-      Class: userProfile.Class,
-      SchoolCode: userProfile.code,
-      CityCode: userProfile.officeCode,
-      schoolLevel: userProfile.level,
-    );
-    await tabledown.downLoad();
 
-    _classData = tabledown.getData();
+    GetTable getTable = GetTable(userProfile);
+    _classData = await getTable.getData();
 
     notifyListeners();
   }
 
   Future<void> setLunch(UserSchool userSchool) async {
     _changeProfile(userSchool);
+
+    print("${userSchool.name} 급식 불러오는 중...");
 
     GetLunch getLunch = GetLunch(userSchool);
     _lunchMap = await getLunch.getLunch();
@@ -64,24 +58,5 @@ class HomeModel with ChangeNotifier {
     _grade = userProfile.grade;
     _class = userProfile.Class;
     _name = userProfile.name;
-  }
-}
-
-class GetLunch {
-  GetLunch(UserSchool userSchool) : _userSchool = userSchool;
-
-  final UserSchool _userSchool;
-
-  Future<Map<String, Lunch>> getLunch() async {
-    print("${_userSchool.name} 급식 불러오는 중...");
-
-    /// json 가져오고
-    LunchDownloader lunchDownload = LunchDownloader(
-        code: _userSchool.code, officeCode: _userSchool.officeCode);
-    Map<String, dynamic> json = await lunchDownload.parse(lunchDownload.uriPast);
-
-    /// 그걸 Lunch에 넣는다.
-    LunchMaker jsonToLunch = LunchMaker(json: json);
-    return jsonToLunch.currentLunch(true);
   }
 }

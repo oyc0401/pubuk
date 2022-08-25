@@ -1,14 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:intl/intl.dart';
-
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:skeletons/skeletons.dart';
 
-import 'HomeModel.dart';
+import '../HomeModel.dart';
+import 'ClassData.dart';
 
 class MyTimeTable extends StatelessWidget {
   const MyTimeTable({Key? key}) : super(key: key);
@@ -266,128 +261,4 @@ class TableSideUnit extends StatelessWidget {
   }
 }
 
-class TableDownloader {
-  int Grade;
-  int Class;
-  String CityCode;
-  int SchoolCode;
-  int schoolLevel;
 
-  TableDownloader({
-    required this.Grade,
-    required this.Class,
-    required this.CityCode,
-    required this.SchoolCode,
-    required this.schoolLevel,
-  });
-
-  late Map<String, dynamic> Json;
-
-  Future<void> downLoad() async => Json = await _getJson();
-
-  ClassData getData() => classDataFromJson(Json);
-
-  Uri _MyUri() {
-    var now = DateTime.now();
-    var mon = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 1)));
-    var fri = DateFormat('yyyyMMdd')
-        .format(now.add(Duration(days: -1 * now.weekday + 5))); // weekday 금요일=5
-
-    if (schoolLevel == 2) {
-      return Uri.parse(
-          "https://open.neis.go.kr/hub/misTimetable?Key=59b8af7c4312435989470cba41e5c7a6&Type=json&pIndex=1&pSize=1000&"
-          "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
-    }
-    else {
-      Uri uri = Uri.parse(
-          "https://open.neis.go.kr/hub/hisTimetable?Key=59b8af7c4312435989470cba41e5c7a6&Type=json&pIndex=1&pSize=1000&"
-              "ATPT_OFCDC_SC_CODE=$CityCode&SD_SCHUL_CODE=$SchoolCode&GRADE=$Grade&CLASS_NM=$Class&TI_FROM_YMD=$mon&TI_TO_YMD=$fri");
-      return uri;
-    }
-
-  }
-
-  Future<Map<String, dynamic>> _getJson() async {
-    // uri값 얻고
-    Uri uri = _MyUri();
-
-    // 요청하기
-    final Response response = await http.get(uri);
-
-    // 요청 성공하면 리턴
-    if (response.statusCode == 200) {
-      print("$Grade학년 $Class반 시간표 url: $uri");
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load post');
-    }
-  }
-
-  ClassData classDataFromJson(Map<String, dynamic> json) {
-    // 각 요일의 날짜를 구하기
-    final DateTime now = DateTime.now();
-    List<String> dates =
-        []; // dates: [20220613, 20220614, 20220615, 20220616, 20220617]
-    for (int i = 1; i <= 5; i++) {
-      dates.add(DateFormat('yyyyMMdd')
-          .format(now.add(Duration(days: -1 * now.weekday + i))));
-    }
-
-    // 과목이 담길 리스트를 만든다
-    List<String> arrMon = [],
-        arrTue = [],
-        arrWed = [],
-        arrThu = [],
-        arrFri = [];
-
-    // 이 리스트는 시간 맵이 모두 들어있는 리스트
-    List? TimeList = json['hisTimetable']?[1]?['row'];
-
-    if (TimeList == null) {
-      assert(json["RESULT"]?["MESSAGE"] == "해당하는 데이터가 없습니다.",
-          "시간표 url을 불러오는 과정에서 예상치 못한 오류가 발생했습니다.");
-      String message = "데이터가 없습니다.";
-      arrMon.add(message);
-      arrTue.add(message);
-      arrWed.add(message);
-      arrThu.add(message);
-      arrFri.add(message);
-    } else {
-      assert(json['hisTimetable']?[0]?['head']?[1]?['RESULT']?['MESSAGE'] ==
-          "정상 처리되었습니다.");
-
-      for (int i = 0; i < TimeList.length; i++) {
-        final String date = TimeList[i]['ALL_TI_YMD'];
-        final String subject = TimeList[i]['ITRT_CNTNT'];
-
-        if (date == dates[0]) {
-          arrMon.add(subject);
-        } else if (date == dates[1]) {
-          arrTue.add(subject);
-        } else if (date == dates[2]) {
-          arrWed.add(subject);
-        } else if (date == dates[3]) {
-          arrThu.add(subject);
-        } else if (date == dates[4]) {
-          arrFri.add(subject);
-        }
-      }
-    }
-
-    return ClassData(
-        Mon: arrMon, Tue: arrTue, Wed: arrWed, Thu: arrThu, Fri: arrFri);
-  }
-}
-
-class ClassData {
-  List<String> Mon, Tue, Wed, Thu, Fri;
-
-  ClassData({
-    required this.Mon,
-    required this.Tue,
-    required this.Wed,
-    required this.Thu,
-    required this.Fri,
-  });
-}

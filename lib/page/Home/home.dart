@@ -5,9 +5,8 @@ import 'package:provider/provider.dart';
 
 import '../Profile/profile.dart';
 import 'HomeModel.dart';
-import 'currentUserWidget.dart';
 import 'Lunch/lunchSlider.dart';
-import 'timetable.dart';
+import 'TimeTable/timetable.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
