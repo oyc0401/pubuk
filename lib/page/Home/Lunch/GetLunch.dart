@@ -8,7 +8,6 @@ class GetLunch {
   final UserSchool _userSchool;
 
   Future<Map<String, Lunch>> getLunch() async {
-
     /// json 가져오고
     LunchDownloader lunchDownload = LunchDownloader(
         code: _userSchool.code, officeCode: _userSchool.officeCode);
@@ -41,7 +40,7 @@ class GetLunch {
 
     String date = map["MLSV_YMD"];
     String dish = map["DDISH_NM"];
-    String origin = map["ORPLC_INFO"];
+    String origin = map["ORPLC_INFO"] ?? "";
     String calorie = map["CAL_INFO"];
     String nutrient = map["NTR_INFO"];
 

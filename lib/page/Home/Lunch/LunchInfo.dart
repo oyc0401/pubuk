@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterschool/DB/userProfile.dart';
 import 'package:provider/provider.dart';
 import '../HomeModel.dart';
 import 'Lunch.dart';
-
 
 const String allergy = "요리명에 표시된 번호는 알레르기를 유발할수 있는 식재료입니다 "
     "(1.난류, 2.우유, 3.메밀, 4.땅콩, 5.대두, 6.밀, 7.고등어, 8.게, 9.새우, 10.돼지고기, 11.복숭아, 12.토마토,"
@@ -24,11 +24,20 @@ class _LunchInfoState extends State<LunchInfo> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    touchedMenu = widget.lunch.menu[0];
+
+
+      touchedMenu = widget.lunch.menu[0];
+
+
   }
 
   @override
   Widget build(BuildContext context) {
+    if(touchedMenu=="급식정보가 없습니다."){
+      return  blank();
+    }
+
+
     return Scaffold(
       appBar: AppBar(
           title: Text(
@@ -42,7 +51,8 @@ class _LunchInfoState extends State<LunchInfo> {
             padding: const EdgeInsets.all(8.0),
             child: menuWidget(),
           ),
-          LunchImage(
+           if(UserProfile.currentUser.code==7530072)
+            LunchImage(
             menu: touchedMenu,
           ),
           Padding(
@@ -81,6 +91,17 @@ class _LunchInfoState extends State<LunchInfo> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget blank(){
+    return Scaffold(
+      appBar: AppBar(
+          title: Text(
+            widget.lunch.date,
+            style: TextStyle(color: Colors.black),
+          )),
+      body: Center(child: Text("급식 정보가 없습니다.",style: TextStyle(fontSize: 28),)),
     );
   }
 
@@ -134,6 +155,7 @@ class _LunchInfoState extends State<LunchInfo> {
 }
 
 
+
 class LunchImage extends StatefulWidget {
   LunchImage({Key? key, required this.menu}) : super(key: key);
 
@@ -146,13 +168,32 @@ class LunchImage extends StatefulWidget {
 class _LunchImageState extends State<LunchImage> {
   @override
   Widget build(BuildContext context) {
-    Name_DateMap lunchAllMap=Name_DateMap(Provider.of<HomeModel>(context).lunchMap);
+    Name_DateMap lunchAllMap =
+        Name_DateMap(Provider.of<HomeModel>(context).lunchMap);
     Map<String, List<String>> allmap = lunchAllMap.nameMap();
 
     List<String> DateList = allmap[widget.menu] ?? [];
 
     List<String> reversedList = List.from(DateList.reversed);
     print("${widget.menu}: $reversedList");
+
+    if(reversedList.isEmpty){
+      return Column(
+        children: [
+          Center(
+              child: Text(
+                widget.menu,
+                style: TextStyle(fontSize: 24),
+              )),
+          Container(
+            height: 200,
+            margin: EdgeInsets.all(8.0),
+            color: Colors.white,
+            child: Center(child: Text("오늘 처음나온 급식입니다!",style: TextStyle(fontSize: 24),))
+          ),
+        ],
+      );
+    }
 
     return Column(
       children: [
@@ -185,6 +226,7 @@ class _LunchImageState extends State<LunchImage> {
 }
 
 
+
 class ImageCard extends StatelessWidget {
   ImageCard({Key? key, required this.date}) : super(key: key);
   String date;
@@ -208,9 +250,6 @@ class ImageCard extends StatelessWidget {
     print("$date: $url");
     return url;
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -266,9 +305,6 @@ class ImageCard extends StatelessWidget {
   }
 }
 
-
-
-
 class Name_DateMap {
   Name_DateMap(Map<String, Lunch>? map) {
     _lunchMap = map;
@@ -285,15 +321,29 @@ class Name_DateMap {
     }
 
     _lunchMap!.forEach((date, lunch) {
-      for (var dish in lunch.menu) {
-        if (allMap[dish] == null) {
-          allMap[dish] = [date];
-        } else {
-          allMap[dish]!.add(date);
+      if(validation(date)){
+        for (var dish in lunch.menu) {
+          if (allMap[dish] == null) {
+            allMap[dish] = [date];
+          } else {
+            allMap[dish]!.add(date);
+          }
         }
       }
+
+
     });
 
     return allMap;
+  }
+
+
+  // 현재 또는 과거의 날짜인지
+  bool validation(String date) {
+    DateTime curr = DateTime.parse(date);
+    DateTime now = DateTime.now();
+    int diff = curr.difference(now).inHours; // curr - now 2021 - 2022 => -1
+
+    return diff < 0 ? true : false;
   }
 }

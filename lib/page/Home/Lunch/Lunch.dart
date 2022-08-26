@@ -90,13 +90,10 @@ class LunchText {
     cleanedData = cleanedData.replaceAll("_", "");
     cleanedData = cleanedData.replaceAll("()", "");
 
-    cleanedData = cleanedData.replaceAll(" ", "");
-
-    // if (UserProfile.currentUser.schoolName == "도당고등학교") {
-    //   cleanedData = cleanedData.replaceAll("1", "");
-    // }
+    // 도당고는 1이 붙음..
     cleanedData = cleanedData.replaceAll("1 ", "");
 
+    cleanedData = cleanedData.replaceAll(" ", "");
     return cleanedData;
   }
 }

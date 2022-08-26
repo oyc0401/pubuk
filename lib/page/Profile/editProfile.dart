@@ -11,6 +11,7 @@ import 'package:select_dialog/select_dialog.dart';
 import '../../DB/userProfile.dart';
 import '../../Server/FireTool.dart';
 import '../Home/HomeModel.dart';
+import '../mainPage.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -33,7 +34,13 @@ class _EditProfileState extends State<EditProfile> {
     Provider.of<HomeModel>(context, listen: false).setLunch(UserProfile.currentUser);
 
     // 나가기
-    Navigator.of(context).pop('complete');
+    Navigator.pushAndRemoveUntil(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => const MyHomePage(),
+        ),
+        (route) => false);
+
   }
 
   @override
