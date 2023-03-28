@@ -6,7 +6,7 @@ import '../../Server/FireTool.dart';
 import '../../Server/FirebaseAirPort.dart';
 import '../Home/HomeModel.dart';
 
-class EditProfileModel extends MapContainer with ChangeNotifier {
+class EditProfileModel  with ChangeNotifier {
   EditProfileModel({required this.grade,
     required this.Class,
     required this.schoolName,
