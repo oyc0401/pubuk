@@ -5,7 +5,7 @@
 
 ## version
 
-1.0 ~ 1.1 (android): https://github.com/oyc0401/pubuk
+1.0 ~ 1.1 (android): https://github.com/oyc0401/pubuk-1.1
 
 현재: 1.2.4
 
